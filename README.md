@@ -22,7 +22,7 @@ RedFoxHub（红狐数据平台）MCP Server — 将 6 大内容平台数据 API 
 
 所有接口需要 RedFoxHub API Key：
 
-1. 前往 <https://redfox.hk/settings/api-keys?source=mcp> 注册并复制 API Key
+1. 前往 [红狐Hub](https://redfox.hk/settings/api-keys?source=mcp) 注册并复制 API Key
 2. 设置环境变量：
 
 ```bash
@@ -82,7 +82,7 @@ claude mcp add redfox --env REDFOX_API_KEY=YOUR_API_KEY -- uvx redfox-mcp
 
 ## 底层依赖
 
-基于官方 SDK [redfox-python-sdk](https://github.com/redfox-data/redfox-python-sdk)（`pip install redfox-python-sdk`），API 文档见 <https://redfox.hk>。
+基于官方 SDK [redfox-python-sdk](https://github.com/redfox-data/redfox-python-sdk)（`pip install redfox-python-sdk`），API 文档见 [红狐Hub API文档](https://redfox.hk/apis/?source=mcp)。
 
 ## License
 

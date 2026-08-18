@@ -20,7 +20,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/redfox-data/redfox-mcp"
-Website = "https://redfox.hk"
+Website = "https://redfox.hk/apis/?source=mcp"
 
 [project.scripts]
 redfox-mcp = "redfox_mcp.server:main"
