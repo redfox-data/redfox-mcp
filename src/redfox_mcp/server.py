@@ -5,7 +5,7 @@
 - AI 搜索（Kimi/豆包/Deepseek，3 个自动轮询工具 + 3 个结果查询工具）
 - AI 生成（GPT 图片/豆包图片 Pro/Lite/豆包视频，4 个自动轮询工具 + 4 个结果查询工具）
 
-认证：环境变量 REDFOX_API_KEY（获取地址 https://redfox.hk/settings/api-keys）
+认证：环境变量 REDFOX_API_KEY（获取地址 https://redfox.hk/settings/api-keys?source=mcp）
 """
 
 import time
@@ -19,7 +19,7 @@ mcp = FastMCP("redfox")
 
 API_KEY_GUIDE = (
     "REDFOX_API_KEY 未配置或无效。请前往 "
-    "https://redfox.hk/settings/api-keys 注册并获取 API Key，"
+    "https://redfox.hk/settings/api-keys?source=mcp 注册并获取 API Key，"
     "然后设置环境变量 REDFOX_API_KEY 后重启本服务。"
 )
 
