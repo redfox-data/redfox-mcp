@@ -1,17 +1,20 @@
-<p align="center">
-  <a href="https://redfox.hk/?source=github"><img src="https://lyy.redfox.hk/page/logo-redfox-name.png" alt="RedFox Logo" width="200"></a>
-</p>
+<div align="center">
+<a href="https://pypi.org/project/redfox-python-sdk/"><img src="https://img.shields.io/pypi/v/redfox-mcp.svg" alt="PyPI version"></a> <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/pyversions/redfox-mcp.svg" alt="Python"></a> <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/l/redfox-mcp.svg" alt="License"></a>
 
-<p align="right">
+<p align="center">
   中文
   <a href="https://github.com/redfox-data/redfox-mcp/blob/main/README.md">English</a>
 </p>
 
-# redfox-mcp
+</div>
 
 <p align="center">
-  <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/v/redfox-mcp" alt="PyPI Version"></a>
+  <a href="https://redfox.hk/?source=github"><img src="https://lyy.redfox.hk/page/logo-redfox-name.png" alt="RedFox Logo" width="200"></a>
 </p>
+
+
+
+# redfox-mcp
 
 RedFoxHub（红狐数据平台）MCP Server — 将 6 大内容平台数据 API 与 AI 搜索/生成能力封装为 40 个 MCP 工具，可被 dsh、Claude Code、Cursor 等任意 MCP 客户端直接调用。
 

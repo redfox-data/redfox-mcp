@@ -1,17 +1,18 @@
-<p align="center">
-  <a href="https://redfox.hk/?source=mcp"><img src="https://lyy.redfox.hk/page/logo-redfox-name.png" alt="RedFox Logo" width="200"></a>
-</p>
+<div align="center">
+<a href="https://pypi.org/project/redfox-python-sdk/"><img src="https://img.shields.io/pypi/v/redfox-mcp.svg" alt="PyPI version"></a> <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/pyversions/redfox-mcp.svg" alt="Python"></a> <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/l/redfox-mcp.svg" alt="License"></a>
 
-<p align="right">
+<p align="center">
   <a href="https://github.com/redfox-data/redfox-mcp/blob/main/README.zh.md">中文</a>
   English
 </p>
 
-# redfox-mcp
+</div>
 
 <p align="center">
-  <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/v/redfox-mcp" alt="PyPI Version"></a>
+  <a href="https://redfox.hk/?source=mcp"><img src="https://lyy.redfox.hk/page/logo-redfox-name.png" alt="RedFox Logo" width="200"></a>
 </p>
+
+# redfox-mcp
 
 RedFoxHub MCP Server — turns the data APIs of 6 major content platforms plus AI search / generation capabilities into 40 MCP tools, ready for any MCP client such as dsh, Claude Code or Cursor.
 
