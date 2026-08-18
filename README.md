@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://redfox.hk/?source=github"><img src="https://lyy.redfox.hk/page/logo-redfox-name.png" alt="RedFox Logo" width="200"></a>
+  <a href="https://redfox.hk/?source=mcp"><img src="https://lyy.redfox.hk/page/logo-redfox-name.png" alt="RedFox Logo" width="200"></a>
 </p>
 
 <p align="right">
@@ -31,7 +31,7 @@ Async tools (AI search / generation) poll internally: submit → wait → return
 
 All APIs require a RedFoxHub API key:
 
-1. Get one at <https://redfox.hk/settings/api-keys>
+1. Get one at <https://redfox.hk/settings/api-keys/?source=mcp>
 2. Set the environment variable:
 
 ```bash
@@ -91,7 +91,7 @@ Add to your MCP configuration:
 
 ## Under the Hood
 
-Built on the official SDK [redfox-python-sdk](https://github.com/redfox-data/redfox-python-sdk). API docs: <https://redfox.hk>.
+Built on the official SDK [redfox-python-sdk](https://github.com/redfox-data/redfox-python-sdk). API docs: <https://redfox.hk/?source=mcp>.
 
 ## License
 
