@@ -9,6 +9,10 @@
 
 # redfox-mcp
 
+<p align="center">
+  <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/v/redfox-mcp" alt="PyPI Version"></a>
+</p>
+
 RedFoxHub（红狐数据平台）MCP Server — 将 6 大内容平台数据 API 与 AI 搜索/生成能力封装为 40 个 MCP 工具，可被 dsh、Claude Code、Cursor 等任意 MCP 客户端直接调用。
 
 ## 工具清单（40 个）

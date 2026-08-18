@@ -9,6 +9,10 @@
 
 # redfox-mcp
 
+<p align="center">
+  <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/v/redfox-mcp" alt="PyPI Version"></a>
+</p>
+
 RedFoxHub MCP Server — turns the data APIs of 6 major content platforms plus AI search / generation capabilities into 40 MCP tools, ready for any MCP client such as dsh, Claude Code or Cursor.
 
 ## Tools (40)
