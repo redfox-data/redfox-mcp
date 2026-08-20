@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-mcp"
-version = "0.1.1"
+version = "0.2.0"
 description = "RedFoxHub MCP server: Douyin/Xiaohongshu/WeChat/Bilibili/Toutiao/TikTok data APIs + AI search, image and video generation tools"
 readme = "README.md"
 requires-python = ">=3.10"

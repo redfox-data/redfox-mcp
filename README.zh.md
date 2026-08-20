@@ -96,6 +96,32 @@ claude mcp add redfox --env REDFOX_API_KEY=YOUR_API_KEY -- uvx redfox-mcp
 }
 ```
 
+## 远程 HTTP 模式（多租户）
+
+面向 MCP 市场和托管场景，server 也可以作为远程 HTTP 服务运行，每个用户携带自己的 API Key：
+
+```bash
+redfox-mcp --transport http --host 0.0.0.0 --port 8000
+# 或用环境变量：REDFOX_MCP_TRANSPORT=http REDFOX_MCP_HOST=0.0.0.0 REDFOX_MCP_PORT=8000
+```
+
+- MCP 端点：`http://<host>:8000/mcp`（Streamable HTTP）；健康检查：`GET /health`
+- 每个请求通过请求头 `X-API-Key: <key>`（或 `Authorization: Bearer <key>`）携带自己的 key。服务端按 key 创建并缓存独立 client，用户之间不共享额度。未带 key 时返回结构化引导而非异常。
+- 客户端配置示例（远程 URL + 请求头）：
+
+```json
+{
+  "mcpServers": {
+    "redfox": {
+      "url": "http://<host>:8000/mcp",
+      "headers": { "X-API-Key": "ak_你的key" }
+    }
+  }
+}
+```
+
+本地 stdio 模式仍是默认模式，行为完全不变。
+
 ## 底层依赖
 
 基于官方 SDK [redfox-python-sdk](https://github.com/redfox-data/redfox-python-sdk)（`pip install redfox-python-sdk`），API 文档见 [红狐Hub API文档](https://redfox.hk/apis/?source=mcp)。

@@ -8,12 +8,24 @@
 认证：环境变量 REDFOX_API_KEY（获取地址 https://redfox.hk/settings/api-keys?source=mcp）
 """
 
+import argparse
+import os
+import threading
 import time
+from collections import OrderedDict
 from typing import Any, Dict, List, Optional
 
 from fastmcp import FastMCP
 from redfox import RedFoxClient
 from redfox.exceptions import RedFoxAPIError, RedFoxAuthError, RedFoxRateLimitError
+from starlette.responses import JSONResponse
+
+try:
+    from fastmcp.server.dependencies import get_http_request
+except ImportError:  # 老版本 fastmcp 无此接口
+    get_http_request = None
+
+from redfox_mcp import __version__
 
 mcp = FastMCP("redfox")
 
@@ -21,6 +33,12 @@ API_KEY_GUIDE = (
     "REDFOX_API_KEY 未配置或无效。请前往 "
     "https://redfox.hk/settings/api-keys?source=mcp 注册并获取 API Key，"
     "然后设置环境变量 REDFOX_API_KEY 后重启本服务。"
+)
+
+API_KEY_GUIDE_HTTP = (
+    "未在请求头中检测到 API Key。请前往 "
+    "https://redfox.hk/settings/api-keys?source=mcp 注册并获取 API Key，"
+    "然后在 MCP 客户端的请求头中配置 X-API-Key（或 Authorization: Bearer <key>）。"
 )
 
 TASK_PENDING_MSG = (
@@ -33,14 +51,60 @@ TERMINAL_STATUSES = {
     "failed", "error", "cancelled", "canceled",
 }
 
-_client: Optional[RedFoxClient] = None
+_TRANSPORT = "stdio"  # main() 启动时按实际 transport 设置
+
+_client: Optional[RedFoxClient] = None  # stdio 模式：全局单例
+_tenants: "OrderedDict[str, RedFoxClient]" = OrderedDict()  # http 模式：按 key 缓存
+_tenants_lock = threading.Lock()
+_TENANT_MAX = 1000
+
+
+@mcp.custom_route("/health", methods=["GET"])
+async def _health(_request):
+    return JSONResponse({"status": "ok", "version": __version__})
+
+
+def _auth_guide() -> str:
+    return API_KEY_GUIDE if _TRANSPORT == "stdio" else API_KEY_GUIDE_HTTP
+
+
+def _request_key() -> Optional[str]:
+    """HTTP 模式下从当前请求头取 key：X-API-Key 优先，Authorization: Bearer 回退"""
+    if get_http_request is None:
+        return None
+    try:
+        req = get_http_request()
+    except Exception:  # 非 HTTP 上下文
+        return None
+    key = req.headers.get("x-api-key")
+    if key and key.strip():
+        return key.strip()
+    auth = req.headers.get("authorization", "")
+    if auth.lower().startswith("bearer "):
+        return auth[7:].strip() or None
+    return None
 
 
 def _get_client() -> RedFoxClient:
     global _client
-    if _client is None:
-        _client = RedFoxClient()  # 零配置：自动读环境变量 REDFOX_API_KEY
-    return _client
+    if _TRANSPORT == "stdio":
+        if _client is None:
+            _client = RedFoxClient()  # 零配置：自动读环境变量 REDFOX_API_KEY
+        return _client
+    # HTTP 多租户：按请求头中的 key 建独立 client，互不共享额度
+    key = _request_key()
+    if not key:
+        raise ValueError("missing API key in request header")
+    with _tenants_lock:
+        cli = _tenants.get(key)
+        if cli is None:
+            cli = RedFoxClient(api_key=key)
+            _tenants[key] = cli
+            if len(_tenants) > _TENANT_MAX:
+                _tenants.popitem(last=False)  # 淘汰最久未使用的租户
+        else:
+            _tenants.move_to_end(key)
+    return cli
 
 
 def _call(fn_factory, **kwargs) -> Dict[str, Any]:
@@ -48,7 +112,7 @@ def _call(fn_factory, **kwargs) -> Dict[str, Any]:
     try:
         return fn_factory()(**{k: v for k, v in kwargs.items() if v is not None})
     except (RedFoxAuthError, ValueError):
-        return {"error": "auth_failed", "message": API_KEY_GUIDE}
+        return {"error": "auth_failed", "message": _auth_guide()}
     except RedFoxRateLimitError:
         return {"error": "rate_limited", "message": "请求频率超限，请稍后重试"}
     except RedFoxAPIError as e:
@@ -512,8 +576,20 @@ def doubao_video_result(task_id: str) -> Dict[str, Any]:
 
 
 def main() -> None:
-    """以 stdio transport 启动 MCP server"""
-    mcp.run()
+    """启动 MCP server：默认 stdio（本地客户端），--transport http 切换为远程多租户模式"""
+    global _TRANSPORT
+    parser = argparse.ArgumentParser(prog="redfox-mcp", description="RedFoxHub MCP server")
+    parser.add_argument("--transport", choices=["stdio", "http"],
+                        default=os.getenv("REDFOX_MCP_TRANSPORT", "stdio"))
+    parser.add_argument("--host", default=os.getenv("REDFOX_MCP_HOST", "127.0.0.1"))
+    parser.add_argument("--port", type=int, default=int(os.getenv("REDFOX_MCP_PORT", "8000")))
+    parser.add_argument("--path", default=os.getenv("REDFOX_MCP_PATH", "/mcp"))
+    args = parser.parse_args()
+    if args.transport == "http":
+        _TRANSPORT = "http"
+        mcp.run(transport="streamable-http", host=args.host, port=args.port, path=args.path)
+    else:
+        mcp.run()
 
 
 if __name__ == "__main__":

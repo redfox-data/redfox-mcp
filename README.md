@@ -94,6 +94,32 @@ Add to your MCP configuration:
 }
 ```
 
+## Remote HTTP Mode (multi-tenant)
+
+For MCP marketplaces and hosted scenarios, the server can also run as a remote HTTP service where every user brings their own API key:
+
+```bash
+redfox-mcp --transport http --host 0.0.0.0 --port 8000
+# or via env vars: REDFOX_MCP_TRANSPORT=http REDFOX_MCP_HOST=0.0.0.0 REDFOX_MCP_PORT=8000
+```
+
+- MCP endpoint: `http://<host>:8000/mcp` (Streamable HTTP); health check: `GET /health`
+- Each request carries its own key via header `X-API-Key: <key>` (or `Authorization: Bearer <key>`). A dedicated client is created and cached per key — quotas are never shared across users. Missing key returns a structured guide instead of an exception.
+- Client-side config (remote URL + header):
+
+```json
+{
+  "mcpServers": {
+    "redfox": {
+      "url": "http://<host>:8000/mcp",
+      "headers": { "X-API-Key": "ak_your_key" }
+    }
+  }
+}
+```
+
+Local stdio mode remains the default and is fully backward-compatible.
+
 ## Under the Hood
 
 Built on the official SDK [redfox-python-sdk](https://github.com/redfox-data/redfox-python-sdk). API docs: <https://redfox.hk/?source=mcp>.
