@@ -1,0 +1,7 @@
+.git
+dist
+*.egg-info
+__pycache__
+.pytest_cache
+cloudbase
+.tmp-*
