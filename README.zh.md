@@ -1,5 +1,5 @@
 <div align="center">
-<a href="https://pypi.org/project/redfox-python-sdk/"><img src="https://img.shields.io/pypi/v/redfox-mcp.svg" alt="PyPI version"></a> <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/pyversions/redfox-mcp.svg" alt="Python"></a> <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/l/redfox-mcp.svg" alt="License"></a>
+<a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/v/redfox-mcp.svg" alt="PyPI version"></a> <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/pyversions/redfox-mcp.svg" alt="Python"></a> <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/l/redfox-mcp.svg" alt="License"></a>
 
 <p align="center">
   中文
@@ -16,115 +16,141 @@
 
 # redfox-mcp
 
-RedFoxHub（红狐数据平台）MCP Server — 将 6 大内容平台数据 API 与 AI 搜索/生成能力封装为 40 个 MCP 工具，可被 dsh、Claude Code、Cursor 等任意 MCP 客户端直接调用。
+RedFoxHub（红狐数据平台）MCP monorepo — 将 6 大内容平台数据 API 与 AI 搜索/生成能力拆分为 8 个按平台独立的 MCP server（共 40 个工具），可被 dsh、Claude Code、Cursor 等任意 MCP 客户端直接调用。
 
-## 工具清单（40 个）
+每个包都同时支持**本地 stdio**（单用户，环境变量 `REDFOX_API_KEY`）与**远程 HTTP**（多租户，按请求头传递 API Key），并自带 Dockerfile 可独立部署。
 
-| 类别 | 工具 | 说明 |
-|---|---|---|
-| 抖音 | `douyin_search_articles` / `douyin_search_users` / `douyin_get_user` / `douyin_get_user_works` / `douyin_get_work` / `douyin_search_ai_articles` | 作品搜索、账号搜索、账号信息、作品列表、作品详情、AI 作品 |
-| 小红书 | `xiaohongshu_search_articles` / `xiaohongshu_search_users` / `xiaohongshu_get_account` / `xiaohongshu_get_work` / `xiaohongshu_search_ai_articles` | 笔记搜索、博主搜索、账号信息、笔记详情、AI 笔记 |
-| 公众号 | `wechat_search_articles` / `wechat_search_users` / `wechat_get_account` / `wechat_get_user_works` / `wechat_get_work` / `wechat_get_article_detail` / `wechat_search_ai_articles` | 文章搜索（支持全文详情）、账号搜索、文章列表、AI 文章 |
-| B 站 | `bilibili_search_articles` / `bilibili_search_users` / `bilibili_get_account` / `bilibili_get_user_works` / `bilibili_get_work` | 视频搜索、UP 主搜索/信息/视频列表、视频详情 |
-| 今日头条 | `toutiao_search_works` / `toutiao_get_work` | 内容搜索、作品详情（实时） |
-| TikTok | `tiktok_search_users` | 账号搜索 |
-| AI 搜索 | `ai_search_kimi` / `ai_search_doubao` / `ai_search_deepseek` | 联网 AI 搜索，单次调用自动等待结果 |
-| AI 生成 | `gpt_image_generate` / `doubao_image_pro_generate` / `doubao_image_lite_generate` / `doubao_video_generate` | 文生图/图生图/组图/文生视频，单次调用自动等待结果 |
-| 任务查询 | `ai_search_*_result` / `gpt_image_result` / `doubao_image_*_result` / `doubao_video_result`（共 7 个） | 异步任务超时返回 taskId 后，凭 taskId 补查结果 |
+## 包索引
 
-异步工具（AI 搜索/生成）内部自动轮询：提交任务 → 等待完成 → 返回完整结果，无需手动管理 taskId。超过 `timeout_seconds`（默认 240 秒，视频 480 秒）仍未完成时返回 `taskId`，可用对应 result 工具补查。
+| 包 | 工具数 | stdio 命令 | Docker 服务 / 端口 |
+|---|---|---|---|
+| [`redfox-mcp`](packages/redfox-mcp)（全量聚合版） | 40 | `uvx redfox-mcp` | `all` → 8000 |
+| [`redfox-douyin-mcp`](packages/redfox-douyin-mcp) | 6 | `uvx redfox-douyin-mcp` | `douyin` → 8001 |
+| [`redfox-xiaohongshu-mcp`](packages/redfox-xiaohongshu-mcp) | 5 | `uvx redfox-xiaohongshu-mcp` | `xiaohongshu` → 8002 |
+| [`redfox-wechat-mcp`](packages/redfox-wechat-mcp) | 7 | `uvx redfox-wechat-mcp` | `wechat` → 8003 |
+| [`redfox-bilibili-mcp`](packages/redfox-bilibili-mcp) | 5 | `uvx redfox-bilibili-mcp` | `bilibili` → 8004 |
+| [`redfox-toutiao-mcp`](packages/redfox-toutiao-mcp) | 2 | `uvx redfox-toutiao-mcp` | `toutiao` → 8005 |
+| [`redfox-tiktok-mcp`](packages/redfox-tiktok-mcp) | 1 | `uvx redfox-tiktok-mcp` | `tiktok` → 8006 |
+| [`redfox-ai-search-mcp`](packages/redfox-ai-search-mcp) | 6 | `uvx redfox-ai-search-mcp` | `ai-search` → 8007 |
+| [`redfox-ai-gen-mcp`](packages/redfox-ai-gen-mcp) | 8 | `uvx redfox-ai-gen-mcp` | `ai-gen` → 8008 |
+| [`redfox-mcp-core`](packages/redfox-mcp-core) | — | 共享运行时（不直接面向用户） | — |
+
+异步工具（AI 搜索/生成）内部自动轮询：提交 → 等待 → 返回完整结果。若等待超过 `timeout_seconds`（默认 240 秒、视频 480 秒），返回 `taskId`，可用对应的 `*_result` 工具补查。
 
 ## 认证
 
-所有接口需要 RedFoxHub API Key：
+所有 API 均需 RedFoxHub API Key：
 
-1. 前往 [红狐Hub](https://redfox.hk/settings/api-keys?source=mcp) 注册并复制 API Key
+1. 前往 <https://redfox.hk/settings/api-keys/?source=mcp> 获取
 2. 设置环境变量：
 
 ```bash
 export REDFOX_API_KEY="YOUR_API_KEY"
 ```
 
-未配置时，工具会返回结构化的获取引导信息。
+未配置 key 时，每个工具都会返回结构化的获取引导。
 
-## 安装与运行
+## 快速开始（本地 stdio）
 
-要求 Python ≥ 3.10，推荐用 [uv](https://docs.astral.sh/uv/) 运行：
+需要 Python ≥ 3.10。按需只装需要的平台 —— 例如只要抖音：
+
+```bash
+uvx redfox-douyin-mcp
+```
+
+或使用包含全部 40 个工具的聚合包：
 
 ```bash
 uvx redfox-mcp
 ```
 
-或：
-
-```bash
-pip install redfox-mcp
-redfox-mcp
-```
-
-server 以 stdio transport 运行。
-
-## 客户端配置
-
-### dsh（DeepSeek Harness）
-
-安装官方 bundle 插件 [redfox-community-dsh](https://github.com/redfox-data/redfox-community-dsh)，其中已内置本 MCP server 的注册，装好后工具以 `mcp__redfox__*` 命名直接可用：
-
-```bash
-dsh plugin --profile web add -w github:redfox-data/redfox-community-dsh
-```
-
-### Claude Code
-
-```bash
-claude mcp add redfox --env REDFOX_API_KEY=YOUR_API_KEY -- uvx redfox-mcp
-```
-
-### Cursor / 其他 MCP 客户端
-
-在 MCP 配置中加入：
+客户端配置（Cursor / 其他 MCP 客户端）：
 
 ```json
 {
   "mcpServers": {
-    "redfox": {
+    "redfox-douyin": {
       "command": "uvx",
-      "args": ["redfox-mcp"],
+      "args": ["redfox-douyin-mcp"],
       "env": { "REDFOX_API_KEY": "YOUR_API_KEY" }
     }
   }
 }
 ```
 
-## 远程 HTTP 模式（多租户）
-
-面向 MCP 市场和托管场景，server 也可以作为远程 HTTP 服务运行，每个用户携带自己的 API Key：
+Claude Code：
 
 ```bash
-redfox-mcp --transport http --host 0.0.0.0 --port 8000
-# 或用环境变量：REDFOX_MCP_TRANSPORT=http REDFOX_MCP_HOST=0.0.0.0 REDFOX_MCP_PORT=8000
+claude mcp add redfox-douyin --env REDFOX_API_KEY=YOUR_API_KEY -- uvx redfox-douyin-mcp
+```
+
+## 远程 HTTP 模式（多租户）
+
+每个 server 都可作为远程 HTTP 服务运行，每个用户携带自己的 API Key：
+
+```bash
+redfox-douyin-mcp --transport http --host 0.0.0.0 --port 8000
+# 或环境变量：REDFOX_MCP_TRANSPORT=http REDFOX_MCP_HOST=0.0.0.0 REDFOX_MCP_PORT=8000
 ```
 
 - MCP 端点：`http://<host>:8000/mcp`（Streamable HTTP）；健康检查：`GET /health`
-- 每个请求通过请求头 `X-API-Key: <key>`（或 `Authorization: Bearer <key>`）携带自己的 key。服务端按 key 创建并缓存独立 client，用户之间不共享额度。未带 key 时返回结构化引导而非异常。
-- 客户端配置示例（远程 URL + 请求头）：
+- 每个请求通过请求头 `X-API-Key: <key>`（或 `Authorization: Bearer <key>`）携带自己的 key，按 key 建独立客户端缓存，额度互不共享
+
+客户端配置（远程 URL + 请求头）：
 
 ```json
 {
   "mcpServers": {
-    "redfox": {
+    "redfox-douyin": {
       "url": "http://<host>:8000/mcp",
-      "headers": { "X-API-Key": "ak_你的key" }
+      "headers": { "X-API-Key": "ak_your_key" }
     }
   }
 }
 ```
 
-本地 stdio 模式仍是默认模式，行为完全不变。
+## Docker 部署
 
-## 底层依赖
+每个包目录自包含独立 Dockerfile，可按目录独立构建部署（以抖音为例）：
 
-基于官方 SDK [redfox-python-sdk](https://github.com/redfox-data/redfox-python-sdk)（`pip install redfox-python-sdk`），API 文档见 [红狐Hub API文档](https://redfox.hk/apis/?source=mcp)。
+```bash
+cd packages/redfox-douyin-mcp
+docker build -t redfox-douyin-mcp .
+docker run -d -p 8001:8000 redfox-douyin-mcp
+```
+
+根目录附带 `docker-compose.yml` 作为便利编排，各服务完全独立、可单独起停：
+
+```bash
+docker compose up -d douyin        # 只起一个平台
+docker compose up -d               # 起全部 9 个服务（端口 8000-8008）
+```
+
+镜像均不内置 API Key，调用方通过请求头携带自己的 key。
+
+## 本地开发
+
+本仓库为 uv workspace，clone 后：
+
+```bash
+uv sync                            # 以源码安装全部包
+uv run redfox-douyin-mcp --help    # 以源码运行任意 server
+```
+
+## 发布
+
+各包按依赖顺序独立发布到 PyPI：
+
+```bash
+cd packages/redfox-mcp-core && uv build && uv publish        # 1. 先发 core
+cd packages/redfox-douyin-mcp && uv build && uv publish      # 2. 再发 8 个平台包
+# ... 其余平台包同理 ...
+cd packages/redfox-mcp && uv build && uv publish             # 3. 最后发聚合包
+```
+
+## 底层实现
+
+基于官方 SDK [redfox-python-sdk](https://github.com/redfox-data/redfox-python-sdk)。API 文档：<https://redfox.hk/?source=mcp>。
 
 ## License
 

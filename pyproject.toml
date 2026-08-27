@@ -1,32 +1,9 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+# RedFox MCP monorepo — uv workspace 根（非可发布包）
+# 各包位于 packages/ 下，本地开发 uv sync 后可直接 uv run <命令>
 
-[project]
-name = "redfox-mcp"
-version = "0.2.0"
-description = "RedFoxHub MCP server: Douyin/Xiaohongshu/WeChat/Bilibili/Toutiao/TikTok data APIs + AI search, image and video generation tools"
-readme = "README.md"
-requires-python = ">=3.10"
-license = "MIT"
-keywords = ["mcp", "redfox", "douyin", "xiaohongshu", "wechat", "bilibili", "toutiao", "tiktok"]
-dependencies = [
-    "fastmcp>=2.0",
-    # Intel Mac 上 cryptography 49+ 无预编译 wheel 会触发源码构建，钉住 48.x
-    "cryptography<49; platform_machine == 'x86_64' and sys_platform == 'darwin'",
-    "redfox-python-sdk",
-    "httpx>=0.24",
-]
+[tool.uv.workspace]
+members = ["packages/*"]
 
-[project.urls]
-Homepage = "https://github.com/redfox-data/redfox-mcp"
-Website = "https://redfox.hk/apis/?source=mcp"
-
-[project.scripts]
-redfox-mcp = "redfox_mcp.server:main"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/redfox_mcp"]
-
-[tool.hatch.build.targets.sdist]
-include = ["src/redfox_mcp", "README.md"]
+[tool.uv]
+# 根为虚拟 workspace，自身不作为包安装
+package = false

@@ -1,5 +1,5 @@
 <div align="center">
-<a href="https://pypi.org/project/redfox-python-sdk/"><img src="https://img.shields.io/pypi/v/redfox-mcp.svg" alt="PyPI version"></a> <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/pyversions/redfox-mcp.svg" alt="Python"></a> <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/l/redfox-mcp.svg" alt="License"></a>
+<a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/v/redfox-mcp.svg" alt="PyPI version"></a> <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/pyversions/redfox-mcp.svg" alt="Python"></a> <a href="https://pypi.org/project/redfox-mcp/"><img src="https://img.shields.io/pypi/l/redfox-mcp.svg" alt="License"></a>
 
 <p align="center">
   <a href="https://github.com/redfox-data/redfox-mcp/blob/main/README.zh.md">中文</a>
@@ -14,23 +14,26 @@
 
 # redfox-mcp
 
-RedFoxHub MCP Server — turns the data APIs of 6 major content platforms plus AI search / generation capabilities into 40 MCP tools, ready for any MCP client such as dsh, Claude Code or Cursor.
+RedFoxHub MCP monorepo — the data APIs of 6 major content platforms plus AI search / generation capabilities, exposed as 40 MCP tools split into 8 independent per-platform MCP servers, ready for any MCP client such as dsh, Claude Code or Cursor.
 
-## Tools (40)
+Every package supports both **local stdio** (single-user, `REDFOX_API_KEY` env var) and **remote HTTP** (multi-tenant, per-request API key header), and ships its own Dockerfile for independent deployment.
 
-| Category | Tools | Notes |
-|---|---|---|
-| Douyin | `douyin_search_articles` / `douyin_search_users` / `douyin_get_user` / `douyin_get_user_works` / `douyin_get_work` / `douyin_search_ai_articles` | work search, account search, account info, work lists, work detail, AI-work feed |
-| Xiaohongshu | `xiaohongshu_search_articles` / `xiaohongshu_search_users` / `xiaohongshu_get_account` / `xiaohongshu_get_work` / `xiaohongshu_search_ai_articles` | note search, creator search, account info, note detail, AI-note feed |
-| WeChat Official Accounts | `wechat_search_articles` / `wechat_search_users` / `wechat_get_account` / `wechat_get_user_works` / `wechat_get_work` / `wechat_get_article_detail` / `wechat_search_ai_articles` | article search (incl. full-text detail), account search, article lists, AI-article feed |
-| Bilibili | `bilibili_search_articles` / `bilibili_search_users` / `bilibili_get_account` / `bilibili_get_user_works` / `bilibili_get_work` | video search, UP-master search / info / videos, video detail |
-| Toutiao | `toutiao_search_works` / `toutiao_get_work` | content search, work detail (realtime) |
-| TikTok | `tiktok_search_users` | account search |
-| AI search | `ai_search_kimi` / `ai_search_doubao` / `ai_search_deepseek` | one call submits the query and waits for the full answer |
-| AI generation | `gpt_image_generate` / `doubao_image_pro_generate` / `doubao_image_lite_generate` / `doubao_video_generate` | text-to-image / image-to-image / image sets / text-to-video, one call submits and waits |
-| Task follow-up | `ai_search_*_result` / `gpt_image_result` / `doubao_image_*_result` / `doubao_video_result` (7 in total) | when an async tool times out it returns a `taskId`; use the matching result tool to fetch the outcome |
+## Packages
 
-Async tools (AI search / generation) poll internally: submit → wait → return the full result, with no manual `taskId` handling. If the wait exceeds `timeout_seconds` (default 240s, 480s for video), a `taskId` is returned for the matching result tool.
+| Package | Tools | stdio command | Docker service / port |
+|---|---|---|---|
+| [`redfox-mcp`](packages/redfox-mcp) (all-in-one) | 40 | `uvx redfox-mcp` | `all` → 8000 |
+| [`redfox-douyin-mcp`](packages/redfox-douyin-mcp) | 6 | `uvx redfox-douyin-mcp` | `douyin` → 8001 |
+| [`redfox-xiaohongshu-mcp`](packages/redfox-xiaohongshu-mcp) | 5 | `uvx redfox-xiaohongshu-mcp` | `xiaohongshu` → 8002 |
+| [`redfox-wechat-mcp`](packages/redfox-wechat-mcp) | 7 | `uvx redfox-wechat-mcp` | `wechat` → 8003 |
+| [`redfox-bilibili-mcp`](packages/redfox-bilibili-mcp) | 5 | `uvx redfox-bilibili-mcp` | `bilibili` → 8004 |
+| [`redfox-toutiao-mcp`](packages/redfox-toutiao-mcp) | 2 | `uvx redfox-toutiao-mcp` | `toutiao` → 8005 |
+| [`redfox-tiktok-mcp`](packages/redfox-tiktok-mcp) | 1 | `uvx redfox-tiktok-mcp` | `tiktok` → 8006 |
+| [`redfox-ai-search-mcp`](packages/redfox-ai-search-mcp) | 6 | `uvx redfox-ai-search-mcp` | `ai-search` → 8007 |
+| [`redfox-ai-gen-mcp`](packages/redfox-ai-gen-mcp) | 8 | `uvx redfox-ai-gen-mcp` | `ai-gen` → 8008 |
+| [`redfox-mcp-core`](packages/redfox-mcp-core) | — | shared runtime (not user-facing) | — |
+
+Async tools (AI search / generation) poll internally: submit → wait → return the full result. If the wait exceeds `timeout_seconds` (default 240s, 480s for video), a `taskId` is returned for the matching `*_result` tool.
 
 ## Authentication
 
@@ -45,72 +48,58 @@ export REDFOX_API_KEY="YOUR_API_KEY"
 
 Without a key, every tool returns a structured message explaining how to obtain one.
 
-## Install & Run
+## Quick Start (stdio)
 
-Python ≥ 3.10 required. Recommended via [uv](https://docs.astral.sh/uv/):
+Python ≥ 3.10 required. Pick only the platforms you need — e.g. Douyin only:
+
+```bash
+uvx redfox-douyin-mcp
+```
+
+or the all-in-one bundle with all 40 tools:
 
 ```bash
 uvx redfox-mcp
 ```
 
-or:
-
-```bash
-pip install redfox-mcp
-redfox-mcp
-```
-
-The server runs on stdio transport.
-
-## Client Configuration
-
-### dsh (DeepSeek Harness)
-
-Install the official bundle plugin [redfox-community-dsh](https://github.com/redfox-data/redfox-community-dsh) — it registers this MCP server out of the box, exposing tools as `mcp__redfox__*`:
-
-```bash
-dsh plugin --profile web add -w github:redfox-data/redfox-community-dsh
-```
-
-### Claude Code
-
-```bash
-claude mcp add redfox --env REDFOX_API_KEY=YOUR_API_KEY -- uvx redfox-mcp
-```
-
-### Cursor / other MCP clients
-
-Add to your MCP configuration:
+Client configuration (Cursor / other MCP clients):
 
 ```json
 {
   "mcpServers": {
-    "redfox": {
+    "redfox-douyin": {
       "command": "uvx",
-      "args": ["redfox-mcp"],
+      "args": ["redfox-douyin-mcp"],
       "env": { "REDFOX_API_KEY": "YOUR_API_KEY" }
     }
   }
 }
 ```
 
-## Remote HTTP Mode (multi-tenant)
-
-For MCP marketplaces and hosted scenarios, the server can also run as a remote HTTP service where every user brings their own API key:
+Claude Code:
 
 ```bash
-redfox-mcp --transport http --host 0.0.0.0 --port 8000
+claude mcp add redfox-douyin --env REDFOX_API_KEY=YOUR_API_KEY -- uvx redfox-douyin-mcp
+```
+
+## Remote HTTP Mode (multi-tenant)
+
+Each server can run as a remote HTTP service where every user brings their own API key:
+
+```bash
+redfox-douyin-mcp --transport http --host 0.0.0.0 --port 8000
 # or via env vars: REDFOX_MCP_TRANSPORT=http REDFOX_MCP_HOST=0.0.0.0 REDFOX_MCP_PORT=8000
 ```
 
 - MCP endpoint: `http://<host>:8000/mcp` (Streamable HTTP); health check: `GET /health`
-- Each request carries its own key via header `X-API-Key: <key>` (or `Authorization: Bearer <key>`). A dedicated client is created and cached per key — quotas are never shared across users. Missing key returns a structured guide instead of an exception.
-- Client-side config (remote URL + header):
+- Each request carries its own key via header `X-API-Key: <key>` (or `Authorization: Bearer <key>`). A dedicated client is created and cached per key — quotas are never shared across users.
+
+Client-side config (remote URL + header):
 
 ```json
 {
   "mcpServers": {
-    "redfox": {
+    "redfox-douyin": {
       "url": "http://<host>:8000/mcp",
       "headers": { "X-API-Key": "ak_your_key" }
     }
@@ -118,7 +107,44 @@ redfox-mcp --transport http --host 0.0.0.0 --port 8000
 }
 ```
 
-Local stdio mode remains the default and is fully backward-compatible.
+## Docker Deployment
+
+Each package directory is self-contained with its own Dockerfile and can be deployed independently:
+
+```bash
+cd packages/redfox-douyin-mcp
+docker build -t redfox-douyin-mcp .
+docker run -d -p 8001:8000 redfox-douyin-mcp
+```
+
+A root-level `docker-compose.yml` is provided for convenience — every service is independent and can be started/stopped on its own:
+
+```bash
+docker compose up -d douyin        # one platform only
+docker compose up -d               # all 9 services, ports 8000-8008
+```
+
+Images never embed API keys; callers pass their own key via request header.
+
+## Development
+
+This repo is a uv workspace. After cloning:
+
+```bash
+uv sync                            # installs all packages from source
+uv run redfox-douyin-mcp --help    # run any server from source
+```
+
+## Publishing
+
+Packages are published to PyPI individually, in dependency order:
+
+```bash
+cd packages/redfox-mcp-core && uv build && uv publish        # 1. core first
+cd packages/redfox-douyin-mcp && uv build && uv publish      # 2. platform packages
+# ... repeat for the other 7 platform packages ...
+cd packages/redfox-mcp && uv build && uv publish             # 3. all-in-one last
+```
 
 ## Under the Hood
 

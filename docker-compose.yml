@@ -1,0 +1,78 @@
+# RedFox MCP 全家桶编排（可选便利，各服务完全独立，可单独起停）
+# 每个服务均为多租户 HTTP 模式：镜像不内置 API Key，
+# 调用方在请求头携带 X-API-Key: ak_xxx（或 Authorization: Bearer ak_xxx）
+#
+# 单独启动某个平台：docker compose up -d douyin
+# 全部启动：docker compose up -d
+services:
+  all:
+    build: packages/redfox-mcp
+    image: redfox-mcp
+    container_name: redfox-mcp
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  douyin:
+    build: packages/redfox-douyin-mcp
+    image: redfox-douyin-mcp
+    container_name: redfox-douyin-mcp
+    ports:
+      - "8001:8000"
+    restart: unless-stopped
+
+  xiaohongshu:
+    build: packages/redfox-xiaohongshu-mcp
+    image: redfox-xiaohongshu-mcp
+    container_name: redfox-xiaohongshu-mcp
+    ports:
+      - "8002:8000"
+    restart: unless-stopped
+
+  wechat:
+    build: packages/redfox-wechat-mcp
+    image: redfox-wechat-mcp
+    container_name: redfox-wechat-mcp
+    ports:
+      - "8003:8000"
+    restart: unless-stopped
+
+  bilibili:
+    build: packages/redfox-bilibili-mcp
+    image: redfox-bilibili-mcp
+    container_name: redfox-bilibili-mcp
+    ports:
+      - "8004:8000"
+    restart: unless-stopped
+
+  toutiao:
+    build: packages/redfox-toutiao-mcp
+    image: redfox-toutiao-mcp
+    container_name: redfox-toutiao-mcp
+    ports:
+      - "8005:8000"
+    restart: unless-stopped
+
+  tiktok:
+    build: packages/redfox-tiktok-mcp
+    image: redfox-tiktok-mcp
+    container_name: redfox-tiktok-mcp
+    ports:
+      - "8006:8000"
+    restart: unless-stopped
+
+  ai-search:
+    build: packages/redfox-ai-search-mcp
+    image: redfox-ai-search-mcp
+    container_name: redfox-ai-search-mcp
+    ports:
+      - "8007:8000"
+    restart: unless-stopped
+
+  ai-gen:
+    build: packages/redfox-ai-gen-mcp
+    image: redfox-ai-gen-mcp
+    container_name: redfox-ai-gen-mcp
+    ports:
+      - "8008:8000"
+    restart: unless-stopped

@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "redfox-wechat-mcp"
+version = "0.1.0"
+description = "RedFoxHub WeChat MCP server: official account article/account search, account info, article list and detail, AI articles search"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+keywords = ["mcp", "redfox", "wechat", "gzh"]
+dependencies = [
+    "redfox-mcp-core>=0.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/redfox-data/redfox-mcp"
+Website = "https://redfox.hk/apis/?source=mcp"
+
+[project.scripts]
+redfox-wechat-mcp = "redfox_wechat_mcp.server:main"
+
+[tool.uv.sources]
+redfox-mcp-core = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/redfox_wechat_mcp"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/redfox_wechat_mcp", "README.md"]

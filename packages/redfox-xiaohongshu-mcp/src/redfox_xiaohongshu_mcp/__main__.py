@@ -1,0 +1,6 @@
+"""支持 python -m redfox_xiaohongshu_mcp 启动"""
+
+from redfox_xiaohongshu_mcp.server import main
+
+if __name__ == "__main__":
+    main()
