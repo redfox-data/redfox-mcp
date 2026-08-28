@@ -5,8 +5,8 @@ resolution-markers = [
     "python_full_version >= '3.14' and sys_platform == 'win32'",
     "python_full_version >= '3.14' and sys_platform != 'win32'",
     "python_full_version >= '3.11' and python_full_version < '3.14' and sys_platform == 'win32'",
-    "python_full_version < '3.11' and sys_platform == 'win32'",
     "python_full_version >= '3.11' and python_full_version < '3.14' and sys_platform != 'win32'",
+    "python_full_version < '3.11' and sys_platform == 'win32'",
     "python_full_version < '3.11' and sys_platform != 'win32'",
 ]
 
@@ -1201,7 +1201,7 @@ requires-dist = [{ name = "redfox-mcp-core", editable = "packages/redfox-mcp-cor
 
 [[package]]
 name = "redfox-douyin-mcp"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/redfox-douyin-mcp" }
 dependencies = [
     { name = "redfox-mcp-core" },
@@ -1212,7 +1212,7 @@ requires-dist = [{ name = "redfox-mcp-core", editable = "packages/redfox-mcp-cor
 
 [[package]]
 name = "redfox-mcp"
-version = "0.3.0"
+version = "0.3.1"
 source = { editable = "packages/redfox-mcp" }
 dependencies = [
     { name = "redfox-ai-gen-mcp" },
@@ -1239,7 +1239,7 @@ requires-dist = [
 
 [[package]]
 name = "redfox-mcp-core"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "packages/redfox-mcp-core" }
 dependencies = [
     { name = "cryptography", marker = "platform_machine == 'x86_64' and sys_platform == 'darwin'" },
@@ -1253,19 +1253,19 @@ requires-dist = [
     { name = "cryptography", marker = "platform_machine == 'x86_64' and sys_platform == 'darwin'", specifier = "<49" },
     { name = "fastmcp", specifier = ">=2.0" },
     { name = "httpx", specifier = ">=0.24" },
-    { name = "redfox-python-sdk" },
+    { name = "redfox-python-sdk", specifier = ">=0.3.0" },
 ]
 
 [[package]]
 name = "redfox-python-sdk"
-version = "0.2.2"
+version = "0.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/58/a4/bc28b31853c2145fab6a6ef9cf11bbc6cf080bb2fed108c5630e3516de05/redfox_python_sdk-0.2.2.tar.gz", hash = "sha256:9dcd624c48069c52e9e4193dc1bb3e6479fe676e2197af4662fcc936b2753102", size = 18735, upload-time = "2026-07-20T12:59:27.854Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d8/e5/146ea316d7a1799a0fee237a8767a73065cc023db5de8b3fa92f1acc1a3d/redfox_python_sdk-0.3.0.tar.gz", hash = "sha256:e10c5209da93f433283602b1d45c84f4a9264e301e06407634646153b6482bd9", size = 35814, upload-time = "2026-08-27T12:14:21.114Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2f/10/9da8cbc189444cc8db614d740e625e29130ab93246ebe9eccc729af16c08/redfox_python_sdk-0.2.2-py3-none-any.whl", hash = "sha256:53cae4f1551974d23147d9b986a5138bd3650ca2f4a0103937b35587656c0807", size = 21779, upload-time = "2026-07-20T12:59:26.553Z" },
+    { url = "https://files.pythonhosted.org/packages/c3/7b/a06ec44197a042d71c773fd5a47b48a15a72ab3f0e98bbbff7b35962ba74/redfox_python_sdk-0.3.0-py3-none-any.whl", hash = "sha256:9949ff32849d9d2c822e2f251d19c553f7b19ab5124261cfdb082b43fede62b3", size = 42420, upload-time = "2026-08-27T12:14:18.867Z" },
 ]
 
 [[package]]
@@ -1292,7 +1292,7 @@ requires-dist = [{ name = "redfox-mcp-core", editable = "packages/redfox-mcp-cor
 
 [[package]]
 name = "redfox-wechat-mcp"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/redfox-wechat-mcp" }
 dependencies = [
     { name = "redfox-mcp-core" },
@@ -1303,7 +1303,7 @@ requires-dist = [{ name = "redfox-mcp-core", editable = "packages/redfox-mcp-cor
 
 [[package]]
 name = "redfox-xiaohongshu-mcp"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/redfox-xiaohongshu-mcp" }
 dependencies = [
     { name = "redfox-mcp-core" },

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-mcp-core"
-version = "0.1.0"
+version = "0.1.1"
 description = "Shared runtime for RedFoxHub MCP servers: client management, multi-tenant auth, async task polling, stdio/HTTP serving"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -14,7 +14,7 @@ dependencies = [
     "fastmcp>=2.0",
     # Intel Mac 上 cryptography 49+ 无预编译 wheel 会触发源码构建，钉住 48.x
     "cryptography<49; platform_machine == 'x86_64' and sys_platform == 'darwin'",
-    "redfox-python-sdk",
+    "redfox-python-sdk>=0.3.0",
     "httpx>=0.24",
 ]
 

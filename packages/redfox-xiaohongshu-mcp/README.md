@@ -1,8 +1,8 @@
 # redfox-xiaohongshu-mcp
 
-RedFoxHub 小红书数据 MCP Server — 将小红书数据 API 封装为 5 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
+RedFoxHub 小红书数据 MCP Server — 将小红书数据 API 封装为 15 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
 
-## 工具（5）
+## 工具（15）
 
 | 工具 | 说明 |
 |---|---|
@@ -11,6 +11,18 @@ RedFoxHub 小红书数据 MCP Server — 将小红书数据 API 封装为 5 个 
 | `xiaohongshu_get_account` | 获取小红书账号信息 |
 | `xiaohongshu_get_work` | 获取小红书笔记详情 |
 | `xiaohongshu_search_ai_articles` | 搜索小红书 AI 创作相关笔记 |
+| `xiaohongshu_get_user_works` | 查询小红书账号作品列表 |
+| `xiaohongshu_get_daily_hot_rank` | 小红书每日爆款笔记榜单 |
+| `xiaohongshu_get_weekly_hot_rank` | 小红书七日爆款笔记 |
+| `xiaohongshu_get_hot_accounts` | 小红书热门账号推荐（日/周/月榜） |
+| `xiaohongshu_search_hot_notes` | 小红书爆款笔记洞察 |
+| `xiaohongshu_get_dark_horse_notes` | 小红书黑马爆文榜（低粉爆款） |
+| `xiaohongshu_get_comments` | 获取笔记一级评论（提交后自动等待结果） |
+| `xiaohongshu_get_comments_result` | 查询评论任务结果（超时返回 taskId 后补查） |
+| `xiaohongshu_transcript` | 小红书视频提文案（提交后自动等待结果） |
+| `xiaohongshu_transcript_result` | 查询视频提文案任务结果（超时返回 taskId 后补查） |
+
+异步工具（评论、提文案）内部自动轮询：提交 → 等待 → 返回完整结果。若等待超过 `timeout_seconds`（默认 240 秒），返回 `taskId`，可用对应的 result 工具补查。
 
 ## 认证
 

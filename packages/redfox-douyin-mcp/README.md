@@ -1,8 +1,8 @@
 # redfox-douyin-mcp
 
-RedFoxHub 抖音数据 MCP Server — 将抖音数据 API 封装为 6 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
+RedFoxHub 抖音数据 MCP Server — 将抖音数据 API 封装为 16 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
 
-## 工具（6）
+## 工具（16）
 
 | 工具 | 说明 |
 |---|---|
@@ -12,6 +12,18 @@ RedFoxHub 抖音数据 MCP Server — 将抖音数据 API 封装为 6 个 MCP �
 | `douyin_get_user_works` | 获取抖音账号作品列表 |
 | `douyin_get_work` | 获取抖音作品详情 |
 | `douyin_search_ai_articles` | 搜索抖音 AI 相关作品 |
+| `douyin_search_works_wide` | 搜索抖音作品（广域库，覆盖更大） |
+| `douyin_search_accounts_wide` | 搜索抖音账号（广域库） |
+| `douyin_get_work_wide` | 获取抖音作品详情（广域库） |
+| `douyin_get_user_works_wide` | 获取抖音账号作品列表（广域库） |
+| `douyin_get_daily_hot_rank` | 抖音每日热门作品榜（按点赞排名） |
+| `douyin_get_daily_surge_rank` | 抖音每日点赞飙升榜（单日新增点赞） |
+| `douyin_get_weekly_surge_rank` | 抖音七日点赞飙升榜（七日新增点赞） |
+| `douyin_get_hot_accounts` | 抖音热门账号推荐（日/周/月榜） |
+| `douyin_transcript` | 抖音视频提文案（提交后自动等待结果） |
+| `douyin_transcript_result` | 查询视频提文案任务结果（超时返回 taskId 后补查） |
+
+异步工具（提文案）内部自动轮询：提交 → 等待 → 返回完整结果。若等待超过 `timeout_seconds`（默认 240 秒），返回 `taskId`，可用对应的 result 工具补查。
 
 ## 认证
 

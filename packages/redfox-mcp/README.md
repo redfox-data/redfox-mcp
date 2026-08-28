@@ -1,14 +1,14 @@
 # redfox-mcp
 
-RedFoxHub MCP Server（全量聚合版）— 将 6 大内容平台数据 API 与 AI 搜索 / 生成能力封装为 40 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
+RedFoxHub MCP Server（全量聚合版）— 将 6 大内容平台数据 API 与 AI 搜索 / 生成能力封装为 69 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
 
 本包为聚合包，组合以下 8 个独立平台包（也可按需单独安装）：
 
 | 独立包 | 工具数 | 说明 |
 |---|---|---|
-| `redfox-douyin-mcp` | 6 | 抖音作品/账号搜索、账号信息、作品列表与详情、AI 作品搜索 |
-| `redfox-xiaohongshu-mcp` | 5 | 小红书笔记/博主搜索、账号信息、笔记详情、AI 笔记搜索 |
-| `redfox-wechat-mcp` | 7 | 公众号文章/账号搜索、账号信息、文章列表与全文详情、AI 文章搜索 |
+| `redfox-douyin-mcp` | 16 | 抖音作品/账号搜索（优质库+广域库）、账号信息、作品列表与详情、AI 作品搜索、每日热门/点赞飙升榜、热门账号推荐、视频提文案 |
+| `redfox-xiaohongshu-mcp` | 15 | 小红书笔记/博主搜索、账号信息、笔记详情、账号作品列表、AI 笔记搜索、每日/七日爆款榜、热门账号推荐、爆款洞察、黑马爆文榜、评论采集、视频提文案 |
+| `redfox-wechat-mcp` | 16 | 公众号文章/账号搜索（优质库+广域库）、账号信息、文章列表与全文详情、AI 文章搜索、10W+/原创爆款/综合实力/阅读增长榜单 |
 | `redfox-bilibili-mcp` | 5 | B 站视频/UP 主搜索、UP 主信息与视频、视频详情 |
 | `redfox-toutiao-mcp` | 2 | 今日头条内容搜索与作品详情（实时） |
 | `redfox-tiktok-mcp` | 1 | TikTok 账号搜索 |

@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-wechat-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "RedFoxHub WeChat MCP server: official account article/account search, account info, article list and detail, AI articles search"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 keywords = ["mcp", "redfox", "wechat", "gzh"]
 dependencies = [
-    "redfox-mcp-core>=0.1.0",
+    "redfox-mcp-core>=0.1.1",
 ]
 
 [project.urls]

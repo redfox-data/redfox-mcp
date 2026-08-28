@@ -16,7 +16,7 @@
 
 # redfox-mcp
 
-RedFoxHub（红狐数据平台）MCP monorepo — 将 6 大内容平台数据 API 与 AI 搜索/生成能力拆分为 8 个按平台独立的 MCP server（共 40 个工具），可被 dsh、Claude Code、Cursor 等任意 MCP 客户端直接调用。
+RedFoxHub（红狐数据平台）MCP monorepo — 将 6 大内容平台数据 API 与 AI 搜索/生成能力拆分为 8 个按平台独立的 MCP server（共 69 个工具），可被 dsh、Claude Code、Cursor 等任意 MCP 客户端直接调用。
 
 每个包都同时支持**本地 stdio**（单用户，环境变量 `REDFOX_API_KEY`）与**远程 HTTP**（多租户，按请求头传递 API Key），并自带 Dockerfile 可独立部署。
 
@@ -24,10 +24,10 @@ RedFoxHub（红狐数据平台）MCP monorepo — 将 6 大内容平台数据 AP
 
 | 包 | 工具数 | stdio 命令 | Docker 服务 / 端口 |
 |---|---|---|---|
-| [`redfox-mcp`](packages/redfox-mcp)（全量聚合版） | 40 | `uvx redfox-mcp` | `all` → 8000 |
-| [`redfox-douyin-mcp`](packages/redfox-douyin-mcp) | 6 | `uvx redfox-douyin-mcp` | `douyin` → 8001 |
-| [`redfox-xiaohongshu-mcp`](packages/redfox-xiaohongshu-mcp) | 5 | `uvx redfox-xiaohongshu-mcp` | `xiaohongshu` → 8002 |
-| [`redfox-wechat-mcp`](packages/redfox-wechat-mcp) | 7 | `uvx redfox-wechat-mcp` | `wechat` → 8003 |
+| [`redfox-mcp`](packages/redfox-mcp)（全量聚合版） | 69 | `uvx redfox-mcp` | `all` → 8000 |
+| [`redfox-douyin-mcp`](packages/redfox-douyin-mcp) | 16 | `uvx redfox-douyin-mcp` | `douyin` → 8001 |
+| [`redfox-xiaohongshu-mcp`](packages/redfox-xiaohongshu-mcp) | 15 | `uvx redfox-xiaohongshu-mcp` | `xiaohongshu` → 8002 |
+| [`redfox-wechat-mcp`](packages/redfox-wechat-mcp) | 16 | `uvx redfox-wechat-mcp` | `wechat` → 8003 |
 | [`redfox-bilibili-mcp`](packages/redfox-bilibili-mcp) | 5 | `uvx redfox-bilibili-mcp` | `bilibili` → 8004 |
 | [`redfox-toutiao-mcp`](packages/redfox-toutiao-mcp) | 2 | `uvx redfox-toutiao-mcp` | `toutiao` → 8005 |
 | [`redfox-tiktok-mcp`](packages/redfox-tiktok-mcp) | 1 | `uvx redfox-tiktok-mcp` | `tiktok` → 8006 |
@@ -58,7 +58,7 @@ export REDFOX_API_KEY="YOUR_API_KEY"
 uvx redfox-douyin-mcp
 ```
 
-或使用包含全部 40 个工具的聚合包：
+或使用包含全部 69 个工具的聚合包：
 
 ```bash
 uvx redfox-mcp

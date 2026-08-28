@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-douyin-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "RedFoxHub Douyin MCP server: Douyin works/user search, account info, works detail, AI works search"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 keywords = ["mcp", "redfox", "douyin"]
 dependencies = [
-    "redfox-mcp-core>=0.1.0",
+    "redfox-mcp-core>=0.1.1",
 ]
 
 [project.urls]

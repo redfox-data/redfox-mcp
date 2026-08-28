@@ -78,6 +78,91 @@ def wechat_search_ai_articles(keyword: str, page_num: int = 1, page_size: int = 
                 start_time=start_time, end_time=end_time)
 
 
+# ─── 广域库 ──────────────────────────────────────────────
+
+
+@mcp.tool()
+def wechat_search_articles_wide(keyword: str, offset: int = 0,
+                                sort_type: Optional[str] = None) -> Dict[str, Any]:
+    """搜索公众号作品（广域库，覆盖范围大于优质库）。keyword 必填；
+    offset 从 0 开始、每页 +20；sort_type：0=默认，2=最新，4=最热。"""
+    return call(lambda: get_client().wechat.search_articles_wide,
+                keyword=keyword, offset=offset, sort_type=sort_type)
+
+
+@mcp.tool()
+def wechat_search_users_wide(keyword: str, offset: int = 0) -> Dict[str, Any]:
+    """搜索公众号账号（广域库）。keyword 必填；offset 从 0 开始、每页 +20。"""
+    return call(lambda: get_client().wechat.search_users_wide,
+                keyword=keyword, offset=offset)
+
+
+@mcp.tool()
+def wechat_get_work_wide(work_uuid: str) -> Dict[str, Any]:
+    """根据作品 UUID 获取公众号作品，含正文全文（广域库）。"""
+    return call(lambda: get_client().wechat.get_work_wide, work_uuid=work_uuid)
+
+
+@mcp.tool()
+def wechat_get_user_works_wide(account: Optional[str] = None,
+                               wx_id: Optional[str] = None,
+                               biz_info: Optional[str] = None,
+                               offset: int = 0,
+                               sort_type: Optional[str] = None) -> Dict[str, Any]:
+    """获取公众号账号作品列表（广域库）。account（微信号）/ wx_id（原始 ID，如 gh_xxx）/
+    biz_info（采集用 ID）三者选其一；offset 从 0 开始、每页 +20；
+    sort_type：0=默认，2=最新，4=最热。"""
+    return call(lambda: get_client().wechat.get_user_works_wide,
+                account=account, wx_id=wx_id, biz_info=biz_info,
+                offset=offset, sort_type=sort_type)
+
+
+@mcp.tool()
+def wechat_get_account_wide(account: Optional[str] = None,
+                            wx_id: Optional[str] = None,
+                            biz_info: Optional[str] = None) -> Dict[str, Any]:
+    """获取公众号账号信息（广域库）。account（微信号）/ wx_id（原始 ID，如 gh_xxx）/
+    biz_info（账号唯一 ID）三者选其一。"""
+    return call(lambda: get_client().wechat.get_account_wide,
+                account=account, wx_id=wx_id, biz_info=biz_info)
+
+
+# ─── 榜单 ────────────────────────────────────────────────
+
+
+@mcp.tool()
+def wechat_get_ten_w_rank(type: str, start_date: str, end_date: str) -> Dict[str, Any]:
+    """公众号 10W+ 阅读文章推荐。type 为分类（如 知识百科、科技数码、总排名）；
+    start_date/end_date 格式 yyyy-MM-dd（每日 18:30 更新昨日数据）。"""
+    return call(lambda: get_client().wechat.get_ten_w_rank,
+                type=type, start_date=start_date, end_date=end_date)
+
+
+@mcp.tool()
+def wechat_get_original_rank(type: str, start_date: str,
+                             end_date: str) -> Dict[str, Any]:
+    """公众号原创爆款文章推荐。type 为分类（如 人文资讯、财富理财、总排名）；
+    start_date/end_date 格式 yyyy-MM-dd（每日 18:30 更新昨日数据）。"""
+    return call(lambda: get_client().wechat.get_original_rank,
+                type=type, start_date=start_date, end_date=end_date)
+
+
+@mcp.tool()
+def wechat_get_strength_rank(rank_type: str, rank_date: str,
+                             category: str) -> Dict[str, Any]:
+    """公众号综合实力榜。rank_type：day/week/month；rank_date 为榜单日期 yyyy-MM-dd；
+    category 为分类（如 人文资讯、时事新闻、总排名）。"""
+    return call(lambda: get_client().wechat.get_strength_rank,
+                rank_type=rank_type, rank_date=rank_date, category=category)
+
+
+@mcp.tool()
+def wechat_get_reading_growth_rank(rank_date: str) -> Dict[str, Any]:
+    """公众号阅读增长榜单。rank_date 为榜单日期 yyyy-MM-dd。"""
+    return call(lambda: get_client().wechat.get_reading_growth_rank,
+                rank_date=rank_date)
+
+
 def main() -> None:
     serve(mcp, prog="redfox-wechat-mcp", description="RedFox 公众号数据 MCP server")
 

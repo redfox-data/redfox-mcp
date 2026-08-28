@@ -1,8 +1,8 @@
 # redfox-wechat-mcp
 
-RedFoxHub 公众号数据 MCP Server — 将公众号数据 API 封装为 7 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
+RedFoxHub 公众号数据 MCP Server — 将公众号数据 API 封装为 16 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
 
-## 工具（7）
+## 工具（16）
 
 | 工具 | 说明 |
 |---|---|
@@ -13,6 +13,15 @@ RedFoxHub 公众号数据 MCP Server — 将公众号数据 API 封装为 7 个 
 | `wechat_get_work` | 根据作品 UUID 获取文章元数据 |
 | `wechat_get_article_detail` | 根据文章链接获取全文详情 |
 | `wechat_search_ai_articles` | 搜索公众号 AI 创作相关文章 |
+| `wechat_search_articles_wide` | 搜索公众号作品（广域库，覆盖更大） |
+| `wechat_search_users_wide` | 搜索公众号账号（广域库） |
+| `wechat_get_work_wide` | 根据作品 UUID 获取作品含正文全文（广域库） |
+| `wechat_get_user_works_wide` | 获取公众号账号作品列表（广域库） |
+| `wechat_get_account_wide` | 获取公众号账号信息（广域库） |
+| `wechat_get_ten_w_rank` | 公众号 10W+ 阅读文章推荐 |
+| `wechat_get_original_rank` | 公众号原创爆款文章推荐 |
+| `wechat_get_strength_rank` | 公众号综合实力榜（日/周/月） |
+| `wechat_get_reading_growth_rank` | 公众号阅读增长榜单 |
 
 ## 认证
 

@@ -14,7 +14,7 @@
 
 # redfox-mcp
 
-RedFoxHub MCP monorepo — the data APIs of 6 major content platforms plus AI search / generation capabilities, exposed as 40 MCP tools split into 8 independent per-platform MCP servers, ready for any MCP client such as dsh, Claude Code or Cursor.
+RedFoxHub MCP monorepo — the data APIs of 6 major content platforms plus AI search / generation capabilities, exposed as 69 MCP tools split into 8 independent per-platform MCP servers, ready for any MCP client such as dsh, Claude Code or Cursor.
 
 Every package supports both **local stdio** (single-user, `REDFOX_API_KEY` env var) and **remote HTTP** (multi-tenant, per-request API key header), and ships its own Dockerfile for independent deployment.
 
@@ -22,10 +22,10 @@ Every package supports both **local stdio** (single-user, `REDFOX_API_KEY` env v
 
 | Package | Tools | stdio command | Docker service / port |
 |---|---|---|---|
-| [`redfox-mcp`](packages/redfox-mcp) (all-in-one) | 40 | `uvx redfox-mcp` | `all` → 8000 |
-| [`redfox-douyin-mcp`](packages/redfox-douyin-mcp) | 6 | `uvx redfox-douyin-mcp` | `douyin` → 8001 |
-| [`redfox-xiaohongshu-mcp`](packages/redfox-xiaohongshu-mcp) | 5 | `uvx redfox-xiaohongshu-mcp` | `xiaohongshu` → 8002 |
-| [`redfox-wechat-mcp`](packages/redfox-wechat-mcp) | 7 | `uvx redfox-wechat-mcp` | `wechat` → 8003 |
+| [`redfox-mcp`](packages/redfox-mcp) (all-in-one) | 69 | `uvx redfox-mcp` | `all` → 8000 |
+| [`redfox-douyin-mcp`](packages/redfox-douyin-mcp) | 16 | `uvx redfox-douyin-mcp` | `douyin` → 8001 |
+| [`redfox-xiaohongshu-mcp`](packages/redfox-xiaohongshu-mcp) | 15 | `uvx redfox-xiaohongshu-mcp` | `xiaohongshu` → 8002 |
+| [`redfox-wechat-mcp`](packages/redfox-wechat-mcp) | 16 | `uvx redfox-wechat-mcp` | `wechat` → 8003 |
 | [`redfox-bilibili-mcp`](packages/redfox-bilibili-mcp) | 5 | `uvx redfox-bilibili-mcp` | `bilibili` → 8004 |
 | [`redfox-toutiao-mcp`](packages/redfox-toutiao-mcp) | 2 | `uvx redfox-toutiao-mcp` | `toutiao` → 8005 |
 | [`redfox-tiktok-mcp`](packages/redfox-tiktok-mcp) | 1 | `uvx redfox-tiktok-mcp` | `tiktok` → 8006 |
@@ -56,7 +56,7 @@ Python ≥ 3.10 required. Pick only the platforms you need — e.g. Douyin only:
 uvx redfox-douyin-mcp
 ```
 
-or the all-in-one bundle with all 40 tools:
+or the all-in-one bundle with all 69 tools:
 
 ```bash
 uvx redfox-mcp
