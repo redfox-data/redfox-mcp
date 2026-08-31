@@ -76,3 +76,59 @@ services:
     ports:
       - "8008:8000"
     restart: unless-stopped
+
+  kuaishou:
+    build: packages/redfox-kuaishou-mcp
+    image: redfox-kuaishou-mcp
+    container_name: redfox-kuaishou-mcp
+    ports:
+      - "8009:8000"
+    restart: unless-stopped
+
+  instagram:
+    build: packages/redfox-instagram-mcp
+    image: redfox-instagram-mcp
+    container_name: redfox-instagram-mcp
+    ports:
+      - "8010:8000"
+    restart: unless-stopped
+
+  twitter:
+    build: packages/redfox-twitter-mcp
+    image: redfox-twitter-mcp
+    container_name: redfox-twitter-mcp
+    ports:
+      - "8011:8000"
+    restart: unless-stopped
+
+  youtube:
+    build: packages/redfox-youtube-mcp
+    image: redfox-youtube-mcp
+    container_name: redfox-youtube-mcp
+    ports:
+      - "8012:8000"
+    restart: unless-stopped
+
+  wechat-channels:
+    build: packages/redfox-wechat-channels-mcp
+    image: redfox-wechat-channels-mcp
+    container_name: redfox-wechat-channels-mcp
+    ports:
+      - "8013:8000"
+    restart: unless-stopped
+
+  auto:
+    build: packages/redfox-auto-mcp
+    image: redfox-auto-mcp
+    container_name: redfox-auto-mcp
+    ports:
+      - "8014:8000"
+    restart: unless-stopped
+
+  tools:
+    build: packages/redfox-tools-mcp
+    image: redfox-tools-mcp
+    container_name: redfox-tools-mcp
+    ports:
+      - "8015:8000"
+    restart: unless-stopped

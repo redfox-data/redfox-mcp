@@ -1,13 +1,16 @@
 # redfox-toutiao-mcp
 
-RedFoxHub 今日头条数据 MCP Server — 将头条数据 API 封装为 2 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
+RedFoxHub 今日头条数据 MCP Server — 将头条数据 API 封装为 5 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
 
-## 工具（2）
+## 工具（5）
 
 | 工具 | 说明 |
 |---|---|
 | `toutiao_search_works` | 搜索今日头条内容（实时） |
 | `toutiao_get_work` | 获取今日头条作品详情（实时） |
+| `toutiao_get_comments` | 获取今日头条作品评论 |
+| `toutiao_search_users` | 今日头条关键词搜索账号 |
+| `toutiao_get_user_works` | 获取今日头条账号作品列表 |
 
 ## 认证
 

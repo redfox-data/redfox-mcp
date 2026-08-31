@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-ai-search-mcp"
-version = "0.1.0"
-description = "RedFoxHub AI Search MCP server: Kimi/Doubao/Deepseek web search with auto polling"
+version = "0.1.1"
+description = "RedFoxHub AI Search MCP server: Kimi/Doubao/Deepseek/Yuanbao/Qianwen/Baidu web search with auto polling"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-keywords = ["mcp", "redfox", "ai-search", "kimi", "doubao", "deepseek"]
+keywords = ["mcp", "redfox", "ai-search", "kimi", "doubao", "deepseek", "yuanbao", "qianwen", "baidu"]
 dependencies = [
     "redfox-mcp-core>=0.1.0",
 ]

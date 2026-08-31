@@ -1,12 +1,15 @@
 # redfox-tiktok-mcp
 
-RedFoxHub TikTok 数据 MCP Server — 将 TikTok 数据 API 封装为 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
+RedFoxHub TikTok 数据 MCP Server — 将 TikTok 数据 API 封装为 4 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
 
-## 工具（1）
+## 工具（4）
 
 | 工具 | 说明 |
 |---|---|
 | `tiktok_search_users` | 搜索 TikTok 账号（含 cursor/hasMore/userList 分页） |
+| `tiktok_search_videos` | TikTok 关键词视频搜索 |
+| `tiktok_get_work` | 获取 TikTok 单个作品数据 |
+| `tiktok_get_user_works` | 获取 TikTok 用户主页作品数据 |
 
 ## 认证
 

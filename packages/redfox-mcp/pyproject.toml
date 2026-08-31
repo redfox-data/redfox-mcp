@@ -4,21 +4,28 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-mcp"
-version = "0.3.1"
-description = "RedFoxHub MCP server (all-in-one): Douyin/Xiaohongshu/WeChat/Bilibili/Toutiao/TikTok data APIs + AI search, image and video generation tools"
+version = "0.4.0"
+description = "RedFoxHub MCP server (all-in-one): 13 platforms — Douyin/Xiaohongshu/WeChat/Bilibili/Toutiao/TikTok/Kuaishou/Instagram/X/YouTube/WeChat Channels + Auto (懂车帝/汽车之家/易车) + AI (search/image/video) + Tools (download/upload)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-keywords = ["mcp", "redfox", "douyin", "xiaohongshu", "wechat", "bilibili", "toutiao", "tiktok"]
+keywords = ["mcp", "redfox", "douyin", "xiaohongshu", "wechat", "bilibili", "toutiao", "tiktok", "kuaishou", "instagram", "twitter", "youtube", "dongchedi", "autohome", "yiche"]
 dependencies = [
     "redfox-douyin-mcp>=0.2.0",
     "redfox-xiaohongshu-mcp>=0.2.0",
     "redfox-wechat-mcp>=0.2.0",
-    "redfox-bilibili-mcp>=0.1.0",
-    "redfox-toutiao-mcp>=0.1.0",
-    "redfox-tiktok-mcp>=0.1.0",
-    "redfox-ai-search-mcp>=0.1.0",
+    "redfox-bilibili-mcp>=0.1.1",
+    "redfox-toutiao-mcp>=0.1.1",
+    "redfox-tiktok-mcp>=0.1.1",
+    "redfox-ai-search-mcp>=0.1.1",
     "redfox-ai-gen-mcp>=0.1.0",
+    "redfox-kuaishou-mcp>=0.1.0",
+    "redfox-instagram-mcp>=0.1.0",
+    "redfox-twitter-mcp>=0.1.0",
+    "redfox-youtube-mcp>=0.1.0",
+    "redfox-wechat-channels-mcp>=0.1.0",
+    "redfox-auto-mcp>=0.1.0",
+    "redfox-tools-mcp>=0.1.0",
 ]
 
 [project.urls]
@@ -38,6 +45,13 @@ redfox-toutiao-mcp = { workspace = true }
 redfox-tiktok-mcp = { workspace = true }
 redfox-ai-search-mcp = { workspace = true }
 redfox-ai-gen-mcp = { workspace = true }
+redfox-kuaishou-mcp = { workspace = true }
+redfox-instagram-mcp = { workspace = true }
+redfox-twitter-mcp = { workspace = true }
+redfox-youtube-mcp = { workspace = true }
+redfox-wechat-channels-mcp = { workspace = true }
+redfox-auto-mcp = { workspace = true }
+redfox-tools-mcp = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/redfox_mcp"]

@@ -1,8 +1,8 @@
 # redfox-bilibili-mcp
 
-RedFoxHub B 站数据 MCP Server — 将 B 站数据 API 封装为 5 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
+RedFoxHub B 站数据 MCP Server — 将 B 站数据 API 封装为 8 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
 
-## 工具（5）
+## 工具（8）
 
 | 工具 | 说明 |
 |---|---|
@@ -11,6 +11,9 @@ RedFoxHub B 站数据 MCP Server — 将 B 站数据 API 封装为 5 个 MCP 工
 | `bilibili_get_account` | 获取 B 站 UP 主信息 |
 | `bilibili_get_user_works` | 获取 B 站 UP 主视频列表 |
 | `bilibili_get_work` | 获取 B 站视频详情 |
+| `bilibili_get_audio` | 获取 B 站视频音频地址 |
+| `bilibili_transcript` | B 站视频字幕/文案提取（自动等待） |
+| `bilibili_transcript_result` | 查询字幕提取任务结果 |
 
 ## 认证
 

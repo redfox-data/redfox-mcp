@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-toutiao-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "RedFoxHub Toutiao MCP server: realtime content search and work detail"
 readme = "README.md"
 requires-python = ">=3.10"

@@ -14,7 +14,7 @@
 
 # redfox-mcp
 
-RedFoxHub MCP monorepo — the data APIs of 6 major content platforms plus AI search / generation capabilities, exposed as 69 MCP tools split into 8 independent per-platform MCP servers, ready for any MCP client such as dsh, Claude Code or Cursor.
+RedFoxHub MCP monorepo — the data APIs of 11 content platforms plus auto vertical (3 brands), AI search / generation and download/upload tools, exposed as 134 MCP tools split into 15 independent per-platform MCP servers, ready for any MCP client such as dsh, Claude Code or Cursor.
 
 Every package supports both **local stdio** (single-user, `REDFOX_API_KEY` env var) and **remote HTTP** (multi-tenant, per-request API key header), and ships its own Dockerfile for independent deployment.
 
@@ -22,15 +22,22 @@ Every package supports both **local stdio** (single-user, `REDFOX_API_KEY` env v
 
 | Package | Tools | stdio command | Docker service / port |
 |---|---|---|---|
-| [`redfox-mcp`](packages/redfox-mcp) (all-in-one) | 69 | `uvx redfox-mcp` | `all` → 8000 |
+| [`redfox-mcp`](packages/redfox-mcp) (all-in-one) | 134 | `uvx redfox-mcp` | `all` → 8000 |
 | [`redfox-douyin-mcp`](packages/redfox-douyin-mcp) | 16 | `uvx redfox-douyin-mcp` | `douyin` → 8001 |
 | [`redfox-xiaohongshu-mcp`](packages/redfox-xiaohongshu-mcp) | 15 | `uvx redfox-xiaohongshu-mcp` | `xiaohongshu` → 8002 |
 | [`redfox-wechat-mcp`](packages/redfox-wechat-mcp) | 16 | `uvx redfox-wechat-mcp` | `wechat` → 8003 |
-| [`redfox-bilibili-mcp`](packages/redfox-bilibili-mcp) | 5 | `uvx redfox-bilibili-mcp` | `bilibili` → 8004 |
-| [`redfox-toutiao-mcp`](packages/redfox-toutiao-mcp) | 2 | `uvx redfox-toutiao-mcp` | `toutiao` → 8005 |
-| [`redfox-tiktok-mcp`](packages/redfox-tiktok-mcp) | 1 | `uvx redfox-tiktok-mcp` | `tiktok` → 8006 |
-| [`redfox-ai-search-mcp`](packages/redfox-ai-search-mcp) | 6 | `uvx redfox-ai-search-mcp` | `ai-search` → 8007 |
+| [`redfox-bilibili-mcp`](packages/redfox-bilibili-mcp) | 8 | `uvx redfox-bilibili-mcp` | `bilibili` → 8004 |
+| [`redfox-toutiao-mcp`](packages/redfox-toutiao-mcp) | 5 | `uvx redfox-toutiao-mcp` | `toutiao` → 8005 |
+| [`redfox-tiktok-mcp`](packages/redfox-tiktok-mcp) | 4 | `uvx redfox-tiktok-mcp` | `tiktok` → 8006 |
+| [`redfox-ai-search-mcp`](packages/redfox-ai-search-mcp) | 12 | `uvx redfox-ai-search-mcp` | `ai-search` → 8007 |
 | [`redfox-ai-gen-mcp`](packages/redfox-ai-gen-mcp) | 8 | `uvx redfox-ai-gen-mcp` | `ai-gen` → 8008 |
+| [`redfox-kuaishou-mcp`](packages/redfox-kuaishou-mcp) | 6 | `uvx redfox-kuaishou-mcp` | `kuaishou` → 8009 |
+| [`redfox-instagram-mcp`](packages/redfox-instagram-mcp) | 4 | `uvx redfox-instagram-mcp` | `instagram` → 8010 |
+| [`redfox-twitter-mcp`](packages/redfox-twitter-mcp) | 4 | `uvx redfox-twitter-mcp` | `twitter` → 8011 |
+| [`redfox-youtube-mcp`](packages/redfox-youtube-mcp) | 4 | `uvx redfox-youtube-mcp` | `youtube` → 8012 |
+| [`redfox-wechat-channels-mcp`](packages/redfox-wechat-channels-mcp) | 7 | `uvx redfox-wechat-channels-mcp` | `wechat-channels` → 8013 |
+| [`redfox-auto-mcp`](packages/redfox-auto-mcp) | 13 | `uvx redfox-auto-mcp` | `auto` → 8014 |
+| [`redfox-tools-mcp`](packages/redfox-tools-mcp) | 12 | `uvx redfox-tools-mcp` | `tools` → 8015 |
 | [`redfox-mcp-core`](packages/redfox-mcp-core) | — | shared runtime (not user-facing) | — |
 
 Async tools (AI search / generation) poll internally: submit → wait → return the full result. If the wait exceeds `timeout_seconds` (default 240s, 480s for video), a `taskId` is returned for the matching `*_result` tool.
@@ -56,7 +63,7 @@ Python ≥ 3.10 required. Pick only the platforms you need — e.g. Douyin only:
 uvx redfox-douyin-mcp
 ```
 
-or the all-in-one bundle with all 69 tools:
+or the all-in-one bundle with all 134 tools:
 
 ```bash
 uvx redfox-mcp
@@ -121,7 +128,7 @@ A root-level `docker-compose.yml` is provided for convenience — every service 
 
 ```bash
 docker compose up -d douyin        # one platform only
-docker compose up -d               # all 9 services, ports 8000-8008
+docker compose up -d               # all 16 services, ports 8000-8015
 ```
 
 Images never embed API keys; callers pass their own key via request header.
@@ -142,7 +149,7 @@ Packages are published to PyPI individually, in dependency order:
 ```bash
 cd packages/redfox-mcp-core && uv build && uv publish        # 1. core first
 cd packages/redfox-douyin-mcp && uv build && uv publish      # 2. platform packages
-# ... repeat for the other 7 platform packages ...
+# ... repeat for the other 13 platform packages ...
 cd packages/redfox-mcp && uv build && uv publish             # 3. all-in-one last
 ```
 

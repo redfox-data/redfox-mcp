@@ -9,7 +9,7 @@ X-API-Key（或 Authorization: Bearer <key>）取 key。
 
 from typing import Any, Dict, Optional
 
-from redfox_mcp_core import call, create_server, get_client, serve
+from redfox_mcp_core import call, create_server, get_client, run_task, serve
 
 from redfox_bilibili_mcp import __version__
 
@@ -60,6 +60,27 @@ def bilibili_get_work(bvid: Optional[str] = None,
     """获取 B 站视频详情（优质库）。bvid 与 work_url 至少传一个，
     work_url 支持 bilibili.com/video/BVxxx 或 b23.tv 短链。"""
     return call(lambda: get_client().bilibili.get_work, bvid=bvid, work_url=work_url)
+
+
+@mcp.tool()
+def bilibili_get_audio(url: str) -> Dict[str, Any]:
+    """获取 B 站视频音频地址。url 为 B 站作品链接（必填）。"""
+    return call(lambda: get_client().bilibili.get_audio, url=url)
+
+
+@mcp.tool()
+def bilibili_transcript(url: str, timeout_seconds: int = 240) -> Dict[str, Any]:
+    """B 站视频字幕/文案提取，提交后自动等待并返回完整文案。
+    url 为作品链接（必填）；超时未完成时返回 taskId，可用 bilibili_transcript_result 再查。"""
+    return run_task(lambda: get_client().bilibili.transcript_submit,
+                    lambda: get_client().bilibili.transcript_result,
+                    timeout_seconds, url=url)
+
+
+@mcp.tool()
+def bilibili_transcript_result(task_id: str) -> Dict[str, Any]:
+    """查询 B 站字幕提取任务结果。仅在 bilibili_transcript 超时返回 taskId 后使用。"""
+    return call(lambda: get_client().bilibili.transcript_result, task_id=task_id)
 
 
 def main() -> None:

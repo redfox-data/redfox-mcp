@@ -27,3 +27,6 @@ packages = ["src/redfox_mcp_core"]
 
 [tool.hatch.build.targets.sdist]
 include = ["src/redfox_mcp_core", "README.md"]
+
+[tool.uv.sources]
+redfox-python-sdk = { path = "../../../redfox-python-sdk" }

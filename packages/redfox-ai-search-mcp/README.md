@@ -1,8 +1,8 @@
 # redfox-ai-search-mcp
 
-RedFoxHub AI 搜索 MCP Server — 将 Kimi / 豆包 / Deepseek 联网搜索能力封装为 6 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
+RedFoxHub AI 搜索 MCP Server — 将 Kimi / 豆包 / Deepseek / 元宝 / 千问 / 百度 联网搜索能力封装为 12 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
 
-## 工具（6）
+## 工具（12）
 
 | 工具 | 说明 |
 |---|---|
@@ -12,6 +12,12 @@ RedFoxHub AI 搜索 MCP Server — 将 Kimi / 豆包 / Deepseek 联网搜索能�
 | `ai_search_kimi_result` | 查询 Kimi 搜索任务结果（超时返回 taskId 后补查） |
 | `ai_search_doubao_result` | 查询豆包搜索任务结果（超时返回 taskId 后补查） |
 | `ai_search_deepseek_result` | 查询 Deepseek 搜索任务结果（超时返回 taskId 后补查） |
+| `ai_search_yuanbao` | 元宝联网 AI 搜索（自动等待） |
+| `ai_search_yuanbao_result` | 查询元宝搜索任务结果 |
+| `ai_search_qianwen` | 千问联网 AI 搜索（自动等待） |
+| `ai_search_qianwen_result` | 查询千问搜索任务结果 |
+| `ai_search_baidu` | 百度联网 AI 搜索（自动等待） |
+| `ai_search_baidu_result` | 查询百度搜索任务结果 |
 
 异步工具内部自动轮询：提交 → 等待 → 返回完整结果，无需手动处理 taskId。若等待超过 `timeout_seconds`（默认 240 秒），返回 `taskId`，可用对应的 result 工具补查。
 

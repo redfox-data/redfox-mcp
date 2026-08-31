@@ -25,6 +25,31 @@ def tiktok_search_users(keyword: str, cursor: int = 0,
                 keyword=keyword, cursor=cursor, rid=rid)
 
 
+@mcp.tool()
+def tiktok_search_videos(keyword: str, offset: str = "0", count: str = "20",
+                         sort_type: str = "0", publish_time: str = "0",
+                         region: str = "US") -> Dict[str, Any]:
+    """TikTok 关键词视频搜索。keyword 必填；
+    sort_type：0=相关度，1=最多点赞；
+    publish_time：0=不限，1=最近一天，7=最近一周，30=最近一个月，90=最近三个月，180=最近半年；
+    region 默认 US（美国），参考 ISO 3166-1 alpha-2 国家代码。"""
+    return call(lambda: get_client().tiktok.search_videos,
+                keyword=keyword, offset=offset, count=count,
+                sort_type=sort_type, publish_time=publish_time, region=region)
+
+
+@mcp.tool()
+def tiktok_get_work(aweme_id: str) -> Dict[str, Any]:
+    """获取 TikTok 单个作品数据。aweme_id 为作品 ID（必填）。"""
+    return call(lambda: get_client().tiktok.get_work, aweme_id=aweme_id)
+
+
+@mcp.tool()
+def tiktok_get_user_works(sec_user_id: str) -> Dict[str, Any]:
+    """获取 TikTok 用户主页作品数据。sec_user_id 为用户 ID（必填）。"""
+    return call(lambda: get_client().tiktok.get_user_works, sec_user_id=sec_user_id)
+
+
 def main() -> None:
     serve(mcp, prog="redfox-tiktok-mcp", description="RedFox TikTok 数据 MCP server")
 

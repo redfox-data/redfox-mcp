@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "redfox-tools-mcp"
+version = "0.1.0"
+description = "RedFoxHub 工具类 MCP server: 多平台视频/作品下载与素材上传"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+keywords = ["mcp", "redfox", "tools", "download", "upload"]
+dependencies = [
+    "redfox-mcp-core>=0.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/redfox-data/redfox-mcp"
+Website = "https://redfox.hk/apis/?source=mcp"
+
+[project.scripts]
+redfox-tools-mcp = "redfox_tools_mcp.server:main"
+
+[tool.uv.sources]
+redfox-mcp-core = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/redfox_tools_mcp"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/redfox_tools_mcp", "README.md"]

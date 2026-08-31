@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "redfox-auto-mcp"
+version = "0.1.0"
+description = "RedFoxHub 汽车垂类 MCP server: 懂车帝/汽车之家/易车 work/user search, detail, user works"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+keywords = ["mcp", "redfox", "auto", "dongchedi", "autohome", "yiche", "懂车帝", "汽车之家", "易车"]
+dependencies = [
+    "redfox-mcp-core>=0.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/redfox-data/redfox-mcp"
+Website = "https://redfox.hk/apis/?source=mcp"
+
+[project.scripts]
+redfox-auto-mcp = "redfox_auto_mcp.server:main"
+
+[tool.uv.sources]
+redfox-mcp-core = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/redfox_auto_mcp"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/redfox_auto_mcp", "README.md"]
