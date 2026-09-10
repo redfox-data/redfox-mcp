@@ -37,6 +37,11 @@ redfox-wechat-channels-mcp --transport http --host 0.0.0.0 --port 8000
 }
 ```
 
+## Platforms
+
+macOS (Apple Silicon) and Windows (x64). The matching native binary
+is pulled in automatically via optionalDependencies.
+
 ## API Key
 
 Get your API key at: https://redfox.hk/settings/api-keys?source=mcp

@@ -3,29 +3,38 @@
 
 const { spawn } = require("child_process");
 const path = require("path");
-const os = require("os");
 const fs = require("fs");
 
-const platform = os.platform();
-const arch = os.arch();
-const dirName = `${platform}-${arch}`;
-const binName = platform === "win32" ? "redfox-tools-mcp.exe" : "redfox-tools-mcp";
-const binPath = path.join(__dirname, "bin", dirName, binName);
+const SERVER = "tools";
+const binPkg = `redfox-mcp-bin-${process.platform}-${process.arch}`;
+const binName = process.platform === "win32" ? "redfox-mcp.exe" : "redfox-mcp";
 
-if (!fs.existsSync(binPath)) {
+function findBin() {
+  // 1) npm-installed platform package (hoisted or nested)
+  try {
+    const pkgJson = require.resolve(`${binPkg}/package.json`);
+    return path.join(path.dirname(pkgJson), "bin", binName);
+  } catch (e) { /* not resolvable, fall through */ }
+  // 2) monorepo sibling directory (local development)
+  const sibling = path.join(__dirname, "..", binPkg, "bin", binName);
+  if (fs.existsSync(sibling)) return sibling;
+  return null;
+}
+
+const binPath = findBin();
+if (!binPath || !fs.existsSync(binPath)) {
   process.stderr.write(
-    `Error: No binary found for ${dirName}.\n` +
-    `Expected: ${binPath}\n` +
-    `Supported: darwin-arm64, darwin-x64, linux-x64, win32-x64\n`
+    `Error: no RedFox MCP binary for ${process.platform}-${process.arch}.\n` +
+    `Supported platforms: darwin-arm64, win32-x64\n`
   );
   process.exit(1);
 }
 
-fs.chmodSync(binPath, 0o755);
+try { fs.chmodSync(binPath, 0o755); } catch (e) { /* windows: no-op */ }
 
-const child = spawn(binPath, process.argv.slice(2), { stdio: "inherit" });
-child.on("exit", (code) => process.exit(code ?? 1));
+const child = spawn(binPath, [SERVER, ...process.argv.slice(2)], { stdio: "inherit" });
+child.on("exit", (code, sig) => process.exit(code ?? (sig ? 1 : 0)));
 child.on("error", (err) => {
-  process.stderr.write(`Failed to start redfox-tools-mcp: ${err.message}\n`);
+  process.stderr.write(`Failed to start redfox-mcp: ${err.message}\n`);
   process.exit(1);
 });

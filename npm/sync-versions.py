@@ -1,82 +1,55 @@
 #!/usr/bin/env python3
-"""Sync version numbers from Python pyproject.toml to npm package.json.
+"""Set a unified version across all RedFox MCP npm packages.
 
 Usage:
-    python npm/sync-versions.py
+    python npm/sync-versions.py 0.4.2
+
+Updates version (and optionalDependencies ranges in main packages) in:
+  - npm/redfox-*-mcp/package.json        (16 main packages)
+  - npm/redfox-mcp-bin-*/package.json    (platform binary packages)
 """
 
+import glob
 import json
 import os
-import re
+import sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
-PACKAGES = [
-    ("redfox-douyin-mcp", "redfox-douyin-mcp"),
-    ("redfox-xiaohongshu-mcp", "redfox-xiaohongshu-mcp"),
-    ("redfox-wechat-mcp", "redfox-wechat-mcp"),
-    ("redfox-bilibili-mcp", "redfox-bilibili-mcp"),
-    ("redfox-toutiao-mcp", "redfox-toutiao-mcp"),
-    ("redfox-tiktok-mcp", "redfox-tiktok-mcp"),
-    ("redfox-ai-search-mcp", "redfox-ai-search-mcp"),
-    ("redfox-ai-gen-mcp", "redfox-ai-gen-mcp"),
-    ("redfox-twitter-mcp", "redfox-twitter-mcp"),
-    ("redfox-youtube-mcp", "redfox-youtube-mcp"),
-    ("redfox-instagram-mcp", "redfox-instagram-mcp"),
-    ("redfox-kuaishou-mcp", "redfox-kuaishou-mcp"),
-    ("redfox-auto-mcp", "redfox-auto-mcp"),
-    ("redfox-wechat-channels-mcp", "redfox-wechat-channels-mcp"),
-    ("redfox-tools-mcp", "redfox-tools-mcp"),
-    ("redfox-mcp", "redfox-mcp"),
-]
+
+def update(path, version):
+    with open(path) as f:
+        data = json.load(f)
+
+    old = data.get("version")
+    data["version"] = version
+    for dep in data.get("optionalDependencies", {}):
+        if dep.startswith("redfox-mcp-bin-"):
+            data["optionalDependencies"][dep] = version
+
+    with open(path, "w") as f:
+        json.dump(data, indent=2, fp=f)
+        f.write("\n")
+
+    mark = "OK  " if old == version else "SET "
+    print(f"  {mark} {data['name']}: {old} → {version}")
 
 
-def read_py_version(pyproject_path):
-    with open(pyproject_path) as f:
-        for line in f:
-            m = re.match(r'^version\s*=\s*"([^"]+)"', line.strip())
-            if m:
-                return m.group(1)
-    return None
+def main():
+    if len(sys.argv) != 2:
+        print(__doc__)
+        sys.exit(1)
+    version = sys.argv[1]
 
-
-def sync():
-    print("Syncing versions: pyproject.toml → package.json\n")
-    for pypi_name, npm_name in PACKAGES:
-        pyproject = os.path.join(ROOT, "..", "packages", pypi_name, "pyproject.toml")
-        pkg_json_path = os.path.join(ROOT, npm_name, "package.json")
-
-        pyproject = os.path.normpath(pyproject)
-
-        if not os.path.exists(pyproject):
-            print(f"  SKIP {npm_name} (no pyproject.toml)")
-            continue
-        if not os.path.exists(pkg_json_path):
-            print(f"  SKIP {npm_name} (no package.json)")
-            continue
-
-        py_ver = read_py_version(pyproject)
-        if not py_ver:
-            print(f"  SKIP {npm_name} (version not found in pyproject.toml)")
-            continue
-
-        with open(pkg_json_path) as f:
-            data = json.load(f)
-
-        old_ver = data.get("version")
-        if old_ver == py_ver:
-            print(f"  OK   {npm_name}: {py_ver} (already synced)")
-            continue
-
-        data["version"] = py_ver
-        with open(pkg_json_path, "w") as f:
-            json.dump(data, f, indent=2)
-            f.write("\n")
-
-        print(f"  SYNC {npm_name}: {old_ver} → {py_ver}")
-
-    print("\nDone!")
+    print(f"Syncing npm versions → {version}\n")
+    paths = sorted(
+        glob.glob(os.path.join(ROOT, "redfox-*-mcp", "package.json"))
+        + glob.glob(os.path.join(ROOT, "redfox-mcp-bin-*", "package.json"))
+    )
+    for path in paths:
+        update(path, version)
+    print(f"\nDone! {len(paths)} packages.")
 
 
 if __name__ == "__main__":
-    sync()
+    main()

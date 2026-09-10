@@ -1,13 +1,12 @@
 {
   "name": "redfox-twitter-mcp",
-  "version": "0.1.1",
+  "version": "0.4.1",
   "description": "RedFoxHub X(Twitter) MCP server",
   "bin": {
     "redfox-twitter-mcp": "./cli.js"
   },
   "files": [
     "cli.js",
-    "bin/",
     "README.md"
   ],
   "keywords": [
@@ -26,13 +25,8 @@
   "engines": {
     "node": ">=14"
   },
-  "os": [
-    "darwin",
-    "linux",
-    "win32"
-  ],
-  "cpu": [
-    "arm64",
-    "x64"
-  ]
+  "optionalDependencies": {
+    "redfox-mcp-bin-darwin-arm64": "0.4.1",
+    "redfox-mcp-bin-win32-x64": "0.4.1"
+  }
 }

@@ -1,8 +1,9 @@
-# RedFox MCP — npm 发布流水线
+# RedFox MCP — npm 发布流水线（busybox 单二进制模式）
 #
 # 触发：推送 v* 标签
-# 流程：3 平台并行编译 → 组装 npm 包 → 发布
+# 流程：2 平台各编译 1 个 busybox 二进制 → 组装 npm 包 → 发布
 #
+# 平台：darwin-arm64 (macos-latest)、win32-x64 (windows-latest)
 # Secrets: NPM_TOKEN
 # PyPI 发布请本地执行：uv build --all-packages && uv publish dist/*
 
@@ -20,15 +21,10 @@ jobs:
         include:
           - os: macos-latest
             platform: darwin-arm64
-          - os: macos-13
-            platform: darwin-x64
-          - os: ubuntu-latest
-            platform: linux-x64
           - os: windows-latest
             platform: win32-x64
 
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.platform == 'win32-x64' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -59,20 +55,19 @@ jobs:
             "redfox-tools-mcp>=0.1.1" \
             "redfox-mcp>=0.4.1"
 
-      - name: Build binaries
+      - name: Build busybox binary
         shell: bash
-        run: bash npm/build-binaries.sh --platform ${{ matrix.platform }} --jobs 4
+        run: bash npm/build-binaries.sh --platform ${{ matrix.platform }}
 
-      - name: Upload binaries
+      - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
           name: bin-${{ matrix.platform }}
-          path: npm/*/bin/${{ matrix.platform }}/
+          path: npm/redfox-mcp-bin-${{ matrix.platform }}/bin/
           retention-days: 3
 
   publish:
     needs: build
-    if: always()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -90,26 +85,36 @@ jobs:
 
       - name: Assemble npm packages
         run: |
-          for pkg_dir in npm/redfox-*-mcp; do
-            pkg=$(basename "$pkg_dir")
-            for platform in darwin-arm64 darwin-x64 linux-x64 win32-x64; do
-              src="artifacts/bin-${platform}/${pkg}/bin/${platform}"
-              dst="${pkg_dir}/bin/${platform}"
-              if [[ -d "$src" ]]; then
-                mkdir -p "$dst"
-                cp "$src"/* "$dst/"
-                chmod +x "$dst"/* 2>/dev/null || true
-              fi
-            done
+          found=0
+          for platform in darwin-arm64 win32-x64; do
+            src="artifacts/bin-${platform}"
+            dst="npm/redfox-mcp-bin-${platform}/bin"
+            if [[ -d "$src" ]]; then
+              mkdir -p "$dst"
+              cp "$src"/* "$dst/"
+              chmod +x "$dst"/* 2>/dev/null || true
+              found=$((found + 1))
+              echo "  ✓ $platform: $(du -sh "$dst" | cut -f1)"
+            fi
           done
-          echo "=== Assembly complete ==="
-          for pkg_dir in npm/redfox-*-mcp; do
-            pkg=$(basename "$pkg_dir")
-            count=$(find "$pkg_dir/bin" -type f 2>/dev/null | wc -l)
-            echo "  $pkg: $count binaries"
-          done
+          if [[ $found -eq 0 ]]; then
+            echo "Error: no platform binaries available, aborting publish."
+            exit 1
+          fi
 
-      - name: Publish to npm
+      - name: Publish binary packages
+        run: |
+          for pkg_dir in npm/redfox-mcp-bin-*; do
+            pkg=$(basename "$pkg_dir")
+            [[ -n "$(ls -A "$pkg_dir/bin" 2>/dev/null)" ]] || { echo "  ⚠ $pkg skipped (no binary)"; continue; }
+            echo "Publishing $pkg ..."
+            (cd "$pkg_dir" && npm publish --access public) \
+              && echo "  ✓ $pkg" || echo "  ⚠ $pkg skipped"
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish main packages
         run: |
           for pkg_dir in npm/redfox-*-mcp; do
             pkg=$(basename "$pkg_dir")

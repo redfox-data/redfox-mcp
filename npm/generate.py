@@ -1,58 +1,52 @@
 #!/usr/bin/env python3
-"""Generate npm package scaffolding for all RedFox MCP servers.
+"""Generate npm package scaffolding for all RedFox MCP servers (busybox mode).
 
 Usage:
-    python npm/generate.py
+    python npm/generate.py [--version 0.4.1]
 
-Creates one npm package per MCP server under npm/, each containing:
-  - package.json  (npm metadata + bin entry)
-  - cli.js        (platform-detecting binary launcher)
-  - _entry.py     (PyInstaller build entry point)
+Architecture:
+  - 16 lightweight main packages (redfox-douyin-mcp, ...): ~5KB each,
+    cli.js spawns the shared platform binary with the server name as argv[1].
+  - 2 platform binary packages (redfox-mcp-bin-<platform>): one busybox
+    binary containing ALL servers, installed via optionalDependencies
+    (npm picks the one matching the current os/cpu automatically).
 
-Binary artifacts go into each package's bin/<platform>-<arch>/ directory,
-populated by the CI build pipeline (not checked into git).
+Binaries themselves are compiled by CI into redfox-mcp-bin-*/bin/ (gitignored).
 """
 
 import json
 import os
+import shutil
+import sys
 import textwrap
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+VERSION = "0.4.1"
 
-# (pypi_name, npm_name, binary_name, python_module, description)
+# Platforms shipped today (linux / darwin-x64 intentionally unsupported).
+BIN_PLATFORMS = [
+    ("darwin", "arm64"),
+    ("win32", "x64"),
+]
+
+# (npm_name, server_name, description)
 PACKAGES = [
-    ("redfox-douyin-mcp", "redfox-douyin-mcp", "redfox-douyin-mcp",
-     "redfox_douyin_mcp", "RedFoxHub Douyin MCP server"),
-    ("redfox-xiaohongshu-mcp", "redfox-xiaohongshu-mcp", "redfox-xiaohongshu-mcp",
-     "redfox_xiaohongshu_mcp", "RedFoxHub Xiaohongshu MCP server"),
-    ("redfox-wechat-mcp", "redfox-wechat-mcp", "redfox-wechat-mcp",
-     "redfox_wechat_mcp", "RedFoxHub WeChat MCP server"),
-    ("redfox-bilibili-mcp", "redfox-bilibili-mcp", "redfox-bilibili-mcp",
-     "redfox_bilibili_mcp", "RedFoxHub Bilibili MCP server"),
-    ("redfox-toutiao-mcp", "redfox-toutiao-mcp", "redfox-toutiao-mcp",
-     "redfox_toutiao_mcp", "RedFoxHub Toutiao MCP server"),
-    ("redfox-tiktok-mcp", "redfox-tiktok-mcp", "redfox-tiktok-mcp",
-     "redfox_tiktok_mcp", "RedFoxHub TikTok MCP server"),
-    ("redfox-ai-search-mcp", "redfox-ai-search-mcp", "redfox-ai-search-mcp",
-     "redfox_ai_search_mcp", "RedFoxHub AI Search MCP server"),
-    ("redfox-ai-gen-mcp", "redfox-ai-gen-mcp", "redfox-ai-gen-mcp",
-     "redfox_ai_gen_mcp", "RedFoxHub AI Generation MCP server"),
-    ("redfox-twitter-mcp", "redfox-twitter-mcp", "redfox-twitter-mcp",
-     "redfox_twitter_mcp", "RedFoxHub X(Twitter) MCP server"),
-    ("redfox-youtube-mcp", "redfox-youtube-mcp", "redfox-youtube-mcp",
-     "redfox_youtube_mcp", "RedFoxHub YouTube MCP server"),
-    ("redfox-instagram-mcp", "redfox-instagram-mcp", "redfox-instagram-mcp",
-     "redfox_instagram_mcp", "RedFoxHub Instagram MCP server"),
-    ("redfox-kuaishou-mcp", "redfox-kuaishou-mcp", "redfox-kuaishou-mcp",
-     "redfox_kuaishou_mcp", "RedFoxHub Kuaishou MCP server"),
-    ("redfox-auto-mcp", "redfox-auto-mcp", "redfox-auto-mcp",
-     "redfox_auto_mcp", "RedFoxHub Auto MCP server"),
-    ("redfox-wechat-channels-mcp", "redfox-wechat-channels-mcp", "redfox-wechat-channels-mcp",
-     "redfox_wechat_channels_mcp", "RedFoxHub WeChat Channels MCP server"),
-    ("redfox-tools-mcp", "redfox-tools-mcp", "redfox-tools-mcp",
-     "redfox_tools_mcp", "RedFoxHub Tools MCP server"),
-    ("redfox-mcp", "redfox-mcp", "redfox-mcp",
-     "redfox_mcp", "RedFoxHub MCP server (all-in-one, 13 platforms)"),
+    ("redfox-douyin-mcp", "douyin", "RedFoxHub Douyin MCP server"),
+    ("redfox-xiaohongshu-mcp", "xiaohongshu", "RedFoxHub Xiaohongshu MCP server"),
+    ("redfox-wechat-mcp", "wechat", "RedFoxHub WeChat MCP server"),
+    ("redfox-bilibili-mcp", "bilibili", "RedFoxHub Bilibili MCP server"),
+    ("redfox-toutiao-mcp", "toutiao", "RedFoxHub Toutiao MCP server"),
+    ("redfox-tiktok-mcp", "tiktok", "RedFoxHub TikTok MCP server"),
+    ("redfox-ai-search-mcp", "ai-search", "RedFoxHub AI Search MCP server"),
+    ("redfox-ai-gen-mcp", "ai-gen", "RedFoxHub AI Generation MCP server"),
+    ("redfox-twitter-mcp", "twitter", "RedFoxHub X(Twitter) MCP server"),
+    ("redfox-youtube-mcp", "youtube", "RedFoxHub YouTube MCP server"),
+    ("redfox-instagram-mcp", "instagram", "RedFoxHub Instagram MCP server"),
+    ("redfox-kuaishou-mcp", "kuaishou", "RedFoxHub Kuaishou MCP server"),
+    ("redfox-auto-mcp", "auto", "RedFoxHub Auto MCP server"),
+    ("redfox-wechat-channels-mcp", "wechat-channels", "RedFoxHub WeChat Channels MCP server"),
+    ("redfox-tools-mcp", "tools", "RedFoxHub Tools MCP server"),
+    ("redfox-mcp", "all", "RedFoxHub MCP server (all-in-one, 13 platforms)"),
 ]
 
 CLI_TEMPLATE = '''#!/usr/bin/env node
@@ -60,69 +54,63 @@ CLI_TEMPLATE = '''#!/usr/bin/env node
 
 const {{ spawn }} = require("child_process");
 const path = require("path");
-const os = require("os");
 const fs = require("fs");
 
-const platform = os.platform();
-const arch = os.arch();
-const dirName = `${{platform}}-${{arch}}`;
-const binName = platform === "win32" ? "{binary_name}.exe" : "{binary_name}";
-const binPath = path.join(__dirname, "bin", dirName, binName);
+const SERVER = "{server_name}";
+const binPkg = `redfox-mcp-bin-${{process.platform}}-${{process.arch}}`;
+const binName = process.platform === "win32" ? "redfox-mcp.exe" : "redfox-mcp";
 
-if (!fs.existsSync(binPath)) {{
+function findBin() {{
+  // 1) npm-installed platform package (hoisted or nested)
+  try {{
+    const pkgJson = require.resolve(`${{binPkg}}/package.json`);
+    return path.join(path.dirname(pkgJson), "bin", binName);
+  }} catch (e) {{ /* not resolvable, fall through */ }}
+  // 2) monorepo sibling directory (local development)
+  const sibling = path.join(__dirname, "..", binPkg, "bin", binName);
+  if (fs.existsSync(sibling)) return sibling;
+  return null;
+}}
+
+const binPath = findBin();
+if (!binPath || !fs.existsSync(binPath)) {{
   process.stderr.write(
-    `Error: No binary found for ${{dirName}}.\\n` +
-    `Expected: ${{binPath}}\\n` +
-    `Supported: darwin-arm64, darwin-x64, linux-x64, win32-x64\\n`
+    `Error: no RedFox MCP binary for ${{process.platform}}-${{process.arch}}.\\n` +
+    `Supported platforms: darwin-arm64, win32-x64\\n`
   );
   process.exit(1);
 }}
 
-fs.chmodSync(binPath, 0o755);
+try {{ fs.chmodSync(binPath, 0o755); }} catch (e) {{ /* windows: no-op */ }}
 
-const child = spawn(binPath, process.argv.slice(2), {{ stdio: "inherit" }});
-child.on("exit", (code) => process.exit(code ?? 1));
+const child = spawn(binPath, [SERVER, ...process.argv.slice(2)], {{ stdio: "inherit" }});
+child.on("exit", (code, sig) => process.exit(code ?? (sig ? 1 : 0)));
 child.on("error", (err) => {{
-  process.stderr.write(`Failed to start {binary_name}: ${{err.message}}\\n`);
+  process.stderr.write(`Failed to start redfox-mcp: ${{err.message}}\\n`);
   process.exit(1);
 }});
 '''
 
-ENTRY_TEMPLATE = '''"""PyInstaller entry point for {pypi_name}."""
-from {module}.server import main
 
-if __name__ == "__main__":
-    main()
-'''
+def bin_pkg_name(platform, arch):
+    return f"redfox-mcp-bin-{platform}-{arch}"
 
 
-def read_version(pypi_name):
-    """Read current version from the Python package's pyproject.toml."""
-    toml_path = os.path.join(ROOT, "..", "packages", pypi_name, "pyproject.toml")
-    toml_path = os.path.normpath(toml_path)
-    if not os.path.exists(toml_path):
-        return "0.1.0"
-    with open(toml_path) as f:
-        for line in f:
-            line = line.strip()
-            if line.startswith("version"):
-                return line.split('"')[1]
-    return "0.1.0"
-
-
-def generate_package(pypi_name, npm_name, binary_name, module, description):
+def generate_main_package(npm_name, server_name, description, version):
     pkg_dir = os.path.join(ROOT, npm_name)
     os.makedirs(pkg_dir, exist_ok=True)
 
-    version = read_version(pypi_name)
+    # Legacy per-package build entry is obsolete in busybox mode.
+    old_entry = os.path.join(pkg_dir, "_entry.py")
+    if os.path.exists(old_entry):
+        os.remove(old_entry)
 
-    # ── package.json ──
     pkg_json = {
         "name": npm_name,
         "version": version,
         "description": description,
-        "bin": {binary_name: "./cli.js"},
-        "files": ["cli.js", "bin/", "README.md"],
+        "bin": {npm_name: "./cli.js"},
+        "files": ["cli.js", "README.md"],
         "keywords": ["mcp", "redfox", "ai", "model-context-protocol"],
         "license": "MIT",
         "repository": {
@@ -132,24 +120,17 @@ def generate_package(pypi_name, npm_name, binary_name, module, description):
         },
         "homepage": "https://redfox.hk",
         "engines": {"node": ">=14"},
-        "os": ["darwin", "linux", "win32"],
-        "cpu": ["arm64", "x64"],
+        "optionalDependencies": {
+            bin_pkg_name(p, a): version for p, a in BIN_PLATFORMS
+        },
     }
     with open(os.path.join(pkg_dir, "package.json"), "w") as f:
         json.dump(pkg_json, f, indent=2)
         f.write("\n")
 
-    # ── cli.js ──
-    cli_content = CLI_TEMPLATE.format(binary_name=binary_name)
     with open(os.path.join(pkg_dir, "cli.js"), "w") as f:
-        f.write(cli_content)
+        f.write(CLI_TEMPLATE.format(server_name=server_name))
 
-    # ── _entry.py (PyInstaller build target) ──
-    entry_content = ENTRY_TEMPLATE.format(pypi_name=pypi_name, module=module)
-    with open(os.path.join(pkg_dir, "_entry.py"), "w") as f:
-        f.write(entry_content)
-
-    # ── README.md ──
     readme = textwrap.dedent(f"""\
         # {npm_name}
 
@@ -168,10 +149,10 @@ def generate_package(pypi_name, npm_name, binary_name, module, description):
         export REDFOX_API_KEY=ak_your_key
 
         # Run MCP server (stdio mode, for local MCP clients)
-        {binary_name}
+        {npm_name}
 
         # Run MCP server (HTTP mode)
-        {binary_name} --transport http --host 0.0.0.0 --port 8000
+        {npm_name} --transport http --host 0.0.0.0 --port 8000
         ```
 
         ## MCP Client Configuration
@@ -190,6 +171,11 @@ def generate_package(pypi_name, npm_name, binary_name, module, description):
         }}
         ```
 
+        ## Platforms
+
+        macOS (Apple Silicon) and Windows (x64). The matching native binary
+        is pulled in automatically via optionalDependencies.
+
         ## API Key
 
         Get your API key at: https://redfox.hk/settings/api-keys?source=mcp
@@ -201,21 +187,66 @@ def generate_package(pypi_name, npm_name, binary_name, module, description):
     with open(os.path.join(pkg_dir, "README.md"), "w") as f:
         f.write(readme)
 
-    # ── .gitignore (ignore compiled binaries) ──
     with open(os.path.join(pkg_dir, ".gitignore"), "w") as f:
-        f.write("bin/\nnode_modules/\n")
+        f.write("node_modules/\n")
 
-    print(f"  ✓ {npm_name} v{version}")
+    print(f"  ✓ {npm_name} v{version} (server: {server_name})")
+
+
+def generate_bin_package(platform, arch, version):
+    name = bin_pkg_name(platform, arch)
+    pkg_dir = os.path.join(ROOT, name)
+    os.makedirs(pkg_dir, exist_ok=True)
+
+    pkg_json = {
+        "name": name,
+        "version": version,
+        "description": f"RedFox MCP native binary for {platform}-{arch} (busybox, all servers)",
+        "files": ["bin/", "README.md"],
+        "license": "MIT",
+        "repository": {
+            "type": "git",
+            "url": "https://github.com/redfox-data/redfox-mcp",
+            "directory": f"npm/{name}",
+        },
+        "os": [platform],
+        "cpu": [arch],
+    }
+    with open(os.path.join(pkg_dir, "package.json"), "w") as f:
+        json.dump(pkg_json, f, indent=2)
+        f.write("\n")
+
+    readme = (
+        f"# {name}\n\n"
+        f"Platform binary package for RedFox MCP servers ({platform}-{arch}).\n"
+        "Do not install directly — install `redfox-douyin-mcp` or any other\n"
+        "RedFox MCP package and npm will pull this in automatically.\n"
+    )
+    with open(os.path.join(pkg_dir, "README.md"), "w") as f:
+        f.write(readme)
+
+    with open(os.path.join(pkg_dir, ".gitignore"), "w") as f:
+        f.write("bin/\n")
+
+    print(f"  ✓ {name} v{version}")
 
 
 def main():
-    print(f"Generating npm packages in {ROOT}\n")
-    for pkg in PACKAGES:
-        generate_package(*pkg)
-    print(f"\nDone! {len(PACKAGES)} npm packages generated.")
-    print("\nNext steps:")
-    print("  1. cd npm/<package-name>")
-    print("  2. npm publish  (after CI builds binaries into bin/)")
+    version = VERSION
+    if "--version" in sys.argv:
+        version = sys.argv[sys.argv.index("--version") + 1]
+
+    print(f"Generating npm packages in {ROOT} (version {version})\n")
+    print("Main packages:")
+    for npm_name, server_name, description in PACKAGES:
+        generate_main_package(npm_name, server_name, description, version)
+    print("Platform binary packages:")
+    for platform, arch in BIN_PLATFORMS:
+        generate_bin_package(platform, arch, version)
+
+    total = len(PACKAGES) + len(BIN_PLATFORMS)
+    print(f"\nDone! {total} npm packages generated (busybox mode).")
+    print("Next: bash npm/build-binaries.sh  (compiles the shared binary)")
 
 
 if __name__ == "__main__":

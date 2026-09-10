@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Build PyInstaller binaries for all RedFox MCP npm packages.
-# Supports parallel builds and cross-platform (macOS/Linux/Windows via Git Bash).
+# Build the single RedFox MCP busybox binary for one platform.
+# Output: npm/redfox-mcp-bin-<platform>/bin/redfox-mcp[.exe]
 #
 # Usage:
-#   ./npm/build-binaries.sh [--platform darwin-arm64] [--jobs 4] [--packages pkg1,pkg2]
+#   bash npm/build-binaries.sh [--platform darwin-arm64]
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -29,14 +29,10 @@ detect_platform() {
 }
 
 PLATFORM=$(detect_platform)
-JOBS=4
-PACKAGES=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
     --platform) PLATFORM="$2"; shift 2 ;;
-    --jobs)     JOBS="$2"; shift 2 ;;
-    --packages) PACKAGES="$2"; shift 2 ;;
     *) echo "Unknown: $1"; exit 1 ;;
   esac
 done
@@ -44,9 +40,15 @@ done
 IS_WINDOWS=false
 [[ "$PLATFORM" == win32-* ]] && IS_WINDOWS=true
 
-echo "=== RedFox MCP Binary Build ==="
-echo "Platform: $PLATFORM | Python: $PY | Parallel: $JOBS"
-echo ""
+BIN_NAME="redfox-mcp"
+$IS_WINDOWS && BIN_NAME="redfox-mcp.exe"
+
+OUT_DIR="$SCRIPT_DIR/redfox-mcp-bin-$PLATFORM/bin"
+WORK_DIR="${TMPDIR:-${TEMP:-/tmp}}/pyi-redfox-mcp"
+mkdir -p "$OUT_DIR"
+
+echo "=== RedFox MCP busybox binary build ==="
+echo "Platform: $PLATFORM | Python: $PY"
 
 # ── Check PyInstaller ──
 if ! $PY -c "import PyInstaller" 2>/dev/null; then
@@ -54,76 +56,35 @@ if ! $PY -c "import PyInstaller" 2>/dev/null; then
   $PY -m pip install pyinstaller
 fi
 
-# ── Build one package ──
-build_one() {
-  local pkg_name="$1"
-  local npm_dir="$SCRIPT_DIR/$pkg_name"
-  local entry="$npm_dir/_entry.py"
-  local out_dir="$npm_dir/bin/$PLATFORM"
+$PY -m PyInstaller \
+  --onefile \
+  --name redfox-mcp \
+  --distpath "$OUT_DIR" \
+  --workpath "$WORK_DIR" \
+  --specpath "$WORK_DIR" \
+  --noconfirm \
+  --clean \
+  --copy-metadata fastmcp \
+  --copy-metadata fastmcp-slim \
+  --copy-metadata redfox-python-sdk \
+  --copy-metadata redfox-mcp-core \
+  --copy-metadata mcp \
+  --copy-metadata starlette \
+  --copy-metadata httpx \
+  --copy-metadata pydantic \
+  --copy-metadata pydantic-core \
+  --copy-metadata anyio \
+  --copy-metadata httpcore \
+  --exclude-module tkinter \
+  --exclude-module unittest \
+  --exclude-module pytest \
+  "$SCRIPT_DIR/_entry.py"
 
-  [[ ! -f "$entry" ]] && { echo "  SKIP $pkg_name"; return; }
-
-  mkdir -p "$out_dir"
-
-  $PY -m PyInstaller \
-    --onefile \
-    --name "$pkg_name" \
-    --distpath "$out_dir" \
-    --workpath "/tmp/pyi-${pkg_name}" \
-    --specpath "/tmp" \
-    --noconfirm \
-    --clean \
-    --copy-metadata fastmcp \
-    --copy-metadata fastmcp-slim \
-    --copy-metadata redfox-python-sdk \
-    --copy-metadata redfox-mcp-core \
-    --copy-metadata mcp \
-    --copy-metadata starlette \
-    --copy-metadata httpx \
-    --copy-metadata pydantic \
-    --copy-metadata pydantic-core \
-    --copy-metadata anyio \
-    --copy-metadata httpcore \
-    "$entry" > /dev/null 2>&1
-
-  local bin_file="$out_dir/$pkg_name"
-  $IS_WINDOWS && bin_file="$out_dir/$pkg_name.exe"
-
-  if [[ -f "$bin_file" ]]; then
-    local size
-    size=$(du -h "$bin_file" | cut -f1)
-    echo "  ✓ $pkg_name ($size)"
-  else
-    echo "  ✗ $pkg_name FAILED"
-  fi
-}
-
-export -f build_one
-export SCRIPT_DIR PLATFORM PY IS_WINDOWS
-
-# ── Collect package list ──
-if [[ -n "$PACKAGES" ]]; then
-  IFS=',' read -ra PKG_LIST <<< "$PACKAGES"
+if [[ -f "$OUT_DIR/$BIN_NAME" ]]; then
+  size=$(du -h "$OUT_DIR/$BIN_NAME" | cut -f1)
+  echo ""
+  echo "=== Done: npm/redfox-mcp-bin-$PLATFORM/bin/$BIN_NAME ($size) ==="
 else
-  PKG_LIST=()
-  for d in "$SCRIPT_DIR"/redfox-*-mcp; do
-    [[ -d "$d" ]] && PKG_LIST+=("$(basename "$d")")
-  done
+  echo "=== FAILED: binary not produced ==="
+  exit 1
 fi
-
-echo "Building ${#PKG_LIST[@]} packages..."
-
-# ── Parallel build using background jobs ──
-active=0
-for pkg in "${PKG_LIST[@]}"; do
-  build_one "$pkg" &
-  active=$((active + 1))
-  if [[ $active -ge $JOBS ]]; then
-    wait -n 2>/dev/null || true
-    active=$((active - 1))
-  fi
-done
-wait
-
-echo ""
-echo "=== Done: npm/*/bin/$PLATFORM/ ==="
