@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-xiaohongshu-mcp"
-version = "0.2.0"
+version = "0.2.1"
 description = "RedFoxHub Xiaohongshu MCP server: note/blogger search, account info, note detail, AI notes search"
 readme = "README.md"
 requires-python = ">=3.10"

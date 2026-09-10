@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-tools-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "RedFoxHub 工具类 MCP server: 多平台视频/作品下载与素材上传"
 readme = "README.md"
 requires-python = ">=3.10"
