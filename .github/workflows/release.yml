@@ -62,30 +62,29 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
+      - name: Install PyInstaller
+        run: pip install pyinstaller
 
-      - name: Install dependencies from local source
+      - name: Install RedFox MCP packages
         run: |
-          uv pip install --system pyinstaller
-          uv pip install --system \
-            ./packages/redfox-mcp-core \
-            ./packages/redfox-douyin-mcp \
-            ./packages/redfox-xiaohongshu-mcp \
-            ./packages/redfox-wechat-mcp \
-            ./packages/redfox-bilibili-mcp \
-            ./packages/redfox-toutiao-mcp \
-            ./packages/redfox-tiktok-mcp \
-            ./packages/redfox-ai-search-mcp \
-            ./packages/redfox-ai-gen-mcp \
-            ./packages/redfox-twitter-mcp \
-            ./packages/redfox-youtube-mcp \
-            ./packages/redfox-instagram-mcp \
-            ./packages/redfox-kuaishou-mcp \
-            ./packages/redfox-auto-mcp \
-            ./packages/redfox-wechat-channels-mcp \
-            ./packages/redfox-tools-mcp \
-            ./packages/redfox-mcp
+          pip install \
+            "redfox-mcp-core>=0.1.3" \
+            "redfox-douyin-mcp>=0.2.1" \
+            "redfox-xiaohongshu-mcp>=0.2.1" \
+            "redfox-wechat-mcp>=0.2.1" \
+            "redfox-bilibili-mcp>=0.1.2" \
+            "redfox-toutiao-mcp>=0.1.2" \
+            "redfox-tiktok-mcp>=0.1.2" \
+            "redfox-ai-search-mcp>=0.1.2" \
+            "redfox-ai-gen-mcp>=0.1.1" \
+            "redfox-twitter-mcp>=0.1.1" \
+            "redfox-youtube-mcp>=0.1.1" \
+            "redfox-instagram-mcp>=0.1.1" \
+            "redfox-kuaishou-mcp>=0.1.1" \
+            "redfox-auto-mcp>=0.1.1" \
+            "redfox-wechat-channels-mcp>=0.1.1" \
+            "redfox-tools-mcp>=0.1.1" \
+            "redfox-mcp>=0.4.1"
 
       - name: Build binaries
         run: bash npm/build-binaries.sh --platform ${{ matrix.platform }}
