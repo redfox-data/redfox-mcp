@@ -114,14 +114,15 @@ jobs:
 
       - name: Publish binary packages
         run: |
-          # npm rate-limits new package creation: retry with backoff.
+          # npm rate-limits package creation/updates (E429): pace publishes
+          # and retry with long backoff so a rate-limit window can pass.
           publish_retry() {
             local dir="$1"
             local attempt
-            for attempt in 1 2 3 4; do
+            for attempt in 1 2 3 4 5 6; do
               if (cd "$dir" && npm publish --access public); then return 0; fi
-              echo "  attempt $attempt failed, backing off 30s..."
-              sleep 30
+              echo "  attempt $attempt failed, backing off 60s..."
+              sleep 60
             done
             return 1
           }
@@ -140,7 +141,7 @@ jobs:
             fi
             echo "Publishing $pkg@$ver ..."
             publish_retry "$pkg_dir" || fail=1
-            sleep 10
+            sleep 30
           done
           exit $fail
         env:
@@ -151,10 +152,10 @@ jobs:
           publish_retry() {
             local dir="$1"
             local attempt
-            for attempt in 1 2 3 4; do
+            for attempt in 1 2 3 4 5 6; do
               if (cd "$dir" && npm publish --access public); then return 0; fi
-              echo "  attempt $attempt failed, backing off 30s..."
-              sleep 30
+              echo "  attempt $attempt failed, backing off 60s..."
+              sleep 60
             done
             return 1
           }
@@ -168,7 +169,7 @@ jobs:
             fi
             echo "Publishing $pkg@$ver ..."
             publish_retry "$pkg_dir" || fail=1
-            sleep 10
+            sleep 30
           done
           exit $fail
         env:
