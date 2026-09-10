@@ -114,6 +114,17 @@ jobs:
 
       - name: Publish binary packages
         run: |
+          # npm rate-limits new package creation: retry with backoff.
+          publish_retry() {
+            local dir="$1"
+            local attempt
+            for attempt in 1 2 3 4; do
+              if (cd "$dir" && npm publish --access public); then return 0; fi
+              echo "  attempt $attempt failed, backing off 30s..."
+              sleep 30
+            done
+            return 1
+          }
           fail=0
           for pkg_dir in npm/redfox-mcp-bin-*; do
             pkg=$(basename "$pkg_dir")
@@ -128,8 +139,8 @@ jobs:
               continue
             fi
             echo "Publishing $pkg@$ver ..."
-            (cd "$pkg_dir" && npm publish --access public) || fail=1
-            sleep 3
+            publish_retry "$pkg_dir" || fail=1
+            sleep 10
           done
           exit $fail
         env:
@@ -137,6 +148,16 @@ jobs:
 
       - name: Publish main packages
         run: |
+          publish_retry() {
+            local dir="$1"
+            local attempt
+            for attempt in 1 2 3 4; do
+              if (cd "$dir" && npm publish --access public); then return 0; fi
+              echo "  attempt $attempt failed, backing off 30s..."
+              sleep 30
+            done
+            return 1
+          }
           fail=0
           for pkg_dir in npm/redfox-*-mcp; do
             pkg=$(basename "$pkg_dir")
@@ -146,8 +167,8 @@ jobs:
               continue
             fi
             echo "Publishing $pkg@$ver ..."
-            (cd "$pkg_dir" && npm publish --access public) || fail=1
-            sleep 3
+            publish_retry "$pkg_dir" || fail=1
+            sleep 10
           done
           exit $fail
         env:
