@@ -225,8 +225,11 @@ def generate_bin_package(platform, arch, version):
     with open(os.path.join(pkg_dir, "README.md"), "w") as f:
         f.write(readme)
 
-    with open(os.path.join(pkg_dir, ".gitignore"), "w") as f:
-        f.write("bin/\n")
+    # NOTE: no .gitignore here — npm pack would honour it and exclude bin/.
+    # Binaries stay out of git via the repo-root .gitignore (npm/*/bin/).
+    old_ignore = os.path.join(pkg_dir, ".gitignore")
+    if os.path.exists(old_ignore):
+        os.remove(old_ignore)
 
     print(f"  ✓ {name} v{version}")
 
