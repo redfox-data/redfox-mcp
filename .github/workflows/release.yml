@@ -117,8 +117,14 @@ jobs:
               fail=1
               continue
             fi
-            echo "Publishing $pkg ..."
+            ver=$(node -p "require('./$pkg_dir/package.json').version")
+            if npm view "$pkg@$ver" version >/dev/null 2>&1; then
+              echo "  = $pkg@$ver already published, skipping"
+              continue
+            fi
+            echo "Publishing $pkg@$ver ..."
             (cd "$pkg_dir" && npm publish --access public) || fail=1
+            sleep 3
           done
           exit $fail
         env:
@@ -129,8 +135,14 @@ jobs:
           fail=0
           for pkg_dir in npm/redfox-*-mcp; do
             pkg=$(basename "$pkg_dir")
-            echo "Publishing $pkg ..."
+            ver=$(node -p "require('./$pkg_dir/package.json').version")
+            if npm view "$pkg@$ver" version >/dev/null 2>&1; then
+              echo "  = $pkg@$ver already published, skipping"
+              continue
+            fi
+            echo "Publishing $pkg@$ver ..."
             (cd "$pkg_dir" && npm publish --access public) || fail=1
+            sleep 3
           done
           exit $fail
         env:
