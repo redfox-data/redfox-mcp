@@ -63,12 +63,13 @@ jobs:
       - name: Build binaries (4-way parallel)
         run: |
           PLATFORM="${{ matrix.platform }}"
+          PY=$(command -v python3 || command -v python)
           ls -d npm/redfox-*-mcp | xargs -P 4 -I {} bash -c '
             pkg=$(basename "{}")
             entry="npm/${pkg}/_entry.py"
             out="npm/${pkg}/bin/'"$PLATFORM"'"
             mkdir -p "$out"
-            python -m PyInstaller \
+            '"$PY"' -m PyInstaller \
               --onefile --name "$pkg" \
               --distpath "$out" \
               --workpath "/tmp/pyi-${pkg}" \
