@@ -1,5 +1,5 @@
 {
-  "name": "redfox-mcp-bin-win32-x64",
+  "name": "redfox-mcp-bin-windows-x64",
   "version": "0.4.1",
   "description": "RedFox MCP native binary for win32-x64 (busybox, all servers)",
   "files": [
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/redfox-data/redfox-mcp",
-    "directory": "npm/redfox-mcp-bin-win32-x64"
+    "directory": "npm/redfox-mcp-bin-windows-x64"
   },
   "os": [
     "win32"

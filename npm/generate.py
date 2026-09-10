@@ -24,9 +24,11 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 VERSION = "0.4.1"
 
 # Platforms shipped today (linux / darwin-x64 intentionally unsupported).
+# (os, cpu, npm name suffix) — win32 uses "windows" in the package name:
+# the literal token "win32" triggers npm registry spam detection on PUT.
 BIN_PLATFORMS = [
-    ("darwin", "arm64"),
-    ("win32", "x64"),
+    ("darwin", "arm64", "darwin-arm64"),
+    ("win32", "x64", "windows-x64"),
 ]
 
 # (npm_name, server_name, description)
@@ -57,7 +59,9 @@ const path = require("path");
 const fs = require("fs");
 
 const SERVER = "{server_name}";
-const binPkg = `redfox-mcp-bin-${{process.platform}}-${{process.arch}}`;
+// Package name suffix maps win32 -> windows (npm spam filter avoids "win32").
+const platSeg = process.platform === "win32" ? "windows" : process.platform;
+const binPkg = `redfox-mcp-bin-${{platSeg}}-${{process.arch}}`;
 const binName = process.platform === "win32" ? "redfox-mcp.exe" : "redfox-mcp";
 
 function findBin() {{
@@ -76,7 +80,7 @@ const binPath = findBin();
 if (!binPath || !fs.existsSync(binPath)) {{
   process.stderr.write(
     `Error: no RedFox MCP binary for ${{process.platform}}-${{process.arch}}.\\n` +
-    `Supported platforms: darwin-arm64, win32-x64\\n`
+    `Supported platforms: darwin-arm64, win32-x64 (package: windows-x64)\\n`
   );
   process.exit(1);
 }}
@@ -92,8 +96,10 @@ child.on("error", (err) => {{
 '''
 
 
-def bin_pkg_name(platform, arch):
-    return f"redfox-mcp-bin-{platform}-{arch}"
+def bin_pkg_name(platform, arch, suffix=None):
+    if suffix is None:
+        suffix = "windows-x64" if platform == "win32" else f"{platform}-{arch}"
+    return f"redfox-mcp-bin-{suffix}"
 
 
 def generate_main_package(npm_name, server_name, description, version):
@@ -121,7 +127,7 @@ def generate_main_package(npm_name, server_name, description, version):
         "homepage": "https://redfox.hk",
         "engines": {"node": ">=14"},
         "optionalDependencies": {
-            bin_pkg_name(p, a): version for p, a in BIN_PLATFORMS
+            bin_pkg_name(p, a, s): version for p, a, s in BIN_PLATFORMS
         },
     }
     with open(os.path.join(pkg_dir, "package.json"), "w") as f:
@@ -193,8 +199,8 @@ def generate_main_package(npm_name, server_name, description, version):
     print(f"  ✓ {npm_name} v{version} (server: {server_name})")
 
 
-def generate_bin_package(platform, arch, version):
-    name = bin_pkg_name(platform, arch)
+def generate_bin_package(platform, arch, suffix, version):
+    name = bin_pkg_name(platform, arch, suffix)
     pkg_dir = os.path.join(ROOT, name)
     os.makedirs(pkg_dir, exist_ok=True)
 
@@ -244,8 +250,8 @@ def main():
     for npm_name, server_name, description in PACKAGES:
         generate_main_package(npm_name, server_name, description, version)
     print("Platform binary packages:")
-    for platform, arch in BIN_PLATFORMS:
-        generate_bin_package(platform, arch, version)
+    for platform, arch, suffix in BIN_PLATFORMS:
+        generate_bin_package(platform, arch, suffix, version)
 
     total = len(PACKAGES) + len(BIN_PLATFORMS)
     print(f"\nDone! {total} npm packages generated (busybox mode).")

@@ -6,7 +6,9 @@ const path = require("path");
 const fs = require("fs");
 
 const SERVER = "toutiao";
-const binPkg = `redfox-mcp-bin-${process.platform}-${process.arch}`;
+// Package name suffix maps win32 -> windows (npm spam filter avoids "win32").
+const platSeg = process.platform === "win32" ? "windows" : process.platform;
+const binPkg = `redfox-mcp-bin-${platSeg}-${process.arch}`;
 const binName = process.platform === "win32" ? "redfox-mcp.exe" : "redfox-mcp";
 
 function findBin() {
@@ -25,7 +27,7 @@ const binPath = findBin();
 if (!binPath || !fs.existsSync(binPath)) {
   process.stderr.write(
     `Error: no RedFox MCP binary for ${process.platform}-${process.arch}.\n` +
-    `Supported platforms: darwin-arm64, win32-x64\n`
+    `Supported platforms: darwin-arm64, win32-x64 (package: windows-x64)\n`
   );
   process.exit(1);
 }
