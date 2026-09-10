@@ -1,0 +1,149 @@
+# RedFox MCP — 双通道发布流水线
+#
+# 触发条件：推送 v* 标签（如 v0.2.2）
+# 流程：PyPI 发布 → 多平台编译二进制 → npm 发布
+#
+# 所需 GitHub Secrets：
+#   UV_PUBLISH_TOKEN  — PyPI API token（pypi-...）
+#   NPM_TOKEN         — npm publish token
+
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  # ─────────────────────────────────────────────
+  # 1. 发布所有 Python 包到 PyPI
+  # ─────────────────────────────────────────────
+  pypi-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build all packages
+        run: uv build --all-packages
+
+      - name: Publish to PyPI
+        run: uv publish dist/*
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.UV_PUBLISH_TOKEN }}
+
+  # ─────────────────────────────────────────────
+  # 2. 多平台编译 PyInstaller 二进制
+  # ─────────────────────────────────────────────
+  build-binaries:
+    needs: pypi-publish
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            platform: darwin-arm64
+          - os: macos-13
+            platform: darwin-x64
+          - os: ubuntu-latest
+            platform: linux-x64
+          - os: windows-latest
+            platform: win32-x64
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+
+      - name: Install RedFox MCP packages from PyPI
+        run: |
+          # Wait for PyPI indexing (typically ~30s after upload)
+          sleep 30
+          pip install \
+            redfox-mcp-core \
+            redfox-douyin-mcp \
+            redfox-xiaohongshu-mcp \
+            redfox-wechat-mcp \
+            redfox-bilibili-mcp \
+            redfox-toutiao-mcp \
+            redfox-tiktok-mcp \
+            redfox-ai-search-mcp \
+            redfox-ai-gen-mcp \
+            redfox-twitter-mcp \
+            redfox-youtube-mcp \
+            redfox-instagram-mcp \
+            redfox-kuaishou-mcp \
+            redfox-auto-mcp \
+            redfox-wechat-channels-mcp \
+            redfox-tools-mcp \
+            redfox-mcp
+
+      - name: Build binaries
+        run: bash npm/build-binaries.sh --platform ${{ matrix.platform }}
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries-${{ matrix.platform }}
+          path: npm/*/bin/${{ matrix.platform }}/
+          retention-days: 7
+
+  # ─────────────────────────────────────────────
+  # 3. 组装 npm 包并发布
+  # ─────────────────────────────────────────────
+  npm-publish:
+    needs: build-binaries
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Download all binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: Assemble npm packages
+        run: |
+          for pkg_dir in npm/redfox-*-mcp; do
+            pkg_name=$(basename "$pkg_dir")
+            echo "Assembling $pkg_name ..."
+
+            for platform in darwin-arm64 darwin-x64 linux-x64 win32-x64; do
+              src="artifacts/binaries-${platform}/${pkg_name}/bin/${platform}"
+              dst="${pkg_dir}/bin/${platform}"
+              if [[ -d "$src" ]]; then
+                mkdir -p "$dst"
+                cp "$src"/* "$dst/"
+                chmod +x "$dst"/* 2>/dev/null || true
+                echo "  ✓ $platform"
+              else
+                echo "  - $platform (not found)"
+              fi
+            done
+          done
+
+      - name: Publish to npm
+        run: |
+          for pkg_dir in npm/redfox-*-mcp; do
+            pkg_name=$(basename "$pkg_dir")
+            echo "Publishing $pkg_name ..."
+            cd "$pkg_dir"
+            npm publish --access public || echo "⚠ Failed: $pkg_name (may already exist)"
+            cd ../..
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

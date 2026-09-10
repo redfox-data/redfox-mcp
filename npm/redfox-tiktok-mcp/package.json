@@ -1,0 +1,38 @@
+{
+  "name": "redfox-tiktok-mcp",
+  "version": "0.1.2",
+  "description": "RedFoxHub TikTok MCP server",
+  "bin": {
+    "redfox-tiktok-mcp": "./cli.js"
+  },
+  "files": [
+    "cli.js",
+    "bin/",
+    "README.md"
+  ],
+  "keywords": [
+    "mcp",
+    "redfox",
+    "ai",
+    "model-context-protocol"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/redfox-data/redfox-mcp",
+    "directory": "npm/redfox-tiktok-mcp"
+  },
+  "homepage": "https://redfox.hk",
+  "engines": {
+    "node": ">=14"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "arm64",
+    "x64"
+  ]
+}

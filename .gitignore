@@ -4,3 +4,7 @@ __pycache__/
 dist/
 *.egg-info/
 .DS_Store
+
+# npm build artifacts (compiled binaries, not source)
+npm/*/bin/
+npm/*/node_modules/
