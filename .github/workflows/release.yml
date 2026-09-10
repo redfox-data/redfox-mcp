@@ -1,13 +1,14 @@
-# RedFox MCP — 双通道发布流水线
+# RedFox MCP — npm 发布流水线
 #
-# 触发条件：推送 v* 标签（如 v0.2.2）
-# 流程：PyPI 发布 → 多平台编译二进制 → npm 发布
+# 触发条件：推送 v* 标签
+# 流程：多平台并行编译 PyInstaller 二进制 → 组装 npm 包 → 发布
 #
 # 所需 GitHub Secrets：
-#   UV_PUBLISH_TOKEN  — PyPI API token（pypi-...）
-#   NPM_TOKEN         — npm publish token
+#   NPM_TOKEN — npm publish token
+#
+# PyPI 发布请使用本地命令：uv build --all-packages && uv publish dist/*
 
-name: Release
+name: Release npm
 
 on:
   push:
@@ -15,31 +16,9 @@ on:
 
 jobs:
   # ─────────────────────────────────────────────
-  # 1. 发布所有 Python 包到 PyPI
+  # 1. 多平台编译 PyInstaller 二进制（并行）
   # ─────────────────────────────────────────────
-  pypi-publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-
-      - name: Build all packages
-        run: uv build --all-packages
-
-      - name: Publish to PyPI
-        run: uv publish dist/*
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.UV_PUBLISH_TOKEN }}
-
-  # ─────────────────────────────────────────────
-  # 2. 多平台编译 PyInstaller 二进制
-  #    不依赖 pypi-publish 成功（版本可能已手动发布）
-  # ─────────────────────────────────────────────
-  build-binaries:
-    needs: pypi-publish
-    if: always()
+  build:
     strategy:
       fail-fast: false
       matrix:
@@ -50,8 +29,6 @@ jobs:
             platform: darwin-x64
           - os: ubuntu-latest
             platform: linux-x64
-          - os: windows-latest
-            platform: win32-x64
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -62,12 +39,9 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install PyInstaller
-        run: pip install pyinstaller
-
-      - name: Install RedFox MCP packages
+      - name: Install dependencies
         run: |
-          pip install \
+          pip install pyinstaller \
             "redfox-mcp-core>=0.1.3" \
             "redfox-douyin-mcp>=0.2.1" \
             "redfox-xiaohongshu-mcp>=0.2.1" \
@@ -86,21 +60,47 @@ jobs:
             "redfox-tools-mcp>=0.1.1" \
             "redfox-mcp>=0.4.1"
 
-      - name: Build binaries
-        run: bash npm/build-binaries.sh --platform ${{ matrix.platform }}
+      - name: Build binaries (4-way parallel)
+        run: |
+          PLATFORM="${{ matrix.platform }}"
+          ls -d npm/redfox-*-mcp | xargs -P 4 -I {} bash -c '
+            pkg=$(basename "{}")
+            entry="npm/${pkg}/_entry.py"
+            out="npm/${pkg}/bin/'"$PLATFORM"'"
+            mkdir -p "$out"
+            python -m PyInstaller \
+              --onefile --name "$pkg" \
+              --distpath "$out" \
+              --workpath "/tmp/pyi-${pkg}" \
+              --specpath "/tmp" \
+              --noconfirm --clean \
+              --copy-metadata fastmcp \
+              --copy-metadata fastmcp-slim \
+              --copy-metadata redfox-python-sdk \
+              --copy-metadata redfox-mcp-core \
+              --copy-metadata mcp \
+              --copy-metadata starlette \
+              --copy-metadata httpx \
+              --copy-metadata pydantic \
+              --copy-metadata pydantic-core \
+              --copy-metadata anyio \
+              --copy-metadata httpcore \
+              "$entry" > /dev/null 2>&1 \
+              && echo "  ✓ $pkg" || echo "  ✗ $pkg FAILED"
+          '
 
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
-          name: binaries-${{ matrix.platform }}
+          name: bin-${{ matrix.platform }}
           path: npm/*/bin/${{ matrix.platform }}/
-          retention-days: 7
+          retention-days: 3
 
   # ─────────────────────────────────────────────
-  # 3. 组装 npm 包并发布
+  # 2. 组装 npm 包并发布
   # ─────────────────────────────────────────────
-  npm-publish:
-    needs: build-binaries
+  publish:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -108,7 +108,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Download all binaries
@@ -119,31 +119,23 @@ jobs:
       - name: Assemble npm packages
         run: |
           for pkg_dir in npm/redfox-*-mcp; do
-            pkg_name=$(basename "$pkg_dir")
-            echo "Assembling $pkg_name ..."
-
-            for platform in darwin-arm64 darwin-x64 linux-x64 win32-x64; do
-              src="artifacts/binaries-${platform}/${pkg_name}/bin/${platform}"
+            pkg=$(basename "$pkg_dir")
+            for platform in darwin-arm64 darwin-x64 linux-x64; do
+              src="artifacts/bin-${platform}/${pkg}/bin/${platform}"
               dst="${pkg_dir}/bin/${platform}"
-              if [[ -d "$src" ]]; then
-                mkdir -p "$dst"
-                cp "$src"/* "$dst/"
-                chmod +x "$dst"/* 2>/dev/null || true
-                echo "  ✓ $platform"
-              else
-                echo "  - $platform (not found)"
-              fi
+              [[ -d "$src" ]] && mkdir -p "$dst" && cp "$src"/* "$dst/" && chmod +x "$dst"/*
             done
           done
+          echo "Assembly done. Package sizes:"
+          du -sh npm/redfox-*-mcp/bin/ 2>/dev/null || true
 
       - name: Publish to npm
         run: |
           for pkg_dir in npm/redfox-*-mcp; do
-            pkg_name=$(basename "$pkg_dir")
-            echo "Publishing $pkg_name ..."
-            cd "$pkg_dir"
-            npm publish --access public || echo "⚠ Failed: $pkg_name (may already exist)"
-            cd ../..
+            pkg=$(basename "$pkg_dir")
+            echo "Publishing $pkg ..."
+            (cd "$pkg_dir" && npm publish --access public) \
+              && echo "  ✓ $pkg" || echo "  ⚠ $pkg skipped"
           done
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
