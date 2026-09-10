@@ -8,5 +8,5 @@ RUN pip install --no-cache-dir redfox-twitter-mcp
 EXPOSE 8000
 
 # 多租户模式：镜像不内置任何 API Key
-# 调用方在请求头携带自己的 key：X-API-Key: ak_xxx（或 Authorization: Bearer ak_xxx）
+# 调用方在请求头携带自己的 key：REDFOX_API_KEY: ak_xxx（或 Authorization: Bearer ak_xxx）
 CMD ["redfox-twitter-mcp", "--transport", "http", "--host", "0.0.0.0", "--port", "8000"]

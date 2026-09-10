@@ -4,7 +4,7 @@
 提交后自动轮询等待结果，超时返回 taskId 供 result 工具补查。
 
 认证：stdio 模式读环境变量 REDFOX_API_KEY；HTTP 模式从请求头
-X-API-Key（或 Authorization: Bearer <key>）取 key。
+REDFOX_API_KEY（或 Authorization: Bearer <key>）取 key。
 获取地址 https://redfox.hk/settings/api-keys?source=mcp
 """
 

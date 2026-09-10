@@ -4,7 +4,7 @@
 聚合懂车帝、汽车之家、易车三个平台。
 
 认证：stdio 模式读环境变量 REDFOX_API_KEY；HTTP 模式从请求头
-X-API-Key（或 Authorization: Bearer <key>）取 key。
+REDFOX_API_KEY（或 Authorization: Bearer <key>）取 key。
 获取地址 https://redfox.hk/settings/api-keys?source=mcp
 """
 

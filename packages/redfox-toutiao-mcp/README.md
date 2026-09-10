@@ -70,7 +70,7 @@ redfox-toutiao-mcp --transport http --host 0.0.0.0 --port 8000
 ```
 
 - MCP 端点：`http://<host>:8000/mcp`（Streamable HTTP）；健康检查：`GET /health`
-- 每个请求通过请求头 `X-API-Key: <key>`（或 `Authorization: Bearer <key>`）携带自己的 key，按 key 建独立客户端缓存，额度互不共享
+- 每个请求通过请求头 `REDFOX_API_KEY: <key>`（或 `Authorization: Bearer <key>`）携带自己的 key，按 key 建独立客户端缓存，额度互不共享
 
 客户端配置（远程 URL + 请求头）：
 
@@ -79,7 +79,7 @@ redfox-toutiao-mcp --transport http --host 0.0.0.0 --port 8000
   "mcpServers": {
     "redfox-toutiao": {
       "url": "http://<host>:8000/mcp",
-      "headers": { "X-API-Key": "ak_your_key" }
+      "headers": { "REDFOX_API_KEY": "ak_your_key" }
     }
   }
 }

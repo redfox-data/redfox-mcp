@@ -6,7 +6,7 @@
 - 异步任务提交 + 自动轮询
 
 认证：stdio 模式读环境变量 REDFOX_API_KEY；
-HTTP 模式从请求头 X-API-Key（或 Authorization: Bearer <key>）取 key。
+HTTP 模式从请求头 REDFOX_API_KEY（或 Authorization: Bearer <key>）取 key。
 获取地址 https://redfox.hk/settings/api-keys?source=mcp
 """
 
@@ -32,7 +32,7 @@ API_KEY_GUIDE = (
 API_KEY_GUIDE_HTTP = (
     "未在请求头中检测到 API Key。请前往 "
     "https://redfox.hk/settings/api-keys?source=mcp 注册并获取 API Key，"
-    "然后在 MCP 客户端的请求头中配置 X-API-Key（或 Authorization: Bearer <key>）。"
+    "然后在 MCP 客户端的请求头中配置 REDFOX_API_KEY（或 Authorization: Bearer <key>）。"
 )
 
 TASK_PENDING_MSG = (
@@ -64,14 +64,14 @@ def _auth_guide() -> str:
 
 
 def _request_key() -> Optional[str]:
-    """HTTP 模式下从当前请求头取 key：X-API-Key 优先，Authorization: Bearer 回退"""
+    """HTTP 模式下从请求头取 key：REDFOX_API_KEY 优先，Authorization: Bearer 回退"""
     if get_http_request is None:
         return None
     try:
         req = get_http_request()
     except Exception:  # 非 HTTP 上下文
         return None
-    key = req.headers.get("x-api-key")
+    key = req.headers.get("REDFOX_API_KEY") or req.headers.get("X-API-KEY")
     if key and key.strip():
         return key.strip()
     auth = req.headers.get("authorization", "")

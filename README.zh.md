@@ -12,8 +12,6 @@
   <a href="https://redfox.hk/?source=github"><img src="https://lyy.redfox.hk/page/logo-redfox-name.png" alt="RedFox Logo" width="200"></a>
 </p>
 
-
-
 # redfox-mcp
 
 RedFoxHub（红狐数据平台）MCP monorepo — 将 11 大内容平台 + 汽车垂类（3 家）+ AI 搜索/生成 + 下载/上传能力拆分为 15 个按平台独立的 MCP server（共 134 个工具），可被 dsh、Claude Code、Cursor 等任意 MCP 客户端直接调用。
@@ -22,25 +20,25 @@ RedFoxHub（红狐数据平台）MCP monorepo — 将 11 大内容平台 + 汽�
 
 ## 包索引
 
-| 包 | 工具数 | stdio 命令 | Docker 服务 / 端口 |
-|---|---|---|---|
-| [`redfox-mcp`](packages/redfox-mcp)（全量聚合版） | 134 | `uvx redfox-mcp` | `all` → 8000 |
-| [`redfox-douyin-mcp`](packages/redfox-douyin-mcp) | 16 | `uvx redfox-douyin-mcp` | `douyin` → 8001 |
-| [`redfox-xiaohongshu-mcp`](packages/redfox-xiaohongshu-mcp) | 15 | `uvx redfox-xiaohongshu-mcp` | `xiaohongshu` → 8002 |
-| [`redfox-wechat-mcp`](packages/redfox-wechat-mcp) | 16 | `uvx redfox-wechat-mcp` | `wechat` → 8003 |
-| [`redfox-bilibili-mcp`](packages/redfox-bilibili-mcp) | 8 | `uvx redfox-bilibili-mcp` | `bilibili` → 8004 |
-| [`redfox-toutiao-mcp`](packages/redfox-toutiao-mcp) | 5 | `uvx redfox-toutiao-mcp` | `toutiao` → 8005 |
-| [`redfox-tiktok-mcp`](packages/redfox-tiktok-mcp) | 4 | `uvx redfox-tiktok-mcp` | `tiktok` → 8006 |
-| [`redfox-ai-search-mcp`](packages/redfox-ai-search-mcp) | 12 | `uvx redfox-ai-search-mcp` | `ai-search` → 8007 |
-| [`redfox-ai-gen-mcp`](packages/redfox-ai-gen-mcp) | 8 | `uvx redfox-ai-gen-mcp` | `ai-gen` → 8008 |
-| [`redfox-kuaishou-mcp`](packages/redfox-kuaishou-mcp) | 6 | `uvx redfox-kuaishou-mcp` | `kuaishou` → 8009 |
-| [`redfox-instagram-mcp`](packages/redfox-instagram-mcp) | 4 | `uvx redfox-instagram-mcp` | `instagram` → 8010 |
-| [`redfox-twitter-mcp`](packages/redfox-twitter-mcp) | 4 | `uvx redfox-twitter-mcp` | `twitter` → 8011 |
-| [`redfox-youtube-mcp`](packages/redfox-youtube-mcp) | 4 | `uvx redfox-youtube-mcp` | `youtube` → 8012 |
-| [`redfox-wechat-channels-mcp`](packages/redfox-wechat-channels-mcp) | 7 | `uvx redfox-wechat-channels-mcp` | `wechat-channels` → 8013 |
-| [`redfox-auto-mcp`](packages/redfox-auto-mcp) | 13 | `uvx redfox-auto-mcp` | `auto` → 8014 |
-| [`redfox-tools-mcp`](packages/redfox-tools-mcp) | 12 | `uvx redfox-tools-mcp` | `tools` → 8015 |
-| [`redfox-mcp-core`](packages/redfox-mcp-core) | — | 共享运行时（不直接面向用户） | — |
+| 包                                                                  | 工具数 | stdio 命令                       | Docker 服务 / 端口       |
+| ------------------------------------------------------------------- | ------ | -------------------------------- | ------------------------ |
+| [`redfox-mcp`](packages/redfox-mcp)（全量聚合版）                   | 134    | `uvx redfox-mcp`                 | `all` → 8000             |
+| [`redfox-douyin-mcp`](packages/redfox-douyin-mcp)                   | 16     | `uvx redfox-douyin-mcp`          | `douyin` → 8001          |
+| [`redfox-xiaohongshu-mcp`](packages/redfox-xiaohongshu-mcp)         | 15     | `uvx redfox-xiaohongshu-mcp`     | `xiaohongshu` → 8002     |
+| [`redfox-wechat-mcp`](packages/redfox-wechat-mcp)                   | 16     | `uvx redfox-wechat-mcp`          | `wechat` → 8003          |
+| [`redfox-bilibili-mcp`](packages/redfox-bilibili-mcp)               | 8      | `uvx redfox-bilibili-mcp`        | `bilibili` → 8004        |
+| [`redfox-toutiao-mcp`](packages/redfox-toutiao-mcp)                 | 5      | `uvx redfox-toutiao-mcp`         | `toutiao` → 8005         |
+| [`redfox-tiktok-mcp`](packages/redfox-tiktok-mcp)                   | 4      | `uvx redfox-tiktok-mcp`          | `tiktok` → 8006          |
+| [`redfox-ai-search-mcp`](packages/redfox-ai-search-mcp)             | 12     | `uvx redfox-ai-search-mcp`       | `ai-search` → 8007       |
+| [`redfox-ai-gen-mcp`](packages/redfox-ai-gen-mcp)                   | 8      | `uvx redfox-ai-gen-mcp`          | `ai-gen` → 8008          |
+| [`redfox-kuaishou-mcp`](packages/redfox-kuaishou-mcp)               | 6      | `uvx redfox-kuaishou-mcp`        | `kuaishou` → 8009        |
+| [`redfox-instagram-mcp`](packages/redfox-instagram-mcp)             | 4      | `uvx redfox-instagram-mcp`       | `instagram` → 8010       |
+| [`redfox-twitter-mcp`](packages/redfox-twitter-mcp)                 | 4      | `uvx redfox-twitter-mcp`         | `twitter` → 8011         |
+| [`redfox-youtube-mcp`](packages/redfox-youtube-mcp)                 | 4      | `uvx redfox-youtube-mcp`         | `youtube` → 8012         |
+| [`redfox-wechat-channels-mcp`](packages/redfox-wechat-channels-mcp) | 7      | `uvx redfox-wechat-channels-mcp` | `wechat-channels` → 8013 |
+| [`redfox-auto-mcp`](packages/redfox-auto-mcp)                       | 13     | `uvx redfox-auto-mcp`            | `auto` → 8014            |
+| [`redfox-tools-mcp`](packages/redfox-tools-mcp)                     | 12     | `uvx redfox-tools-mcp`           | `tools` → 8015           |
+| [`redfox-mcp-core`](packages/redfox-mcp-core)                       | —      | 共享运行时（不直接面向用户）     | —                        |
 
 异步工具（AI 搜索/生成）内部自动轮询：提交 → 等待 → 返回完整结果。若等待超过 `timeout_seconds`（默认 240 秒、视频 480 秒），返回 `taskId`，可用对应的 `*_result` 工具补查。
 
@@ -101,7 +99,7 @@ redfox-douyin-mcp --transport http --host 0.0.0.0 --port 8000
 ```
 
 - MCP 端点：`http://<host>:8000/mcp`（Streamable HTTP）；健康检查：`GET /health`
-- 每个请求通过请求头 `X-API-Key: <key>`（或 `Authorization: Bearer <key>`）携带自己的 key，按 key 建独立客户端缓存，额度互不共享
+- 每个请求通过请求头 `REDFOX_API_KEY: <key>`（或 `Authorization: Bearer <key>`）携带自己的 key，按 key 建独立客户端缓存，额度互不共享
 
 客户端配置（远程 URL + 请求头）：
 
@@ -110,7 +108,7 @@ redfox-douyin-mcp --transport http --host 0.0.0.0 --port 8000
   "mcpServers": {
     "redfox-douyin": {
       "url": "http://<host>:8000/mcp",
-      "headers": { "X-API-Key": "ak_your_key" }
+      "headers": { "REDFOX_API_KEY": "ak_your_key" }
     }
   }
 }

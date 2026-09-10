@@ -1,6 +1,6 @@
 # RedFox MCP 全家桶编排（可选便利，各服务完全独立，可单独起停）
 # 每个服务均为多租户 HTTP 模式：镜像不内置 API Key，
-# 调用方在请求头携带 X-API-Key: ak_xxx（或 Authorization: Bearer ak_xxx）
+# 调用方在请求头携带 REDFOX_API_KEY: ak_xxx（或 Authorization: Bearer ak_xxx）
 #
 # 单独启动某个平台：docker compose up -d douyin
 # 全部启动：docker compose up -d
