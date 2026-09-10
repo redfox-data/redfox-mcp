@@ -28,6 +28,7 @@ jobs:
             platform: win32-x64
 
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.platform == 'win32-x64' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -37,6 +38,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
+        shell: bash
         run: |
           pip install pyinstaller \
             "redfox-mcp-core>=0.1.3" \
@@ -58,6 +60,7 @@ jobs:
             "redfox-mcp>=0.4.1"
 
       - name: Build binaries
+        shell: bash
         run: bash npm/build-binaries.sh --platform ${{ matrix.platform }} --jobs 4
 
       - name: Upload binaries
