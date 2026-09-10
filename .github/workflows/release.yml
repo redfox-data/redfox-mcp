@@ -1,12 +1,10 @@
 # RedFox MCP — npm 发布流水线
 #
-# 触发条件：推送 v* 标签
-# 流程：多平台并行编译 PyInstaller 二进制 → 组装 npm 包 → 发布
+# 触发：推送 v* 标签
+# 流程：3 平台并行编译 → 组装 npm 包 → 发布
 #
-# 所需 GitHub Secrets：
-#   NPM_TOKEN — npm publish token
-#
-# PyPI 发布请使用本地命令：uv build --all-packages && uv publish dist/*
+# Secrets: NPM_TOKEN
+# PyPI 发布请本地执行：uv build --all-packages && uv publish dist/*
 
 name: Release npm
 
@@ -15,9 +13,6 @@ on:
     tags: ['v*']
 
 jobs:
-  # ─────────────────────────────────────────────
-  # 1. 多平台编译 PyInstaller 二进制（并行）
-  # ─────────────────────────────────────────────
   build:
     strategy:
       fail-fast: false
@@ -29,6 +24,8 @@ jobs:
             platform: darwin-x64
           - os: ubuntu-latest
             platform: linux-x64
+          - os: windows-latest
+            platform: win32-x64
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -60,35 +57,8 @@ jobs:
             "redfox-tools-mcp>=0.1.1" \
             "redfox-mcp>=0.4.1"
 
-      - name: Build binaries (4-way parallel)
-        run: |
-          PLATFORM="${{ matrix.platform }}"
-          PY=$(command -v python3 || command -v python)
-          ls -d npm/redfox-*-mcp | xargs -P 4 -I {} bash -c '
-            pkg=$(basename "{}")
-            entry="npm/${pkg}/_entry.py"
-            out="npm/${pkg}/bin/'"$PLATFORM"'"
-            mkdir -p "$out"
-            '"$PY"' -m PyInstaller \
-              --onefile --name "$pkg" \
-              --distpath "$out" \
-              --workpath "/tmp/pyi-${pkg}" \
-              --specpath "/tmp" \
-              --noconfirm --clean \
-              --copy-metadata fastmcp \
-              --copy-metadata fastmcp-slim \
-              --copy-metadata redfox-python-sdk \
-              --copy-metadata redfox-mcp-core \
-              --copy-metadata mcp \
-              --copy-metadata starlette \
-              --copy-metadata httpx \
-              --copy-metadata pydantic \
-              --copy-metadata pydantic-core \
-              --copy-metadata anyio \
-              --copy-metadata httpcore \
-              "$entry" > /dev/null 2>&1 \
-              && echo "  ✓ $pkg" || echo "  ✗ $pkg FAILED"
-          '
+      - name: Build binaries
+        run: bash npm/build-binaries.sh --platform ${{ matrix.platform }} --jobs 4
 
       - name: Upload binaries
         uses: actions/upload-artifact@v4
@@ -97,11 +67,9 @@ jobs:
           path: npm/*/bin/${{ matrix.platform }}/
           retention-days: 3
 
-  # ─────────────────────────────────────────────
-  # 2. 组装 npm 包并发布
-  # ─────────────────────────────────────────────
   publish:
     needs: build
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -121,14 +89,22 @@ jobs:
         run: |
           for pkg_dir in npm/redfox-*-mcp; do
             pkg=$(basename "$pkg_dir")
-            for platform in darwin-arm64 darwin-x64 linux-x64; do
+            for platform in darwin-arm64 darwin-x64 linux-x64 win32-x64; do
               src="artifacts/bin-${platform}/${pkg}/bin/${platform}"
               dst="${pkg_dir}/bin/${platform}"
-              [[ -d "$src" ]] && mkdir -p "$dst" && cp "$src"/* "$dst/" && chmod +x "$dst"/*
+              if [[ -d "$src" ]]; then
+                mkdir -p "$dst"
+                cp "$src"/* "$dst/"
+                chmod +x "$dst"/* 2>/dev/null || true
+              fi
             done
           done
-          echo "Assembly done. Package sizes:"
-          du -sh npm/redfox-*-mcp/bin/ 2>/dev/null || true
+          echo "=== Assembly complete ==="
+          for pkg_dir in npm/redfox-*-mcp; do
+            pkg=$(basename "$pkg_dir")
+            count=$(find "$pkg_dir/bin" -type f 2>/dev/null | wc -l)
+            echo "  $pkg: $count binaries"
+          done
 
       - name: Publish to npm
         run: |
