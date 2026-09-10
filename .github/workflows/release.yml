@@ -35,9 +35,11 @@ jobs:
 
   # ─────────────────────────────────────────────
   # 2. 多平台编译 PyInstaller 二进制
+  #    不依赖 pypi-publish 成功（版本可能已手动发布）
   # ─────────────────────────────────────────────
   build-binaries:
     needs: pypi-publish
+    if: always()
     strategy:
       fail-fast: false
       matrix:
@@ -60,31 +62,30 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install PyInstaller
-        run: pip install pyinstaller
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
 
-      - name: Install RedFox MCP packages from PyPI
+      - name: Install dependencies from local source
         run: |
-          # Wait for PyPI indexing (typically ~30s after upload)
-          sleep 30
-          pip install \
-            redfox-mcp-core \
-            redfox-douyin-mcp \
-            redfox-xiaohongshu-mcp \
-            redfox-wechat-mcp \
-            redfox-bilibili-mcp \
-            redfox-toutiao-mcp \
-            redfox-tiktok-mcp \
-            redfox-ai-search-mcp \
-            redfox-ai-gen-mcp \
-            redfox-twitter-mcp \
-            redfox-youtube-mcp \
-            redfox-instagram-mcp \
-            redfox-kuaishou-mcp \
-            redfox-auto-mcp \
-            redfox-wechat-channels-mcp \
-            redfox-tools-mcp \
-            redfox-mcp
+          uv pip install --system pyinstaller
+          uv pip install --system \
+            ./packages/redfox-mcp-core \
+            ./packages/redfox-douyin-mcp \
+            ./packages/redfox-xiaohongshu-mcp \
+            ./packages/redfox-wechat-mcp \
+            ./packages/redfox-bilibili-mcp \
+            ./packages/redfox-toutiao-mcp \
+            ./packages/redfox-tiktok-mcp \
+            ./packages/redfox-ai-search-mcp \
+            ./packages/redfox-ai-gen-mcp \
+            ./packages/redfox-twitter-mcp \
+            ./packages/redfox-youtube-mcp \
+            ./packages/redfox-instagram-mcp \
+            ./packages/redfox-kuaishou-mcp \
+            ./packages/redfox-auto-mcp \
+            ./packages/redfox-wechat-channels-mcp \
+            ./packages/redfox-tools-mcp \
+            ./packages/redfox-mcp
 
       - name: Build binaries
         run: bash npm/build-binaries.sh --platform ${{ matrix.platform }}
