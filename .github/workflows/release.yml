@@ -160,7 +160,8 @@ jobs:
             return 1
           }
           fail=0
-          for pkg_dir in npm/redfox-*-mcp; do
+          # note: bare glob redfox-*-mcp would miss the aggregate redfox-mcp
+          for pkg_dir in npm/redfox-mcp npm/redfox-*-mcp; do
             pkg=$(basename "$pkg_dir")
             ver=$(node -p "require('./$pkg_dir/package.json').version")
             if npm view "$pkg@$ver" version >/dev/null 2>&1; then
