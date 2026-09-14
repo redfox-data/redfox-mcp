@@ -17,7 +17,7 @@ RedFoxHub AI 生成 MCP Server — 将 GPT-Image-2 图片、豆包 Seedream 图�
 
 异步工具内部自动轮询：提交 → 等待 → 返回完整结果，无需手动处理 taskId。若等待超过 `timeout_seconds`（图片默认 240 秒、视频默认 480 秒），返回 `taskId`，可用对应的 result 工具补查。
 
-> **GPT-Image-2 注意事项**：`gpt_image_generate` 返回的 `imageUrls` 有效期仅数分钟，过期后访问返回 404，请立即下载保存；任务状态实测为 `queued`/`in_progress`/`completed`/`failed`（仅后两者为终态）；`reference_images` 必须是公网可访问且未过期的图片 URL，否则任务会以 `failed` 结束。实测 1k 单张约 40~60 秒。
+> **GPT-Image-2 注意事项**：任务状态实测为 `queued`/`in_progress`/`completed`/`failed`，仅后两者为终态（接口文档所写的 `processing` 实测不会返回）；`reference_images` 需为公网可访问的图片 URL。实测 1k 单张约 40~75 秒。
 
 ## 认证
 

@@ -27,7 +27,9 @@ const binPath = findBin();
 if (!binPath || !fs.existsSync(binPath)) {
   process.stderr.write(
     `Error: no RedFox MCP binary for ${process.platform}-${process.arch}.\n` +
-    `Supported platforms: darwin-arm64, darwin-x64, win32-x64 (package: windows-x64)\n`
+    `Supported platforms: darwin-arm64, win32-x64 (package: windows-x64).\n` +
+    `Intel Mac (darwin-x64) has no npm binary; install from PyPI instead:\n` +
+    `  npm-unavailable fallback -> pipx install redfox-mcp   (or: uvx redfox-mcp)\n`
   );
   process.exit(1);
 }

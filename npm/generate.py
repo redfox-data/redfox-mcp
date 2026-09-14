@@ -25,10 +25,11 @@ VERSION = "0.4.3"
 
 # (os, cpu, npm name suffix) — win32 uses "windows" in the package name:
 # the literal token "win32" triggers npm registry spam detection on PUT.
-# darwin-x64 is compiled by CI on macos-13 (scarce x64 runner, expect long queues).
+# darwin-x64 (Intel Mac) is intentionally absent: it needed the macos-13 runner,
+# which queues for hours or never starts, so its bin package never reached the
+# registry. Intel Mac users install from PyPI instead (pip/uvx, pure Python).
 BIN_PLATFORMS = [
     ("darwin", "arm64", "darwin-arm64"),
-    ("darwin", "x64", "darwin-x64"),
     ("win32", "x64", "windows-x64"),
 ]
 
@@ -81,7 +82,9 @@ const binPath = findBin();
 if (!binPath || !fs.existsSync(binPath)) {{
   process.stderr.write(
     `Error: no RedFox MCP binary for ${{process.platform}}-${{process.arch}}.\\n` +
-    `Supported platforms: darwin-arm64, darwin-x64, win32-x64 (package: windows-x64)\\n`
+    `Supported platforms: darwin-arm64, win32-x64 (package: windows-x64).\\n` +
+    `Intel Mac (darwin-x64) has no npm binary; install from PyPI instead:\\n` +
+    `  npm-unavailable fallback -> pipx install redfox-mcp   (or: uvx redfox-mcp)\\n`
   );
   process.exit(1);
 }}

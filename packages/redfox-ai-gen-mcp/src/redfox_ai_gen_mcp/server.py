@@ -29,8 +29,7 @@ def gpt_image_generate(prompt: str, resolution: str = "1k", size: str = "1:1",
     resolution：1k/2k/4k；size 为宽高比，支持 1:1、3:2、2:3、4:3、3:4、5:4、4:5、
     16:9、9:16、2:1、1:2、21:9、9:21；n 为生成数量，最多 4 张；
     reference_images 传参考图 URL 列表（最多 2 张）即为图生图，不传为纯文生图，
-    参考图必须公网可访问且未过期。实测 1k 单张约 40~60 秒。
-    注意：返回的 imageUrls 有效期仅数分钟，过期后 404，需立即下载保存。
+    参考图需公网可访问。实测 1k 单张约 40~75 秒。
     超时返回 taskId，可用 gpt_image_result 再查。"""
     return run_task(lambda: get_client().gpt_image.submit,
                     lambda: get_client().gpt_image.result,
@@ -42,8 +41,7 @@ def gpt_image_generate(prompt: str, resolution: str = "1k", size: str = "1:1",
 def gpt_image_result(task_id: str) -> Dict[str, Any]:
     """查询 GPT-Image-2 图片生成任务结果（含 status/progress/imageUrls/failReason）。
     status 取值 queued/in_progress/completed/failed，仅后两者为终态。
-    仅在 gpt_image_generate 超时返回 taskId 后使用；imageUrls 有效期仅数分钟，
-    拿到后需立即下载保存。"""
+    仅在 gpt_image_generate 超时返回 taskId 后使用。"""
     return call(lambda: get_client().gpt_image.result, task_id=task_id)
 
 

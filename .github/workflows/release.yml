@@ -1,11 +1,12 @@
 # RedFox MCP — npm 发布流水线（busybox 单二进制模式）
 #
 # 触发：推送 v* 标签
-# 流程：3 平台各编译 1 个 busybox 二进制 → 组装 npm 包 → 发布
+# 流程：2 平台各编译 1 个 busybox 二进制 → 组装 npm 包 → 发布
 #
-# 平台：darwin-arm64 (macos-latest)、win32-x64 (windows-latest) 走主链；
-# darwin-x64 (macos-13) 独立 build-x64/publish-x64 作业：x64 runner 稀缺
-# 排队可能数小时，不阻塞主发布。若 macos-13 镜像退役需改用本地编译+手动发布。
+# 平台：darwin-arm64 (macos-latest)、win32-x64 (windows-latest)。
+# 曾支持的 darwin-x64 (macos-13) 已移除：macos-13 runner 极度稀缺，排队数小时
+# 甚至始终不启动，redfox-mcp-bin-darwin-x64 从未成功发布到 registry。
+# Intel Mac 用户请改用 pip/uvx 安装（纯 Python 分发，无平台限制）。
 # Secrets: NPM_TOKEN
 # PyPI 发布请本地执行：uv build --all-packages && uv publish dist/*
 
@@ -66,51 +67,6 @@ jobs:
         with:
           name: bin-${{ matrix.platform }}
           path: npm/redfox-mcp-bin-${{ matrix.platform }}/bin/
-          retention-days: 3
-
-  # Intel Mac binary: isolated so the scarce macos-13 runner never blocks the
-  # main release path.
-  build-x64:
-    runs-on: macos-13
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install dependencies
-        shell: bash
-        run: |
-          pip install pyinstaller \
-            "redfox-mcp-core>=0.1.4" \
-            "redfox-douyin-mcp>=0.2.1" \
-            "redfox-xiaohongshu-mcp>=0.2.1" \
-            "redfox-wechat-mcp>=0.2.1" \
-            "redfox-bilibili-mcp>=0.1.2" \
-            "redfox-toutiao-mcp>=0.1.2" \
-            "redfox-tiktok-mcp>=0.1.2" \
-            "redfox-ai-search-mcp>=0.1.2" \
-            "redfox-ai-gen-mcp>=0.2.0" \
-            "redfox-twitter-mcp>=0.1.1" \
-            "redfox-youtube-mcp>=0.1.1" \
-            "redfox-instagram-mcp>=0.1.1" \
-            "redfox-kuaishou-mcp>=0.1.1" \
-            "redfox-auto-mcp>=0.1.1" \
-            "redfox-wechat-channels-mcp>=0.1.1" \
-            "redfox-tools-mcp>=0.1.1" \
-            "redfox-mcp>=0.4.2"
-
-      - name: Build busybox binary
-        shell: bash
-        run: bash npm/build-binaries.sh --platform darwin-x64
-
-      - name: Upload binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: bin-darwin-x64
-          path: npm/redfox-mcp-bin-darwin-x64/bin/
           retention-days: 3
 
   publish:
@@ -174,8 +130,7 @@ jobs:
             return 1
           }
           fail=0
-          # explicit list: darwin-x64 bin is published by publish-x64, its dir
-          # has no binary here and must not be treated as an error
+          # explicit list: the two binary packages the build matrix produces
           for pkg_dir in npm/redfox-mcp-bin-darwin-arm64 npm/redfox-mcp-bin-windows-x64; do
             pkg=$(basename "$pkg_dir")
             ver=$(node -p "require('./$pkg_dir/package.json').version")
@@ -183,8 +138,7 @@ jobs:
               echo "  = $pkg@$ver already published, skipping"
               continue
             fi
-            # unpublished version with no binary = real error (e.g. forgot the
-            # manual local publish for darwin-x64)
+            # unpublished version with no binary = real error
             if [[ -z "$(ls -A "$pkg_dir/bin" 2>/dev/null)" ]]; then
               echo "::error::no binary in $pkg"
               fail=1
@@ -227,38 +181,3 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  publish-x64:
-    needs: build-x64
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Download darwin-x64 binary
-        uses: actions/download-artifact@v4
-        with:
-          name: bin-darwin-x64
-          path: npm/redfox-mcp-bin-darwin-x64/bin/
-
-      - name: Publish darwin-x64 binary package
-        run: |
-          chmod +x npm/redfox-mcp-bin-darwin-x64/bin/* 2>/dev/null || true
-          pkg_dir=npm/redfox-mcp-bin-darwin-x64
-          ver=$(node -p "require('./$pkg_dir/package.json').version")
-          if npm view "$(basename $pkg_dir)@$ver" version >/dev/null 2>&1; then
-            echo "  = $(basename $pkg_dir)@$ver already published, skipping"
-            exit 0
-          fi
-          for attempt in 1 2 3 4 5 6; do
-            if (cd "$pkg_dir" && npm publish --access public); then exit 0; fi
-            echo "  attempt $attempt failed, backing off 60s..."
-            sleep 60
-          done
-          exit 1
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
