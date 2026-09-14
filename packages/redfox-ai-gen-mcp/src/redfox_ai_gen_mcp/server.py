@@ -1,7 +1,7 @@
 """RedFox AI 生成 MCP Server
 
 将 RedFoxHub（红狐数据平台）的 AI 生成能力暴露为 MCP 工具：
-- GPT 图片生成（gpt-image-2）
+- GPT 图片生成（GPT-Image-2，文生图 / 参考图生图）
 - 豆包 Seedream 5.0 Pro / Lite 图片生成
 - 豆包 Seedance 2.0 视频生成
 提交后自动轮询等待结果，超时返回 taskId 供 result 工具补查。
@@ -21,32 +21,29 @@ mcp = create_server("redfox-ai-gen", __version__)
 
 
 @mcp.tool()
-def gpt_image_generate(prompt: str, n: int = 1, size: str = "1024x1024",
-                       quality: str = "medium", background: str = "auto",
-                       output_format: str = "png",
-                       output_compression: Optional[int] = None,
-                       model_name: str = "gpt-image-2",
-                       operation: str = "generate",
-                       input_fidelity: Optional[str] = None,
-                       images: Optional[List[Dict[str, str]]] = None,
+def gpt_image_generate(prompt: str, resolution: str = "1k", size: str = "1:1",
+                       n: int = 1,
+                       reference_images: Optional[List[str]] = None,
                        timeout_seconds: int = 240) -> Dict[str, Any]:
-    """GPT 图片生成（gpt-image-2），提交后自动等待并返回 imagePaths。
-    operation：generate=文生图 / edit=图生图（edit 时 images 必填，
-    形如 [{"url": "https://..."}]，input_fidelity 支持 high/low）；
-    quality：low/medium/high/auto；background：transparent/opaque/auto；
-    output_format：png/jpeg/webp。超时返回 taskId，可用 gpt_image_result 再查。"""
+    """GPT-Image-2 图片生成，支持文生图与参考图生图，提交后自动等待并返回 imageUrls。
+    resolution：1k/2k/4k；size 为宽高比，支持 1:1、3:2、2:3、4:3、3:4、5:4、4:5、
+    16:9、9:16、2:1、1:2、21:9、9:21；n 为生成数量，最多 4 张；
+    reference_images 传参考图 URL 列表（最多 2 张）即为图生图，不传为纯文生图，
+    参考图必须公网可访问且未过期。实测 1k 单张约 40~60 秒。
+    注意：返回的 imageUrls 有效期仅数分钟，过期后 404，需立即下载保存。
+    超时返回 taskId，可用 gpt_image_result 再查。"""
     return run_task(lambda: get_client().gpt_image.submit,
                     lambda: get_client().gpt_image.result,
-                    timeout_seconds, prompt=prompt, n=n, size=size, quality=quality,
-                    background=background, output_format=output_format,
-                    output_compression=output_compression, model_name=model_name,
-                    operation=operation, input_fidelity=input_fidelity, images=images)
+                    timeout_seconds, prompt=prompt, resolution=resolution, size=size,
+                    n=n, reference_images=reference_images)
 
 
 @mcp.tool()
 def gpt_image_result(task_id: str) -> Dict[str, Any]:
-    """查询 GPT 图片生成任务结果（含 status/imagePaths/failReason）。
-    仅在 gpt_image_generate 超时返回 taskId 后使用。"""
+    """查询 GPT-Image-2 图片生成任务结果（含 status/progress/imageUrls/failReason）。
+    status 取值 queued/in_progress/completed/failed，仅后两者为终态。
+    仅在 gpt_image_generate 超时返回 taskId 后使用；imageUrls 有效期仅数分钟，
+    拿到后需立即下载保存。"""
     return call(lambda: get_client().gpt_image.result, task_id=task_id)
 
 

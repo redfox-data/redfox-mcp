@@ -21,7 +21,7 @@ import sys
 import textwrap
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-VERSION = "0.4.2"
+VERSION = "0.4.3"
 
 # (os, cpu, npm name suffix) — win32 uses "windows" in the package name:
 # the literal token "win32" triggers npm registry spam detection on PUT.

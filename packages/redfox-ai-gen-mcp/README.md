@@ -1,13 +1,13 @@
 # redfox-ai-gen-mcp
 
-RedFoxHub AI 生成 MCP Server — 将 GPT 图片、豆包 Seedream 图片（Pro/Lite）、豆包 Seedance 视频生成能力封装为 8 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
+RedFoxHub AI 生成 MCP Server — 将 GPT-Image-2 图片、豆包 Seedream 图片（Pro/Lite）、豆包 Seedance 视频生成能力封装为 8 个 MCP 工具，适用于 dsh、Claude Code、Cursor 等任意 MCP 客户端。
 
 ## 工具（8）
 
 | 工具 | 说明 |
 |---|---|
-| `gpt_image_generate` | GPT 图片生成（gpt-image-2），支持文生图 / 图生图 |
-| `gpt_image_result` | 查询 GPT 图片生成任务结果（超时返回 taskId 后补查） |
+| `gpt_image_generate` | GPT-Image-2 图片生成，支持文生图 / 参考图生图（`resolution` 1k/2k/4k、`size` 13 种宽高比、`n` 最多 4 张、`reference_images` 最多 2 张）|
+| `gpt_image_result` | 查询 GPT-Image-2 图片生成任务结果（超时返回 taskId 后补查）|
 | `doubao_image_pro_generate` | 豆包 Seedream 5.0 Pro 图片生成 |
 | `doubao_image_pro_result` | 查询 Seedream 5.0 Pro 任务结果 |
 | `doubao_image_lite_generate` | 豆包 Seedream 5.0 Lite 图片生成，支持组图 |
@@ -16,6 +16,8 @@ RedFoxHub AI 生成 MCP Server — 将 GPT 图片、豆包 Seedream 图片（Pro
 | `doubao_video_result` | 查询豆包视频生成任务结果 |
 
 异步工具内部自动轮询：提交 → 等待 → 返回完整结果，无需手动处理 taskId。若等待超过 `timeout_seconds`（图片默认 240 秒、视频默认 480 秒），返回 `taskId`，可用对应的 result 工具补查。
+
+> **GPT-Image-2 注意事项**：`gpt_image_generate` 返回的 `imageUrls` 有效期仅数分钟，过期后访问返回 404，请立即下载保存；任务状态实测为 `queued`/`in_progress`/`completed`/`failed`（仅后两者为终态）；`reference_images` 必须是公网可访问且未过期的图片 URL，否则任务会以 `failed` 结束。实测 1k 单张约 40~60 秒。
 
 ## 认证
 

@@ -39,7 +39,7 @@ jobs:
         shell: bash
         run: |
           pip install pyinstaller \
-            "redfox-mcp-core>=0.1.3" \
+            "redfox-mcp-core>=0.1.4" \
             "redfox-douyin-mcp>=0.2.1" \
             "redfox-xiaohongshu-mcp>=0.2.1" \
             "redfox-wechat-mcp>=0.2.1" \
@@ -47,7 +47,7 @@ jobs:
             "redfox-toutiao-mcp>=0.1.2" \
             "redfox-tiktok-mcp>=0.1.2" \
             "redfox-ai-search-mcp>=0.1.2" \
-            "redfox-ai-gen-mcp>=0.1.1" \
+            "redfox-ai-gen-mcp>=0.2.0" \
             "redfox-twitter-mcp>=0.1.1" \
             "redfox-youtube-mcp>=0.1.1" \
             "redfox-instagram-mcp>=0.1.1" \
@@ -55,7 +55,7 @@ jobs:
             "redfox-auto-mcp>=0.1.1" \
             "redfox-wechat-channels-mcp>=0.1.1" \
             "redfox-tools-mcp>=0.1.1" \
-            "redfox-mcp>=0.4.1"
+            "redfox-mcp>=0.4.2"
 
       - name: Build busybox binary
         shell: bash
@@ -84,7 +84,7 @@ jobs:
         shell: bash
         run: |
           pip install pyinstaller \
-            "redfox-mcp-core>=0.1.3" \
+            "redfox-mcp-core>=0.1.4" \
             "redfox-douyin-mcp>=0.2.1" \
             "redfox-xiaohongshu-mcp>=0.2.1" \
             "redfox-wechat-mcp>=0.2.1" \
@@ -92,7 +92,7 @@ jobs:
             "redfox-toutiao-mcp>=0.1.2" \
             "redfox-tiktok-mcp>=0.1.2" \
             "redfox-ai-search-mcp>=0.1.2" \
-            "redfox-ai-gen-mcp>=0.1.1" \
+            "redfox-ai-gen-mcp>=0.2.0" \
             "redfox-twitter-mcp>=0.1.1" \
             "redfox-youtube-mcp>=0.1.1" \
             "redfox-instagram-mcp>=0.1.1" \
@@ -100,7 +100,7 @@ jobs:
             "redfox-auto-mcp>=0.1.1" \
             "redfox-wechat-channels-mcp>=0.1.1" \
             "redfox-tools-mcp>=0.1.1" \
-            "redfox-mcp>=0.4.1"
+            "redfox-mcp>=0.4.2"
 
       - name: Build busybox binary
         shell: bash

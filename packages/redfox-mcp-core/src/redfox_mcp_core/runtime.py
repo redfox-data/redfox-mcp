@@ -45,6 +45,9 @@ TERMINAL_STATUSES = {
     "failed", "error", "cancelled", "canceled",
 }
 
+# 非终态（仅作说明）：各品类还有 queued / in_progress / processing / running 等
+# 中间态，不在上表内即视为未完成，poll() 会继续轮询。
+
 _TRANSPORT = "stdio"  # serve() 启动时按实际 transport 设置
 
 _client: Optional[RedFoxClient] = None  # stdio 模式：全局单例
@@ -125,7 +128,9 @@ def is_done(res: Any) -> bool:
     status = res.get("status")
     if isinstance(status, str) and status.lower() in TERMINAL_STATUSES:
         return True
-    for field in ("content", "imagePaths", "images", "videoUrl", "videoUrls", "video"):
+    # imageUrls: GPT-Image-2 等新图片接口的结果字段；imagePaths 为其旧版字段
+    for field in ("content", "imageUrls", "imagePaths", "images",
+                  "videoUrl", "videoUrls", "video"):
         if res.get(field):
             return True
     return False

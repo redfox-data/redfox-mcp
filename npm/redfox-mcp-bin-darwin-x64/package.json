@@ -1,6 +1,6 @@
 {
   "name": "redfox-mcp-bin-darwin-x64",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "RedFox MCP native binary for darwin-x64 (busybox, all servers)",
   "files": [
     "bin/",
