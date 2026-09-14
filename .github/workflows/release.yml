@@ -1,13 +1,11 @@
 # RedFox MCP — npm 发布流水线（busybox 单二进制模式）
 #
 # 触发：推送 v* 标签
-# 流程：2 平台各编译 1 个 busybox 二进制 → 组装 npm 包 → 发布
+# 流程：3 平台各编译 1 个 busybox 二进制 → 组装 npm 包 → 发布
 #
-# 平台：darwin-arm64 (macos-latest)、win32-x64 (windows-latest)
-# darwin-x64 无 CI runner（macos-13 x64 稀缺）：在 Intel Mac 本地
-#   bash npm/build-binaries.sh --platform darwin-x64
-#   cd npm/redfox-mcp-bin-darwin-x64 && npm publish --access public --otp=<2FA码>
-# 先于 tag 发布；CI 幂等检查会自动跳过它。
+# 平台：darwin-arm64 (macos-latest)、darwin-x64 (macos-13)、win32-x64 (windows-latest)
+# 注意：macos-13 x64 runner 资源稀缺，排队可能很久；fail-fast 已关，
+# 其余平台不会等它。若 macos-13 镜像退役需改用本地编译+手动发布该 bin 包。
 # Secrets: NPM_TOKEN
 # PyPI 发布请本地执行：uv build --all-packages && uv publish dist/*
 
@@ -25,6 +23,8 @@ jobs:
         include:
           - os: macos-latest
             platform: darwin-arm64
+          - os: macos-13
+            platform: darwin-x64
           - os: windows-latest
             platform: win32-x64
 
@@ -93,7 +93,7 @@ jobs:
           # artifact platform -> npm bin package suffix
           # (win32-x64 ships as redfox-mcp-bin-windows-x64: "win32" in a package
           #  name triggers npm registry spam detection)
-          for pair in darwin-arm64:darwin-arm64 win32-x64:windows-x64; do
+          for pair in darwin-arm64:darwin-arm64 darwin-x64:darwin-x64 win32-x64:windows-x64; do
             platform="${pair%%:*}"
             suffix="${pair##*:}"
             src="artifacts/bin-${platform}"

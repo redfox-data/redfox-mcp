@@ -25,9 +25,7 @@ VERSION = "0.4.2"
 
 # (os, cpu, npm name suffix) — win32 uses "windows" in the package name:
 # the literal token "win32" triggers npm registry spam detection on PUT.
-# darwin-arm64 / windows-x64 are compiled by CI; darwin-x64 has no CI runner
-# (macos-13 x64 images are scarce) — its binary is built on an Intel Mac and
-# published manually before tagging; CI skips it via the idempotency check.
+# darwin-x64 is compiled by CI on macos-13 (scarce x64 runner, expect long queues).
 BIN_PLATFORMS = [
     ("darwin", "arm64", "darwin-arm64"),
     ("darwin", "x64", "darwin-x64"),
