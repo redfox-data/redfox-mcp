@@ -1,7 +1,7 @@
 {
-  "name": "redfox-mcp-bin-darwin-arm64",
+  "name": "redfox-mcp-bin-darwin-x64",
   "version": "0.4.2",
-  "description": "RedFox MCP native binary for darwin-arm64 (busybox, all servers)",
+  "description": "RedFox MCP native binary for darwin-x64 (busybox, all servers)",
   "files": [
     "bin/",
     "README.md"
@@ -10,12 +10,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/redfox-data/redfox-mcp",
-    "directory": "npm/redfox-mcp-bin-darwin-arm64"
+    "directory": "npm/redfox-mcp-bin-darwin-x64"
   },
   "os": [
     "darwin"
   ],
   "cpu": [
-    "arm64"
+    "x64"
   ]
 }

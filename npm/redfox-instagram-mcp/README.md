@@ -39,8 +39,8 @@ redfox-instagram-mcp --transport http --host 0.0.0.0 --port 8000
 
 ## Platforms
 
-macOS (Apple Silicon) and Windows (x64). The matching native binary
-is pulled in automatically via optionalDependencies.
+macOS (Apple Silicon and Intel) and Windows (x64). The matching native
+binary is pulled in automatically via optionalDependencies.
 
 ## API Key
 

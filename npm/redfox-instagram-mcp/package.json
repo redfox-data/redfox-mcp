@@ -1,6 +1,6 @@
 {
   "name": "redfox-instagram-mcp",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "RedFoxHub Instagram MCP server",
   "bin": {
     "redfox-instagram-mcp": "./cli.js"
@@ -26,7 +26,8 @@
     "node": ">=14"
   },
   "optionalDependencies": {
-    "redfox-mcp-bin-darwin-arm64": "0.4.1",
-    "redfox-mcp-bin-windows-x64": "0.4.1"
+    "redfox-mcp-bin-darwin-arm64": "0.4.2",
+    "redfox-mcp-bin-darwin-x64": "0.4.2",
+    "redfox-mcp-bin-windows-x64": "0.4.2"
   }
 }

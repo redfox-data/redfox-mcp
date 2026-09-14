@@ -4,6 +4,10 @@
 # 流程：2 平台各编译 1 个 busybox 二进制 → 组装 npm 包 → 发布
 #
 # 平台：darwin-arm64 (macos-latest)、win32-x64 (windows-latest)
+# darwin-x64 无 CI runner（macos-13 x64 稀缺）：在 Intel Mac 本地
+#   bash npm/build-binaries.sh --platform darwin-x64
+#   cd npm/redfox-mcp-bin-darwin-x64 && npm publish --access public --otp=<2FA码>
+# 先于 tag 发布；CI 幂等检查会自动跳过它。
 # Secrets: NPM_TOKEN
 # PyPI 发布请本地执行：uv build --all-packages && uv publish dist/*
 
@@ -129,14 +133,16 @@ jobs:
           fail=0
           for pkg_dir in npm/redfox-mcp-bin-*; do
             pkg=$(basename "$pkg_dir")
-            if [[ -z "$(ls -A "$pkg_dir/bin" 2>/dev/null)" ]]; then
-              echo "::error::no binary in $pkg"
-              fail=1
-              continue
-            fi
             ver=$(node -p "require('./$pkg_dir/package.json').version")
             if npm view "$pkg@$ver" version >/dev/null 2>&1; then
               echo "  = $pkg@$ver already published, skipping"
+              continue
+            fi
+            # unpublished version with no binary = real error (e.g. forgot the
+            # manual local publish for darwin-x64)
+            if [[ -z "$(ls -A "$pkg_dir/bin" 2>/dev/null)" ]]; then
+              echo "::error::no binary in $pkg"
+              fail=1
               continue
             fi
             echo "Publishing $pkg@$ver ..."

@@ -21,13 +21,16 @@ import sys
 import textwrap
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-VERSION = "0.4.1"
+VERSION = "0.4.2"
 
-# Platforms shipped today (linux / darwin-x64 intentionally unsupported).
 # (os, cpu, npm name suffix) — win32 uses "windows" in the package name:
 # the literal token "win32" triggers npm registry spam detection on PUT.
+# darwin-arm64 / windows-x64 are compiled by CI; darwin-x64 has no CI runner
+# (macos-13 x64 images are scarce) — its binary is built on an Intel Mac and
+# published manually before tagging; CI skips it via the idempotency check.
 BIN_PLATFORMS = [
     ("darwin", "arm64", "darwin-arm64"),
+    ("darwin", "x64", "darwin-x64"),
     ("win32", "x64", "windows-x64"),
 ]
 
@@ -80,7 +83,7 @@ const binPath = findBin();
 if (!binPath || !fs.existsSync(binPath)) {{
   process.stderr.write(
     `Error: no RedFox MCP binary for ${{process.platform}}-${{process.arch}}.\\n` +
-    `Supported platforms: darwin-arm64, win32-x64 (package: windows-x64)\\n`
+    `Supported platforms: darwin-arm64, darwin-x64, win32-x64 (package: windows-x64)\\n`
   );
   process.exit(1);
 }}
@@ -179,8 +182,8 @@ def generate_main_package(npm_name, server_name, description, version):
 
         ## Platforms
 
-        macOS (Apple Silicon) and Windows (x64). The matching native binary
-        is pulled in automatically via optionalDependencies.
+        macOS (Apple Silicon and Intel) and Windows (x64). The matching native
+        binary is pulled in automatically via optionalDependencies.
 
         ## API Key
 
