@@ -21,7 +21,7 @@ import sys
 import textwrap
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-VERSION = "0.4.3"
+VERSION = "0.4.4"
 
 # (os, cpu, npm name suffix) — win32 uses "windows" in the package name:
 # the literal token "win32" triggers npm registry spam detection on PUT.
@@ -183,8 +183,12 @@ def generate_main_package(npm_name, server_name, description, version):
 
         ## Platforms
 
-        macOS (Apple Silicon and Intel) and Windows (x64). The matching native
-        binary is pulled in automatically via optionalDependencies.
+        macOS (Apple Silicon) and Windows (x64). The matching native binary is
+        pulled in automatically via optionalDependencies.
+
+        Intel Mac (darwin-x64) has no npm binary — the macos-13 CI runner is too
+        scarce to build it reliably. Install from PyPI instead:
+        `uvx {npm_name}` or `pipx install {npm_name}` (pure Python, any platform).
 
         ## API Key
 

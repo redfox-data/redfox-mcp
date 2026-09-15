@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-ai-gen-mcp"
-version = "0.2.0"
+version = "0.2.1"
 description = "RedFoxHub AI Generation MCP server: GPT-Image-2 image (text-to-image & reference-image-to-image), Doubao Seedream image Pro/Lite, Doubao Seedance video generation with auto polling"
 readme = "README.md"
 requires-python = ">=3.10"

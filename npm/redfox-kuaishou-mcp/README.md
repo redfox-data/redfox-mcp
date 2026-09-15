@@ -39,8 +39,12 @@ redfox-kuaishou-mcp --transport http --host 0.0.0.0 --port 8000
 
 ## Platforms
 
-macOS (Apple Silicon and Intel) and Windows (x64). The matching native
-binary is pulled in automatically via optionalDependencies.
+macOS (Apple Silicon) and Windows (x64). The matching native binary is
+pulled in automatically via optionalDependencies.
+
+Intel Mac (darwin-x64) has no npm binary — the macos-13 CI runner is too
+scarce to build it reliably. Install from PyPI instead:
+`uvx redfox-kuaishou-mcp` or `pipx install redfox-kuaishou-mcp` (pure Python, any platform).
 
 ## API Key
 

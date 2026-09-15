@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-mcp"
-version = "0.4.2"
+version = "0.4.3"
 description = "RedFoxHub MCP server (all-in-one): 13 platforms — Douyin/Xiaohongshu/WeChat/Bilibili/Toutiao/TikTok/Kuaishou/Instagram/X/YouTube/WeChat Channels + Auto (懂车帝/汽车之家/易车) + AI (search/image/video) + Tools (download/upload)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -18,7 +18,7 @@ dependencies = [
     "redfox-toutiao-mcp>=0.1.1",
     "redfox-tiktok-mcp>=0.1.1",
     "redfox-ai-search-mcp>=0.1.1",
-    "redfox-ai-gen-mcp>=0.2.0",
+    "redfox-ai-gen-mcp>=0.2.1",
     "redfox-kuaishou-mcp>=0.1.0",
     "redfox-instagram-mcp>=0.1.0",
     "redfox-twitter-mcp>=0.1.0",

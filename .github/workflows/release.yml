@@ -48,7 +48,7 @@ jobs:
             "redfox-toutiao-mcp>=0.1.2" \
             "redfox-tiktok-mcp>=0.1.2" \
             "redfox-ai-search-mcp>=0.1.2" \
-            "redfox-ai-gen-mcp>=0.2.0" \
+            "redfox-ai-gen-mcp>=0.2.1" \
             "redfox-twitter-mcp>=0.1.1" \
             "redfox-youtube-mcp>=0.1.1" \
             "redfox-instagram-mcp>=0.1.1" \
@@ -56,7 +56,7 @@ jobs:
             "redfox-auto-mcp>=0.1.1" \
             "redfox-wechat-channels-mcp>=0.1.1" \
             "redfox-tools-mcp>=0.1.1" \
-            "redfox-mcp>=0.4.2"
+            "redfox-mcp>=0.4.3"
 
       - name: Build busybox binary
         shell: bash
