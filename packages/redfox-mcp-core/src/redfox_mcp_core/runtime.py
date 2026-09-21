@@ -10,6 +10,9 @@ HTTP 模式从请求头 REDFOX_API_KEY（或 Authorization: Bearer <key>）取 k
 获取地址 https://redfox.hk/settings/api-keys?source=mcp
 """
 
+import json
+import logging
+import os
 import threading
 import time
 from collections import OrderedDict
@@ -49,6 +52,82 @@ TERMINAL_STATUSES = {
 # 中间态，不在上表内即视为未完成，poll() 会继续轮询。
 
 _TRANSPORT = "stdio"  # serve() 启动时按实际 transport 设置
+
+_log = logging.getLogger("redfox_mcp")
+
+
+def _log_enabled() -> bool:
+    return os.getenv("REDFOX_MCP_LOG", "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _log_max() -> int:
+    try:
+        return max(200, int(os.getenv("REDFOX_MCP_LOG_MAX", "4000")))
+    except ValueError:
+        return 4000
+
+
+def _mask_key(key: Optional[str]) -> str:
+    if not key:
+        return ""
+    if os.getenv("REDFOX_MCP_LOG_API_KEY", "mask").strip().lower() == "full":
+        return key
+    if len(key) <= 8:
+        return "***"
+    return f"{key[:4]}...{key[-4:]}"
+
+
+def _clip(value: Any) -> str:
+    try:
+        text = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False, default=str)
+    except Exception:
+        text = str(value)
+    limit = _log_max()
+    if len(text) <= limit:
+        return text
+    return text[:limit] + f"...<truncated {len(text) - limit} chars>"
+
+
+def _fn_name(fn: Callable) -> str:
+    owner = getattr(fn, "__self__", None)
+    name = getattr(fn, "__name__", None) or type(fn).__name__
+    if owner is None:
+        return name
+    return f"{type(owner).__name__}.{name}"
+
+
+def _request_meta() -> Dict[str, Any]:
+    meta: Dict[str, Any] = {"transport": _TRANSPORT}
+    key = os.getenv("REDFOX_API_KEY")
+    if get_http_request is not None:
+        try:
+            req = get_http_request()
+        except Exception:
+            req = None
+        if req is not None:
+            header_key = _request_key()
+            if header_key:
+                key = header_key
+            meta.update({
+                "http_method": getattr(req, "method", None),
+                "path": str(getattr(getattr(req, "url", None), "path", "") or ""),
+                "session_id": (
+                    req.headers.get("mcp-session-id")
+                    or req.headers.get("Mcp-Session-Id")
+                    or ""
+                ),
+            })
+    meta["api_key"] = _mask_key(key)
+    return meta
+
+
+def _emit(event: str, **fields: Any) -> None:
+    if not _log_enabled():
+        return
+    if not _log.handlers:
+        logging.basicConfig(level=logging.INFO, format="%(message)s")
+    payload = {"event": event, **_request_meta(), **fields}
+    _log.info(_clip(payload))
 
 _client: Optional[RedFoxClient] = None  # stdio 模式：全局单例
 _tenants: "OrderedDict[str, RedFoxClient]" = OrderedDict()  # http 模式：按 key 缓存
@@ -107,14 +186,26 @@ def get_client() -> RedFoxClient:
 
 def call(fn_factory: Callable[[], Callable], **kwargs) -> Dict[str, Any]:
     """统一调用 SDK 方法并把异常转为结构化结果，agent 可直接读取出错引导"""
+    args = {k: v for k, v in kwargs.items() if v is not None}
+    tool = "unknown"
     try:
-        return fn_factory()(**{k: v for k, v in kwargs.items() if v is not None})
-    except (RedFoxAuthError, ValueError):
-        return {"error": "auth_failed", "message": _auth_guide()}
-    except RedFoxRateLimitError:
-        return {"error": "rate_limited", "message": "请求频率超限，请稍后重试"}
+        fn = fn_factory()
+        tool = _fn_name(fn)
+        result = fn(**args)
+        _emit("mcp_call", tool=tool, arguments=args, ok=True, result=result)
+        return result
+    except (RedFoxAuthError, ValueError) as e:
+        result = {"error": "auth_failed", "message": _auth_guide()}
+        _emit("mcp_call", tool=tool, arguments=args, ok=False, error=type(e).__name__, result=result)
+        return result
+    except RedFoxRateLimitError as e:
+        result = {"error": "rate_limited", "message": "请求频率超限，请稍后重试"}
+        _emit("mcp_call", tool=tool, arguments=args, ok=False, error=type(e).__name__, result=result)
+        return result
     except RedFoxAPIError as e:
-        return {"error": "api_error", "code": e.code, "message": e.message}
+        result = {"error": "api_error", "code": e.code, "message": e.message}
+        _emit("mcp_call", tool=tool, arguments=args, ok=False, error=type(e).__name__, result=result)
+        return result
 
 
 def is_done(res: Any) -> bool:
