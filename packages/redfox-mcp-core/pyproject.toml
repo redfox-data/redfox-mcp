@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-mcp-core"
-version = "0.1.4"
+version = "0.1.5"
 description = "Shared runtime for RedFoxHub MCP servers: client management, multi-tenant auth, async task polling, stdio/HTTP serving"
 readme = "README.md"
 requires-python = ">=3.10"
