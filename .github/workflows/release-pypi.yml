@@ -54,8 +54,12 @@ jobs:
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.UV_PUBLISH_TOKEN }}
         run: |
-          if [ -z "$(ls -A dist 2>/dev/null)" ]; then
+          # uv build 会往输出目录写一个 .gitignore，"dist 是否为空"必须按产物
+          # glob 判定而不是 ls -A（隐藏文件会骗过它，v1 空跑就死在这里）。
+          shopt -s nullglob
+          artifacts=(dist/*.whl dist/*.tar.gz)
+          if [ "${#artifacts[@]}" -eq 0 ]; then
             echo "无新版本，跳过发布"
             exit 0
           fi
-          uv publish dist/*
+          uv publish "${artifacts[@]}"
