@@ -1,0 +1,61 @@
+# RedFox MCP — PyPI 发布流水线（增量）
+#
+# 触发：推送 v* 标签（与 npm 的 release.yml 同源触发），或手动 workflow_dispatch。
+# 增量语义：改了哪个包就在提交里 bump 哪个包的版本；本流水线构建全部 workspace 包，
+# 但只上传 PyPI 尚不存在的 (包名, 版本)。未改动的包自动跳过，重跑安全。
+# "每次全量重发"在 PyPI 上本就不可能（同名同版本重复上传被拒），增量是唯一形态。
+#
+# 依赖闭包无需手动处理：core 改动后，依赖包的红线 >=0.1.x 会在新装时自动解析到
+# 新 core，只有正确性依赖新行为的包才需要抬红线并发版（人工判断）。
+#
+# 防漏守卫：check_bumps.py 对比上一个 tag，对"代码改了但版本没 bump"的包告警，
+# 避免改动静默漏发（只告警不阻断）。
+#
+# 认证：secrets.UV_PUBLISH_TOKEN（PyPI API token，与本地 uv publish 用同一个）。
+# 后续可迁移 Trusted Publishing（OIDC），届时删掉 env 并加 id-token 权限即可。
+#
+# 与 npm 流水线的时序：同一 tag 会并行触发 release.yml，其 pip install 可能早于
+# 本流水线上传完成而撞到陈旧索引——release.yml 已内置重试循环兜底。
+
+name: Release PyPI
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+concurrency:
+  group: pypi-publish
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 守卫需要 tag 历史做基线
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Build all workspace packages
+        run: uv build --all-packages --out-dir dist
+
+      - name: Keep only versions missing from PyPI
+        run: python3 .github/scripts/skip_published.py dist
+
+      - name: Guard - changed packages without a version bump
+        run: python3 .github/scripts/check_bumps.py
+
+      - name: Publish new versions to PyPI
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.UV_PUBLISH_TOKEN }}
+        run: |
+          if [ -z "$(ls -A dist 2>/dev/null)" ]; then
+            echo "无新版本，跳过发布"
+            exit 0
+          fi
+          uv publish dist/*

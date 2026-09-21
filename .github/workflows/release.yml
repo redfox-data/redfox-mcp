@@ -8,7 +8,7 @@
 # 甚至始终不启动，redfox-mcp-bin-darwin-x64 从未成功发布到 registry。
 # Intel Mac 用户请改用 pip/uvx 安装（纯 Python 分发，无平台限制）。
 # Secrets: NPM_TOKEN
-# PyPI 发布请本地执行：uv build --all-packages && uv publish dist/*
+# PyPI 发布由 release-pypi.yml 在同一 v* 标签下增量完成（只上传 PyPI 尚无的版本）
 
 name: Release npm
 
@@ -39,24 +39,34 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
-          pip install pyinstaller \
-            "redfox-mcp-core>=0.1.4" \
-            "redfox-douyin-mcp>=0.2.1" \
-            "redfox-xiaohongshu-mcp>=0.2.1" \
-            "redfox-wechat-mcp>=0.2.1" \
-            "redfox-bilibili-mcp>=0.1.2" \
-            "redfox-toutiao-mcp>=0.1.2" \
-            "redfox-tiktok-mcp>=0.1.2" \
-            "redfox-ai-search-mcp>=0.1.2" \
-            "redfox-ai-gen-mcp>=0.2.1" \
-            "redfox-twitter-mcp>=0.1.1" \
-            "redfox-youtube-mcp>=0.1.1" \
-            "redfox-instagram-mcp>=0.1.1" \
-            "redfox-kuaishou-mcp>=0.1.1" \
-            "redfox-auto-mcp>=0.1.1" \
-            "redfox-wechat-channels-mcp>=0.1.1" \
-            "redfox-tools-mcp>=0.1.1" \
-            "redfox-mcp>=0.4.3"
+          # 同一 v* 标签会并行触发 release-pypi.yml；刚发布几分钟的版本可能还没
+          # 传播到所有 PyPI CDN 边缘（v0.4.4 的 macOS build 就死在这个窗口），
+          # 因此失败后重试而不是直接判死。
+          for attempt in 1 2 3 4; do
+            if pip install pyinstaller \
+              "redfox-mcp-core>=0.1.4" \
+              "redfox-douyin-mcp>=0.2.1" \
+              "redfox-xiaohongshu-mcp>=0.2.1" \
+              "redfox-wechat-mcp>=0.2.1" \
+              "redfox-bilibili-mcp>=0.1.2" \
+              "redfox-toutiao-mcp>=0.1.2" \
+              "redfox-tiktok-mcp>=0.1.2" \
+              "redfox-ai-search-mcp>=0.1.2" \
+              "redfox-ai-gen-mcp>=0.2.1" \
+              "redfox-twitter-mcp>=0.1.1" \
+              "redfox-youtube-mcp>=0.1.1" \
+              "redfox-instagram-mcp>=0.1.1" \
+              "redfox-kuaishou-mcp>=0.1.1" \
+              "redfox-auto-mcp>=0.1.1" \
+              "redfox-wechat-channels-mcp>=0.1.1" \
+              "redfox-tools-mcp>=0.1.1" \
+              "redfox-mcp>=0.4.3"; then
+              exit 0
+            fi
+            echo "::warning::pip 第 $attempt 次失败（PyPI 索引传播窗口？），60s 后重试"
+            sleep 60
+          done
+          exit 1
 
       - name: Build busybox binary
         shell: bash
