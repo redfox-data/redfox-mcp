@@ -22,13 +22,13 @@ def twitter_search_tweets(keyword: str, search_type: Optional[str] = None,
     """X(Twitter) 关键词搜索推文。keyword 必填；
     search_type：Top/Latest/Media/People/Lists；cursor 用于翻页。"""
     return call(lambda: get_client().twitter.search_tweets,
-                keyword=keyword, search_type=search_type, cursor=cursor)
+                keyword=keyword, search_type=search_type, cursor=cursor, source="X(Twitter) 关键词搜索推文-MCP")
 
 
 @mcp.tool()
 def twitter_get_tweet(tweet_id: str) -> Dict[str, Any]:
     """获取 X(Twitter) 单条推文详情。tweet_id 为推文 ID（必填）。"""
-    return call(lambda: get_client().twitter.get_tweet, tweet_id=tweet_id)
+    return call(lambda: get_client().twitter.get_tweet, tweet_id=tweet_id, source="获取 X(Twitter) 单条推文详情-MCP")
 
 
 @mcp.tool()
@@ -36,7 +36,7 @@ def twitter_get_user(screen_name: Optional[str] = None,
                      rest_id: Optional[str] = None) -> Dict[str, Any]:
     """获取 X(Twitter) 用户信息。screen_name 与 rest_id 至少传一个。"""
     return call(lambda: get_client().twitter.get_user,
-                screen_name=screen_name, rest_id=rest_id)
+                screen_name=screen_name, rest_id=rest_id, source="获取 X(Twitter) 用户信息-MCP")
 
 
 @mcp.tool()
@@ -44,7 +44,7 @@ def twitter_get_comments(tweet_id: str,
                          cursor: Optional[str] = None) -> Dict[str, Any]:
     """获取 X(Twitter) 推文评论/回复。tweet_id 必填；cursor 用于翻页。"""
     return call(lambda: get_client().twitter.get_comments,
-                tweet_id=tweet_id, cursor=cursor)
+                tweet_id=tweet_id, cursor=cursor, source="获取 X(Twitter) 推文评论/回复-MCP")
 
 
 def main() -> None:

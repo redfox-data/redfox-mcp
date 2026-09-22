@@ -22,7 +22,7 @@ def douyin_search_articles(keyword: str, offset: int = 0,
     """搜索抖音作品（优质库）。keyword 必填；offset 分页偏移从 0 开始、每次 +20；
     sort_type 排序方式，如 "default"。返回含 total/hasMore/list。"""
     return call(lambda: get_client().douyin.search_articles,
-                keyword=keyword, offset=offset, sort_type=sort_type)
+                keyword=keyword, offset=offset, sort_type=sort_type, source="搜索抖音作品（优质库）-MCP")
 
 
 @mcp.tool()
@@ -30,14 +30,14 @@ def douyin_search_users(keyword: str, offset: int = 0,
                         sort_type: Optional[str] = None) -> Dict[str, Any]:
     """搜索抖音账号（优质库）。keyword 必填；offset 分页偏移从 0 开始。"""
     return call(lambda: get_client().douyin.search_users,
-                keyword=keyword, offset=offset, sort_type=sort_type)
+                keyword=keyword, offset=offset, sort_type=sort_type, source="搜索抖音账号（优质库）-MCP")
 
 
 @mcp.tool()
 def douyin_get_user(account_id: str) -> Dict[str, Any]:
     """获取抖音账号信息（优质库）。account_id 为抖音账号 ID，
     支持 unique_id、short_id、uid 任一匹配。"""
-    return call(lambda: get_client().douyin.get_user, account_id=account_id)
+    return call(lambda: get_client().douyin.get_user, account_id=account_id, source="获取抖音账号信息-MCP")
 
 
 @mcp.tool()
@@ -50,7 +50,7 @@ def douyin_get_user_works(account_id: Optional[str] = None,
     sec_user_id 至少传一个；offset 每页 +20；sort_type：0=默认，2=最新，4=最热。"""
     return call(lambda: get_client().douyin.get_user_works,
                 account_id=account_id, author_url=author_url,
-                sec_user_id=sec_user_id, offset=offset, sort_type=sort_type)
+                sec_user_id=sec_user_id, offset=offset, sort_type=sort_type, source="获取抖音账号作品列表（优质库）-MCP")
 
 
 @mcp.tool()
@@ -58,7 +58,7 @@ def douyin_get_work(work_id: Optional[str] = None,
                     work_url: Optional[str] = None) -> Dict[str, Any]:
     """获取抖音作品详情（优质库）。work_id 与 work_url（作品链接）至少传一个，
     返回互动数据、作者信息等。"""
-    return call(lambda: get_client().douyin.get_work, work_id=work_id, work_url=work_url)
+    return call(lambda: get_client().douyin.get_work, work_id=work_id, work_url=work_url, source="获取抖音作品详情（优质库）-MCP")
 
 
 @mcp.tool()
@@ -69,7 +69,7 @@ def douyin_search_ai_articles(keyword: str, page_num: int = 1, page_size: int = 
     start_time/end_time 格式如 "2026-06-01 00:00:00"。"""
     return call(lambda: get_client().douyin.search_ai_articles,
                 keyword=keyword, page_num=page_num, page_size=page_size,
-                start_time=start_time, end_time=end_time)
+                start_time=start_time, end_time=end_time, source="搜索抖音 AI 相关作品-MCP")
 
 
 # ─── 广域库 ──────────────────────────────────────────────
@@ -83,7 +83,7 @@ def douyin_search_works_wide(keyword: str, start_date: Optional[str] = None,
     start_date/end_date 格式 yyyy-MM-dd；page_num 从 1 开始，page_size 最大 50。"""
     return call(lambda: get_client().douyin.search_works_wide,
                 keyword=keyword, start_date=start_date, end_date=end_date,
-                page_num=page_num, page_size=page_size)
+                page_num=page_num, page_size=page_size, source="搜索抖音作品（广域库）-MCP")
 
 
 @mcp.tool()
@@ -92,13 +92,13 @@ def douyin_search_accounts_wide(keyword: str, page_num: int = 1,
     """搜索抖音账号（广域库）。keyword 必填（匹配账号名）；
     page_num 从 1 开始，page_size 最大 50。"""
     return call(lambda: get_client().douyin.search_accounts_wide,
-                keyword=keyword, page_num=page_num, page_size=page_size)
+                keyword=keyword, page_num=page_num, page_size=page_size, source="搜索抖音账号（广域库）-MCP")
 
 
 @mcp.tool()
 def douyin_get_work_wide(video_id: str) -> Dict[str, Any]:
     """获取抖音作品详情（广域库）。video_id 为作品 ID（对应 aweme_id，必填）。"""
-    return call(lambda: get_client().douyin.get_work_wide, video_id=video_id)
+    return call(lambda: get_client().douyin.get_work_wide, video_id=video_id, source="获取抖音作品详情（广域库）-MCP")
 
 
 @mcp.tool()
@@ -114,7 +114,7 @@ def douyin_get_user_works_wide(user_id: Optional[str] = None,
     return call(lambda: get_client().douyin.get_user_works_wide,
                 user_id=user_id, unique_name=unique_name, short_id=short_id,
                 page_num=page_num, page_size=page_size,
-                start_date=start_date, end_date=end_date)
+                start_date=start_date, end_date=end_date, source="获取抖音账号作品列表（广域库）-MCP")
 
 
 # ─── 榜单 ────────────────────────────────────────────────
@@ -127,7 +127,7 @@ def douyin_get_daily_hot_rank(type: Optional[str] = None,
     """抖音每日热门作品榜（按点赞排名，日度收录）。type 为类别（如 二次元、美食，
     不传查全部）；start_time/end_time 格式 yyyy-MM-dd，不传默认昨日（每日 10 点后更新）。"""
     return call(lambda: get_client().douyin.get_daily_hot_rank,
-                type=type, start_time=start_time, end_time=end_time)
+                type=type, start_time=start_time, end_time=end_time, source="抖音每日热门作品榜-MCP")
 
 
 @mcp.tool()
@@ -136,7 +136,7 @@ def douyin_get_daily_surge_rank(type: Optional[str] = None,
     """抖音每日点赞飙升榜（单日新增点赞排名）。type 为分类（如 小剧场、财富理财，
     不传或"全部"查全部分类）；start_time 为榜单日期 yyyy-MM-dd，不传默认昨日（每日 16 点更新）。"""
     return call(lambda: get_client().douyin.get_daily_surge_rank,
-                type=type, start_time=start_time)
+                type=type, start_time=start_time, source="抖音每日点赞飙升榜-MCP")
 
 
 @mcp.tool()
@@ -145,7 +145,7 @@ def douyin_get_weekly_surge_rank(type: Optional[str] = None,
     """抖音七日点赞飙升榜（七日新增点赞排名）。type 为分类，不传或"全部"查全部分类；
     start_time 为榜单日期 yyyy-MM-dd，不传默认昨日（每日 16:30 更新）。"""
     return call(lambda: get_client().douyin.get_weekly_surge_rank,
-                type=type, start_time=start_time)
+                type=type, start_time=start_time, source="抖音七日点赞飙升榜-MCP")
 
 
 @mcp.tool()
@@ -155,7 +155,7 @@ def douyin_get_hot_accounts(date_type: str, rank_date: str,
     rank_date 格式 yyyy-MM-dd（日榜传当日日期、周榜传周一日期、月榜传一号）；
     type 为类别（如 全部、个人才艺、美食）。"""
     return call(lambda: get_client().douyin.get_hot_accounts,
-                date_type=date_type, rank_date=rank_date, type=type)
+                date_type=date_type, rank_date=rank_date, type=type, source="抖音热门账号推荐-MCP")
 
 
 # ─── 视频提文案 ───────────────────────────────────────────
@@ -167,13 +167,13 @@ def douyin_transcript(url: str, timeout_seconds: int = 240) -> Dict[str, Any]:
     url 为视频链接（支持口令分享文本）；超时未完成时返回 taskId，可用 douyin_transcript_result 再查。"""
     return run_task(lambda: get_client().douyin.transcript_submit,
                     lambda: get_client().douyin.transcript_result,
-                    timeout_seconds, url=url)
+                    timeout_seconds, url=url, source="抖音视频提文案-MCP")
 
 
 @mcp.tool()
 def douyin_transcript_result(task_id: str) -> Dict[str, Any]:
     """查询抖音视频提文案任务结果。仅在 douyin_transcript 超时返回 taskId 后使用。"""
-    return call(lambda: get_client().douyin.transcript_result, task_id=task_id)
+    return call(lambda: get_client().douyin.transcript_result, task_id=task_id, source="查询抖音视频提文案任务结果-MCP")
 
 
 def main() -> None:

@@ -21,7 +21,7 @@ def xiaohongshu_search_articles(keyword: str, offset: int = 0,
                                 sort_type: Optional[str] = None) -> Dict[str, Any]:
     """搜索小红书笔记（优质库）。keyword 必填；offset 分页偏移。"""
     return call(lambda: get_client().xiaohongshu.search_articles,
-                keyword=keyword, offset=offset, sort_type=sort_type)
+                keyword=keyword, offset=offset, sort_type=sort_type, source="搜索小红书笔记-MCP")
 
 
 @mcp.tool()
@@ -29,7 +29,7 @@ def xiaohongshu_search_users(keyword: str, offset: int = 0,
                              sort_type: Optional[str] = None) -> Dict[str, Any]:
     """搜索小红书博主账号（优质库）。keyword 必填；offset 分页偏移。"""
     return call(lambda: get_client().xiaohongshu.search_users,
-                keyword=keyword, offset=offset, sort_type=sort_type)
+                keyword=keyword, offset=offset, sort_type=sort_type, source="搜索小红书博主账号-MCP")
 
 
 @mcp.tool()
@@ -37,7 +37,7 @@ def xiaohongshu_get_account(account_id: str,
                             user_id: Optional[str] = None) -> Dict[str, Any]:
     """获取小红书账号信息（优质库）。account_id 为小红书号（必填），user_id 可选。"""
     return call(lambda: get_client().xiaohongshu.get_account,
-                account_id=account_id, user_id=user_id)
+                account_id=account_id, user_id=user_id, source="获取小红书账号信息-MCP")
 
 
 @mcp.tool()
@@ -45,20 +45,20 @@ def xiaohongshu_get_work(work_id: Optional[str] = None,
                          work_link: Optional[str] = None) -> Dict[str, Any]:
     """获取小红书笔记详情（优质库）。work_id 与 work_link（笔记链接）至少传一个。"""
     return call(lambda: get_client().xiaohongshu.get_work,
-                work_id=work_id, work_link=work_link)
+                work_id=work_id, work_link=work_link, source="获取小红书笔记详情-MCP")
 
 
 @mcp.tool()
 def xiaohongshu_search_ai_articles(keyword: str, page_num: int = 1,
                                    page_size: int = 20,
                                    start_time: Optional[str] = None,
-                                   end_time: Optional[str] = None,
-                                   source: Optional[str] = None) -> Dict[str, Any]:
+                                   end_time: Optional[str] = None) -> Dict[str, Any]:
     """搜索小红书 AI 创作相关笔记（优质库）。keyword 必填；
-    start_time/end_time 格式如 "2026-06-01 00:00:00"；source 为来源平台（可选）。"""
+    start_time/end_time 格式如 "2026-06-01 00:00:00"。"""
     return call(lambda: get_client().xiaohongshu.search_ai_articles,
                 keyword=keyword, page_num=page_num, page_size=page_size,
-                start_time=start_time, end_time=end_time, source=source)
+                start_time=start_time, end_time=end_time,
+                source="搜索小红书 AI 创作相关笔记-MCP")
 
 
 # ─── 账号作品列表 ─────────────────────────────────────────
@@ -77,7 +77,7 @@ def xiaohongshu_get_user_works(red_id: Optional[str] = None,
     return call(lambda: get_client().xiaohongshu.get_user_works,
                 red_id=red_id, userid=userid, offset=offset, sort_type=sort_type,
                 publish_time_start=publish_time_start,
-                publish_time_end=publish_time_end)
+                publish_time_end=publish_time_end, source="查询小红书账号作品列表-MCP")
 
 
 # ─── 榜单与洞察 ───────────────────────────────────────────
@@ -88,7 +88,7 @@ def xiaohongshu_get_daily_hot_rank(rank_date: str, category: str) -> Dict[str, A
     """小红书每日爆款笔记榜单。rank_date 为榜单日期 yyyy-MM-dd；
     category 为分类（如 综合全部、时尚穿搭、美味佳肴）。"""
     return call(lambda: get_client().xiaohongshu.get_daily_hot_rank,
-                rank_date=rank_date, category=category)
+                rank_date=rank_date, category=category, source="小红书每日爆款笔记榜单-MCP")
 
 
 @mcp.tool()
@@ -97,7 +97,7 @@ def xiaohongshu_get_weekly_hot_rank(rank_date: Optional[str] = None,
     """小红书七日爆款笔记。rank_date 为榜单日期 yyyy-MM-dd（每天 19:00 更新昨日榜单）；
     category 为分类（如 综合全部、出行代步），均可不传。"""
     return call(lambda: get_client().xiaohongshu.get_weekly_hot_rank,
-                rank_date=rank_date, category=category)
+                rank_date=rank_date, category=category, source="小红书七日爆款笔记-MCP")
 
 
 @mcp.tool()
@@ -108,7 +108,7 @@ def xiaohongshu_get_hot_accounts(date_type: Optional[int] = None,
     rank_date 格式 yyyy-MM-dd（日榜传当日日期、周榜传周一日期、月榜传一号）；
     type 为类别（如 综合全部）。"""
     return call(lambda: get_client().xiaohongshu.get_hot_accounts,
-                date_type=date_type, rank_date=rank_date, type=type)
+                date_type=date_type, rank_date=rank_date, type=type, source="小红书热门账号推荐-MCP")
 
 
 @mcp.tool()
@@ -121,7 +121,7 @@ def xiaohongshu_search_hot_notes(keyword: Optional[str] = None,
     start_date/end_date 格式 yyyy-MM-dd。"""
     return call(lambda: get_client().xiaohongshu.search_hot_notes,
                 keyword=keyword, page_num=page_num, page_size=page_size,
-                start_date=start_date, end_date=end_date)
+                start_date=start_date, end_date=end_date, source="小红书爆款笔记洞察-MCP")
 
 
 @mcp.tool()
@@ -129,7 +129,7 @@ def xiaohongshu_get_dark_horse_notes(keyword: str, start_date: str) -> Dict[str,
     """小红书黑马爆文榜（低粉账号爆款笔记）。keyword 必填，多个关键词用逗号分隔、
     最多 5 个、总长度不超过 200；start_date 为开始日期 yyyy-MM-dd（最长最近 30 天）。"""
     return call(lambda: get_client().xiaohongshu.get_dark_horse_notes,
-                keyword=keyword, start_date=start_date)
+                keyword=keyword, start_date=start_date, source="小红书黑马爆文榜-MCP")
 
 
 # ─── 评论（异步任务） ──────────────────────────────────────
@@ -143,13 +143,13 @@ def xiaohongshu_get_comments(opus_id: str, data_num: int,
     超时未完成时返回 taskId，可用 xiaohongshu_get_comments_result 再查。"""
     return run_task(lambda: get_client().xiaohongshu.comment_submit,
                     lambda: get_client().xiaohongshu.comment_result,
-                    timeout_seconds, opus_id=opus_id, data_num=data_num)
+                    timeout_seconds, opus_id=opus_id, data_num=data_num, source="获取小红书笔记一级评论-MCP")
 
 
 @mcp.tool()
 def xiaohongshu_get_comments_result(task_id: str) -> Dict[str, Any]:
     """查询小红书评论任务结果。仅在 xiaohongshu_get_comments 超时返回 taskId 后使用。"""
-    return call(lambda: get_client().xiaohongshu.comment_result, task_id=task_id)
+    return call(lambda: get_client().xiaohongshu.comment_result, task_id=task_id, source="查询小红书评论任务结果-MCP")
 
 
 # ─── 视频提文案（异步任务） ─────────────────────────────────
@@ -161,13 +161,13 @@ def xiaohongshu_transcript(url: str, timeout_seconds: int = 240) -> Dict[str, An
     url 为笔记/视频链接；超时未完成时返回 taskId，可用 xiaohongshu_transcript_result 再查。"""
     return run_task(lambda: get_client().xiaohongshu.transcript_submit,
                     lambda: get_client().xiaohongshu.transcript_result,
-                    timeout_seconds, url=url)
+                    timeout_seconds, url=url, source="小红书视频提文案-MCP")
 
 
 @mcp.tool()
 def xiaohongshu_transcript_result(task_id: str) -> Dict[str, Any]:
     """查询小红书视频提文案任务结果。仅在 xiaohongshu_transcript 超时返回 taskId 后使用。"""
-    return call(lambda: get_client().xiaohongshu.transcript_result, task_id=task_id)
+    return call(lambda: get_client().xiaohongshu.transcript_result, task_id=task_id, source="查询小红书视频提文案任务结果-MCP")
 
 
 def main() -> None:

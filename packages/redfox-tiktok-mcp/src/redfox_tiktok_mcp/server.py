@@ -22,7 +22,7 @@ def tiktok_search_users(keyword: str, cursor: int = 0,
     """搜索 TikTok 账号。keyword 必填；cursor 翻页游标第一页为 0、每页 +10；
     rid 为上一页数据返回的 rid，翻页时传入。返回含 cursor/hasMore/userList。"""
     return call(lambda: get_client().tiktok.search_users,
-                keyword=keyword, cursor=cursor, rid=rid)
+                keyword=keyword, cursor=cursor, rid=rid, source="搜索 TikTok 账号-MCP")
 
 
 @mcp.tool()
@@ -35,19 +35,19 @@ def tiktok_search_videos(keyword: str, offset: str = "0", count: str = "20",
     region 默认 US（美国），参考 ISO 3166-1 alpha-2 国家代码。"""
     return call(lambda: get_client().tiktok.search_videos,
                 keyword=keyword, offset=offset, count=count,
-                sort_type=sort_type, publish_time=publish_time, region=region)
+                sort_type=sort_type, publish_time=publish_time, region=region, source="TikTok 关键词视频搜索-MCP")
 
 
 @mcp.tool()
 def tiktok_get_work(aweme_id: str) -> Dict[str, Any]:
     """获取 TikTok 单个作品数据。aweme_id 为作品 ID（必填）。"""
-    return call(lambda: get_client().tiktok.get_work, aweme_id=aweme_id)
+    return call(lambda: get_client().tiktok.get_work, aweme_id=aweme_id, source="获取 TikTok 单个作品数据-MCP")
 
 
 @mcp.tool()
 def tiktok_get_user_works(sec_user_id: str) -> Dict[str, Any]:
     """获取 TikTok 用户主页作品数据。sec_user_id 为用户 ID（必填）。"""
-    return call(lambda: get_client().tiktok.get_user_works, sec_user_id=sec_user_id)
+    return call(lambda: get_client().tiktok.get_user_works, sec_user_id=sec_user_id, source="获取 TikTok 用户主页作品数据-MCP")
 
 
 def main() -> None:

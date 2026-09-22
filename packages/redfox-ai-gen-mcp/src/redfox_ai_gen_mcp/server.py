@@ -34,7 +34,7 @@ def gpt_image_generate(prompt: str, resolution: str = "1k", size: str = "1:1",
     return run_task(lambda: get_client().gpt_image.submit,
                     lambda: get_client().gpt_image.result,
                     timeout_seconds, prompt=prompt, resolution=resolution, size=size,
-                    n=n, reference_images=reference_images)
+                    n=n, reference_images=reference_images, source="GPT-Image-2 图片生成-MCP")
 
 
 @mcp.tool()
@@ -42,7 +42,7 @@ def gpt_image_result(task_id: str) -> Dict[str, Any]:
     """查询 GPT-Image-2 图片生成任务结果（含 status/progress/imageUrls/failReason）。
     status 取值 queued/in_progress/completed/failed，仅后两者为终态。
     仅在 gpt_image_generate 超时返回 taskId 后使用。"""
-    return call(lambda: get_client().gpt_image.result, task_id=task_id)
+    return call(lambda: get_client().gpt_image.result, task_id=task_id, source="查询 GPT-Image-2 图片生成任务结果-MCP")
 
 
 @mcp.tool()
@@ -63,13 +63,13 @@ def doubao_image_pro_generate(prompt: str, size: str = "2048x2048",
                     timeout_seconds, prompt=prompt, size=size, image=image,
                     output_format=output_format, response_format=response_format,
                     watermark=watermark, optimize_prompt=optimize_prompt,
-                    optimize_mode=optimize_mode)
+                    optimize_mode=optimize_mode, source="豆包 Seedream 5.0 Pro 图片生成-MCP")
 
 
 @mcp.tool()
 def doubao_image_pro_result(task_id: str) -> Dict[str, Any]:
     """查询 Seedream 5.0 Pro 任务结果。仅在 doubao_image_pro_generate 超时返回 taskId 后使用。"""
-    return call(lambda: get_client().doubao_image.pro_result, task_id=task_id)
+    return call(lambda: get_client().doubao_image.pro_result, task_id=task_id, source="查询 Seedream 5.0 Pro 任务结果-MCP")
 
 
 @mcp.tool()
@@ -91,13 +91,13 @@ def doubao_image_lite_generate(prompt: str, size: str = "2048x2048",
                     timeout_seconds, prompt=prompt, size=size, image=image,
                     output_format=output_format, response_format=response_format,
                     watermark=watermark, sequential=sequential, max_images=max_images,
-                    optimize_prompt=optimize_prompt, optimize_mode=optimize_mode)
+                    optimize_prompt=optimize_prompt, optimize_mode=optimize_mode, source="豆包 Seedream 5.0 Lite 图片生成-MCP")
 
 
 @mcp.tool()
 def doubao_image_lite_result(task_id: str) -> Dict[str, Any]:
     """查询 Seedream 5.0 Lite 任务结果。仅在 doubao_image_lite_generate 超时返回 taskId 后使用。"""
-    return call(lambda: get_client().doubao_image.lite_result, task_id=task_id)
+    return call(lambda: get_client().doubao_image.lite_result, task_id=task_id, source="查询 Seedream 5.0 Lite 任务结果-MCP")
 
 
 @mcp.tool()
@@ -124,13 +124,13 @@ def doubao_video_generate(content: List[Dict[str, Any]],
                     timeout_seconds, content=content, model=model,
                     resolution=resolution, ratio=ratio, duration=duration,
                     seed=seed, watermark=watermark, generate_audio=generate_audio,
-                    return_last_frame=return_last_frame)
+                    return_last_frame=return_last_frame, source="豆包 Seedance 2.0 视频生成-MCP")
 
 
 @mcp.tool()
 def doubao_video_result(task_id: str) -> Dict[str, Any]:
     """查询豆包视频生成任务结果。仅在 doubao_video_generate 超时返回 taskId 后使用。"""
-    return call(lambda: get_client().doubao_video.result, task_id=task_id)
+    return call(lambda: get_client().doubao_video.result, task_id=task_id, source="查询豆包视频生成任务结果-MCP")
 
 
 def main() -> None:

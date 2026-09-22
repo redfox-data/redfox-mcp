@@ -228,10 +228,14 @@ def is_done(res: Any) -> bool:
 
 
 def poll(result_fn: Callable[[], Callable], task_id: str,
-         timeout_seconds: int, interval: float = 3.0) -> Dict[str, Any]:
+         timeout_seconds: int, interval: float = 3.0,
+         source: Optional[str] = None) -> Dict[str, Any]:
     deadline = time.monotonic() + timeout_seconds
     while True:
-        res = call(result_fn, task_id=task_id)
+        kw: Dict[str, Any] = {"task_id": task_id}
+        if source is not None:
+            kw["source"] = source
+        res = call(result_fn, **kw)
         if is_done(res):
             return res
         if time.monotonic() >= deadline:
@@ -241,11 +245,14 @@ def poll(result_fn: Callable[[], Callable], task_id: str,
 
 def run_task(submit_fn: Callable[[], Callable], result_fn: Callable[[], Callable],
              timeout_seconds: int, **kwargs) -> Dict[str, Any]:
-    """提交异步任务并自动轮询至完成；超时则返回 taskId 供 result 工具后续查询"""
+    """提交异步任务并自动轮询至完成；超时则返回 taskId 供 result 工具后续查询
+
+    kwargs 中的 source（调用来源标识）会同时透传给提交与轮询两个 SDK 方法。
+    """
     submitted = call(submit_fn, **kwargs)
     if not isinstance(submitted, dict) or submitted.get("error"):
         return submitted
     task_id = submitted.get("taskId") or submitted.get("task_id")
     if not task_id:
         return submitted
-    return poll(result_fn, task_id, timeout_seconds)
+    return poll(result_fn, task_id, timeout_seconds, source=kwargs.get("source"))

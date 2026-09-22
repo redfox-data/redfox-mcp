@@ -21,13 +21,13 @@ def youtube_search_videos(search_query: str,
                           continuation_token: Optional[str] = None) -> Dict[str, Any]:
     """YouTube 关键词视频搜索。search_query 必填；continuation_token 用于翻页。"""
     return call(lambda: get_client().youtube.search_videos,
-                search_query=search_query, continuation_token=continuation_token)
+                search_query=search_query, continuation_token=continuation_token, source="YouTube 关键词视频搜索-MCP")
 
 
 @mcp.tool()
 def youtube_get_video(video_id: str) -> Dict[str, Any]:
     """获取 YouTube 单个视频详情。video_id 为视频 ID（必填）。"""
-    return call(lambda: get_client().youtube.get_video, video_id=video_id)
+    return call(lambda: get_client().youtube.get_video, video_id=video_id, source="获取 YouTube 单个视频详情-MCP")
 
 
 @mcp.tool()
@@ -40,7 +40,7 @@ def youtube_get_comments(video_id: str, language_code: Optional[str] = None,
     return call(lambda: get_client().youtube.get_comments,
                 video_id=video_id, language_code=language_code,
                 country_code=country_code, sort_by=sort_by,
-                continuation_token=continuation_token)
+                continuation_token=continuation_token, source="获取 YouTube 视频评论-MCP")
 
 
 @mcp.tool()
@@ -54,7 +54,7 @@ def youtube_get_transcript(video_url: str, format: Optional[str] = None,
     return call(lambda: get_client().youtube.get_transcript,
                 video_url=video_url, format=format,
                 include_timestamp=include_timestamp,
-                send_metadata=send_metadata, language=language)
+                send_metadata=send_metadata, language=language, source="提取 YouTube 视频字幕/文案-MCP")
 
 
 def main() -> None:

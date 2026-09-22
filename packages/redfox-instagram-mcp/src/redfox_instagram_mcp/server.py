@@ -21,13 +21,13 @@ def instagram_search(keyword: str,
                      pagination_token: Optional[str] = None) -> Dict[str, Any]:
     """Instagram 关键词搜索。keyword 必填；pagination_token 用于翻页。"""
     return call(lambda: get_client().instagram.search,
-                keyword=keyword, pagination_token=pagination_token)
+                keyword=keyword, pagination_token=pagination_token, source="Instagram 关键词搜索-MCP")
 
 
 @mcp.tool()
 def instagram_get_post(code_or_url: str) -> Dict[str, Any]:
     """获取 Instagram 单个帖子详情。code_or_url 为帖子 code 或完整链接（必填）。"""
-    return call(lambda: get_client().instagram.get_post, code_or_url=code_or_url)
+    return call(lambda: get_client().instagram.get_post, code_or_url=code_or_url, source="获取 Instagram 单个帖子详情-MCP")
 
 
 @mcp.tool()
@@ -37,7 +37,7 @@ def instagram_get_comments(code_or_url: str, sort_by: str = "recent",
     pagination_token 用于翻页。"""
     return call(lambda: get_client().instagram.get_comments,
                 code_or_url=code_or_url, sort_by=sort_by,
-                pagination_token=pagination_token)
+                pagination_token=pagination_token, source="获取 Instagram 帖子评论-MCP")
 
 
 @mcp.tool()
@@ -45,7 +45,7 @@ def instagram_get_user(username: Optional[str] = None,
                        user_id: Optional[str] = None) -> Dict[str, Any]:
     """获取 Instagram 用户信息。username 与 user_id 至少传一个，user_id 优先。"""
     return call(lambda: get_client().instagram.get_user,
-                username=username, user_id=user_id)
+                username=username, user_id=user_id, source="获取 Instagram 用户信息-MCP")
 
 
 def main() -> None:

@@ -23,7 +23,7 @@ def ai_search_kimi(inquiry_text: str, timeout_seconds: int = 240) -> Dict[str, A
     inquiry_text 为搜索提问文本；超时未完成时返回 taskId，可用 ai_search_kimi_result 再查。"""
     return run_task(lambda: get_client().ai_search.kimi_submit,
                     lambda: get_client().ai_search.kimi_result,
-                    timeout_seconds, inquiry_text=inquiry_text)
+                    timeout_seconds, inquiry_text=inquiry_text, source="Kimi 联网 AI 搜索-MCP")
 
 
 @mcp.tool()
@@ -32,7 +32,7 @@ def ai_search_doubao(inquiry_text: str, timeout_seconds: int = 240) -> Dict[str,
     inquiry_text 为搜索提问文本；超时未完成时返回 taskId，可用 ai_search_doubao_result 再查。"""
     return run_task(lambda: get_client().ai_search.doubao_submit,
                     lambda: get_client().ai_search.doubao_result,
-                    timeout_seconds, inquiry_text=inquiry_text)
+                    timeout_seconds, inquiry_text=inquiry_text, source="豆包联网 AI 搜索-MCP")
 
 
 @mcp.tool()
@@ -41,7 +41,7 @@ def ai_search_deepseek(inquiry_text: str, timeout_seconds: int = 240) -> Dict[st
     inquiry_text 为搜索提问文本；超时未完成时返回 taskId，可用 ai_search_deepseek_result 再查。"""
     return run_task(lambda: get_client().ai_search.deepseek_submit,
                     lambda: get_client().ai_search.deepseek_result,
-                    timeout_seconds, inquiry_text=inquiry_text)
+                    timeout_seconds, inquiry_text=inquiry_text, source="Deepseek 联网 AI 搜索-MCP")
 
 
 @mcp.tool()
@@ -50,7 +50,7 @@ def ai_search_yuanbao(inquiry_text: str, timeout_seconds: int = 240) -> Dict[str
     inquiry_text 为搜索提问文本；超时未完成时返回 taskId，可用 ai_search_yuanbao_result 再查。"""
     return run_task(lambda: get_client().ai_search.yuanbao_submit,
                     lambda: get_client().ai_search.yuanbao_result,
-                    timeout_seconds, inquiry_text=inquiry_text)
+                    timeout_seconds, inquiry_text=inquiry_text, source="元宝联网 AI 搜索-MCP")
 
 
 @mcp.tool()
@@ -59,7 +59,7 @@ def ai_search_qianwen(inquiry_text: str, timeout_seconds: int = 240) -> Dict[str
     inquiry_text 为搜索提问文本；超时未完成时返回 taskId，可用 ai_search_qianwen_result 再查。"""
     return run_task(lambda: get_client().ai_search.qianwen_submit,
                     lambda: get_client().ai_search.qianwen_result,
-                    timeout_seconds, inquiry_text=inquiry_text)
+                    timeout_seconds, inquiry_text=inquiry_text, source="千问联网 AI 搜索-MCP")
 
 
 @mcp.tool()
@@ -68,43 +68,43 @@ def ai_search_baidu(inquiry_text: str, timeout_seconds: int = 240) -> Dict[str, 
     inquiry_text 为搜索提问文本；超时未完成时返回 taskId，可用 ai_search_baidu_result 再查。"""
     return run_task(lambda: get_client().ai_search.baidu_submit,
                     lambda: get_client().ai_search.baidu_result,
-                    timeout_seconds, inquiry_text=inquiry_text)
+                    timeout_seconds, inquiry_text=inquiry_text, source="百度联网 AI 搜索-MCP")
 
 
 @mcp.tool()
 def ai_search_kimi_result(task_id: str) -> Dict[str, Any]:
     """查询 Kimi 搜索任务结果。仅在 ai_search_kimi 超时返回 taskId 后使用。"""
-    return call(lambda: get_client().ai_search.kimi_result, task_id=task_id)
+    return call(lambda: get_client().ai_search.kimi_result, task_id=task_id, source="查询 Kimi 搜索任务结果-MCP")
 
 
 @mcp.tool()
 def ai_search_doubao_result(task_id: str) -> Dict[str, Any]:
     """查询豆包搜索任务结果。仅在 ai_search_doubao 超时返回 taskId 后使用。"""
-    return call(lambda: get_client().ai_search.doubao_result, task_id=task_id)
+    return call(lambda: get_client().ai_search.doubao_result, task_id=task_id, source="查询豆包搜索任务结果-MCP")
 
 
 @mcp.tool()
 def ai_search_deepseek_result(task_id: str) -> Dict[str, Any]:
     """查询 Deepseek 搜索任务结果。仅在 ai_search_deepseek 超时返回 taskId 后使用。"""
-    return call(lambda: get_client().ai_search.deepseek_result, task_id=task_id)
+    return call(lambda: get_client().ai_search.deepseek_result, task_id=task_id, source="查询 Deepseek 搜索任务结果-MCP")
 
 
 @mcp.tool()
 def ai_search_yuanbao_result(task_id: str) -> Dict[str, Any]:
     """查询元宝搜索任务结果。仅在 ai_search_yuanbao 超时返回 taskId 后使用。"""
-    return call(lambda: get_client().ai_search.yuanbao_result, task_id=task_id)
+    return call(lambda: get_client().ai_search.yuanbao_result, task_id=task_id, source="查询元宝搜索任务结果-MCP")
 
 
 @mcp.tool()
 def ai_search_qianwen_result(task_id: str) -> Dict[str, Any]:
     """查询千问搜索任务结果。仅在 ai_search_qianwen 超时返回 taskId 后使用。"""
-    return call(lambda: get_client().ai_search.qianwen_result, task_id=task_id)
+    return call(lambda: get_client().ai_search.qianwen_result, task_id=task_id, source="查询千问搜索任务结果-MCP")
 
 
 @mcp.tool()
 def ai_search_baidu_result(task_id: str) -> Dict[str, Any]:
     """查询百度搜索任务结果。仅在 ai_search_baidu 超时返回 taskId 后使用。"""
-    return call(lambda: get_client().ai_search.baidu_result, task_id=task_id)
+    return call(lambda: get_client().ai_search.baidu_result, task_id=task_id, source="查询百度搜索任务结果-MCP")
 
 
 def main() -> None:
