@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-kuaishou-mcp"
-version = "0.1.1"
+version = "0.1.2"
 description = "RedFoxHub Kuaishou MCP server: work/user search, work detail, user works, transcript"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 keywords = ["mcp", "redfox", "kuaishou", "快手"]
 dependencies = [
-    "redfox-mcp-core>=0.1.0",
+    "redfox-mcp-core>=0.1.6",
 ]
 
 [project.urls]

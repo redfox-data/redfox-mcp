@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-tiktok-mcp"
-version = "0.1.2"
+version = "0.1.3"
 description = "RedFoxHub TikTok MCP server: account search, video search, work detail and user works"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 keywords = ["mcp", "redfox", "tiktok"]
 dependencies = [
-    "redfox-mcp-core>=0.1.0",
+    "redfox-mcp-core>=0.1.6",
 ]
 
 [project.urls]

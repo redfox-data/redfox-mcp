@@ -1,6 +1,6 @@
 {
   "name": "redfox-tools-mcp",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "RedFoxHub Tools MCP server",
   "bin": {
     "redfox-tools-mcp": "./cli.js"
@@ -26,7 +26,7 @@
     "node": ">=14"
   },
   "optionalDependencies": {
-    "redfox-mcp-bin-darwin-arm64": "0.4.4",
-    "redfox-mcp-bin-windows-x64": "0.4.4"
+    "redfox-mcp-bin-darwin-arm64": "0.4.5",
+    "redfox-mcp-bin-windows-x64": "0.4.5"
   }
 }

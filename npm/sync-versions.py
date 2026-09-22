@@ -42,8 +42,11 @@ def main():
     version = sys.argv[1]
 
     print(f"Syncing npm versions → {version}\n")
+    # 注意：glob "redfox-*-mcp" 不匹配裸聚合包目录 "redfox-mcp"（* 需要
+    # 两侧各有字符），必须显式列出，否则聚合包版本漏 bump 会被 CI 跳过发布。
     paths = sorted(
         glob.glob(os.path.join(ROOT, "redfox-*-mcp", "package.json"))
+        + glob.glob(os.path.join(ROOT, "redfox-mcp", "package.json"))
         + glob.glob(os.path.join(ROOT, "redfox-mcp-bin-*", "package.json"))
     )
     for path in paths:

@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-tools-mcp"
-version = "0.1.1"
+version = "0.1.2"
 description = "RedFoxHub 工具类 MCP server: 多平台视频/作品下载与素材上传"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 keywords = ["mcp", "redfox", "tools", "download", "upload"]
 dependencies = [
-    "redfox-mcp-core>=0.1.0",
+    "redfox-mcp-core>=0.1.6",
 ]
 
 [project.urls]

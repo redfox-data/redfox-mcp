@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "redfox-auto-mcp"
-version = "0.1.1"
+version = "0.1.2"
 description = "RedFoxHub 汽车垂类 MCP server: 懂车帝/汽车之家/易车 work/user search, detail, user works"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 keywords = ["mcp", "redfox", "auto", "dongchedi", "autohome", "yiche", "懂车帝", "汽车之家", "易车"]
 dependencies = [
-    "redfox-mcp-core>=0.1.0",
+    "redfox-mcp-core>=0.1.6",
 ]
 
 [project.urls]
