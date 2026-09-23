@@ -1,6 +1,6 @@
 {
   "name": "redfox-tiktok-mcp",
-  "version": "0.4.5",
+  "version": "0.4.7",
   "description": "RedFoxHub TikTok MCP server",
   "bin": {
     "redfox-tiktok-mcp": "./cli.js"
@@ -26,7 +26,7 @@
     "node": ">=14"
   },
   "optionalDependencies": {
-    "redfox-mcp-bin-darwin-arm64": "0.4.5",
-    "redfox-mcp-bin-windows-x64": "0.4.5"
+    "redfox-mcp-bin-darwin-arm64": "0.4.7",
+    "redfox-mcp-bin-windows-x64": "0.4.7"
   }
 }
