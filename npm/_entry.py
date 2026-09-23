@@ -7,6 +7,10 @@ Examples:
     redfox-mcp douyin
     redfox-mcp xiaohongshu --transport http --port 8000
     redfox-mcp all            # all-in-one aggregate server
+
+HTTP mode requires request header REDFOX_API_KEY (or Authorization: Bearer)
+to create a session; /health stays open. Set REDFOX_MCP_REQUIRE_API_KEY=0
+to disable the gate while debugging.
 """
 
 import sys

@@ -4,8 +4,10 @@ import argparse
 import os
 
 from fastmcp import FastMCP
+from starlette.middleware import Middleware
 from starlette.responses import JSONResponse
 
+from redfox_mcp_core.http_auth import RequireApiKeyMiddleware
 from redfox_mcp_core.runtime import set_transport
 
 
@@ -31,6 +33,12 @@ def serve(mcp: FastMCP, prog: str, description: str) -> None:
     args = parser.parse_args()
     if args.transport == "http":
         set_transport("http")
-        mcp.run(transport="streamable-http", host=args.host, port=args.port, path=args.path)
+        mcp.run(
+            transport="streamable-http",
+            host=args.host,
+            port=args.port,
+            path=args.path,
+            middleware=[Middleware(RequireApiKeyMiddleware)],
+        )
     else:
         mcp.run()

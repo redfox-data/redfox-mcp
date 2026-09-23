@@ -145,21 +145,60 @@ def _auth_guide() -> str:
     return API_KEY_GUIDE if _TRANSPORT == "stdio" else API_KEY_GUIDE_HTTP
 
 
+def require_api_key_enabled() -> bool:
+    """HTTP 建连是否强制要求 API Key。默认开启；REDFOX_MCP_REQUIRE_API_KEY=0 可关闭拦截。"""
+    return os.getenv("REDFOX_MCP_REQUIRE_API_KEY", "1").strip().lower() in {
+        "1", "true", "yes", "on",
+    }
+
+
+def api_key_from_headers(headers: Any) -> Optional[str]:
+    """从映射式 headers 取 key：REDFOX_API_KEY / X-API-KEY 优先，Authorization: Bearer 回退。"""
+    if headers is None:
+        return None
+    key = headers.get("REDFOX_API_KEY") or headers.get("X-API-KEY")
+    if key and str(key).strip():
+        return str(key).strip()
+    auth = headers.get("authorization") or headers.get("Authorization") or ""
+    auth = str(auth)
+    if auth.lower().startswith("bearer "):
+        return auth[7:].strip() or None
+    return None
+
+
 def _request_key() -> Optional[str]:
-    """HTTP 模式下从请求头取 key：REDFOX_API_KEY 优先，Authorization: Bearer 回退"""
+    """HTTP 模式下从当前请求头取 key。"""
     if get_http_request is None:
         return None
     try:
         req = get_http_request()
     except Exception:  # 非 HTTP 上下文
         return None
-    key = req.headers.get("REDFOX_API_KEY") or req.headers.get("X-API-KEY")
-    if key and key.strip():
-        return key.strip()
-    auth = req.headers.get("authorization", "")
-    if auth.lower().startswith("bearer "):
-        return auth[7:].strip() or None
-    return None
+    if req is None:
+        return None
+    return api_key_from_headers(getattr(req, "headers", None))
+
+
+def emit_mcp_connect(
+    *,
+    has_api_key: bool,
+    api_key: Optional[str] = None,
+    session_id: Optional[str] = None,
+    rejected: bool = False,
+    http_method: Optional[str] = None,
+    path: Optional[str] = None,
+) -> None:
+    """记录建连事件（含空连 / 无 Key 拒绝）。不依赖 FastMCP 请求上下文。"""
+    _emit(
+        "mcp_connect",
+        has_api_key=has_api_key,
+        api_key=_mask_key(api_key) if api_key else "",
+        session_id=session_id or "",
+        rejected=rejected,
+        http_method=http_method,
+        path=path,
+        require_api_key=require_api_key_enabled(),
+    )
 
 
 def get_client() -> RedFoxClient:

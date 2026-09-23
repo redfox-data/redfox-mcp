@@ -21,7 +21,7 @@ import sys
 import textwrap
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-VERSION = "0.4.4"
+VERSION = "0.4.5"
 
 # (os, cpu, npm name suffix) — win32 uses "windows" in the package name:
 # the literal token "win32" triggers npm registry spam detection on PUT.
@@ -165,7 +165,14 @@ def generate_main_package(npm_name, server_name, description, version):
         {npm_name} --transport http --host 0.0.0.0 --port 8000
         ```
 
+        HTTP 模式建连时必须在请求头携带 API Key（`REDFOX_API_KEY` 或
+        `Authorization: Bearer ak_xxx`），否则返回 401、不创建 session。
+        `/health` 探活无需 Key。紧急排查可设 `REDFOX_MCP_REQUIRE_API_KEY=0`
+        关闭拦截（仍会打建连日志）。
+
         ## MCP Client Configuration
+
+        ### stdio（本地）
 
         ```json
         {{
@@ -174,6 +181,21 @@ def generate_main_package(npm_name, server_name, description, version):
               "command": "npx",
               "args": ["-y", "{npm_name}"],
               "env": {{
+                "REDFOX_API_KEY": "ak_your_key"
+              }}
+            }}
+          }}
+        }}
+        ```
+
+        ### HTTP（远程 / 自建）
+
+        ```json
+        {{
+          "mcpServers": {{
+            "{npm_name}": {{
+              "url": "http://127.0.0.1:8000/mcp",
+              "headers": {{
                 "REDFOX_API_KEY": "ak_your_key"
               }}
             }}

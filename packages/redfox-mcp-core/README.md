@@ -12,6 +12,8 @@ RedFoxHub 各平台 MCP server 的共享基础包，不直接面向终端用户�
 认证方式：
 
 - stdio：环境变量 `REDFOX_API_KEY`
-- HTTP：请求头 `REDFOX_API_KEY: ak_xxx`（或 `Authorization: Bearer ak_xxx`）
+- HTTP：请求头 `REDFOX_API_KEY: ak_xxx`（或 `Authorization: Bearer ak_xxx` / `X-API-KEY`）
+- HTTP 建连：默认无 Key 返回 401、不建 session（`/health` 除外）；`REDFOX_MCP_REQUIRE_API_KEY=0` 可关闭拦截（仍打 `mcp_connect` 日志）
+- 日志：`REDFOX_MCP_LOG=1` 时记录 `mcp_connect`（含空连是否带 Key）与 `mcp_call`
 
 API Key 获取：https://redfox.hk/settings/api-keys?source=mcp
