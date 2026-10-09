@@ -28,9 +28,14 @@ VERSION = "0.4.5"
 # darwin-x64 (Intel Mac) is intentionally absent: it needed the macos-13 runner,
 # which queues for hours or never starts, so its bin package never reached the
 # registry. Intel Mac users install from PyPI instead (pip/uvx, pure Python).
+# linux-x64 is built on the ubuntu-22.04 runner (glibc 2.35) so the binary runs
+# on every still-supported mainstream distro; building on ubuntu-latest (newer
+# glibc) would crash older systems with "GLIBC_x.yy not found". linux-arm64 and
+# Alpine/musl are intentionally not built — those users install from PyPI.
 BIN_PLATFORMS = [
     ("darwin", "arm64", "darwin-arm64"),
     ("win32", "x64", "windows-x64"),
+    ("linux", "x64", "linux-x64"),
 ]
 
 # (npm_name, server_name, description)
@@ -82,8 +87,9 @@ const binPath = findBin();
 if (!binPath || !fs.existsSync(binPath)) {{
   process.stderr.write(
     `Error: no RedFox MCP binary for ${{process.platform}}-${{process.arch}}.\\n` +
-    `Supported platforms: darwin-arm64, win32-x64 (package: windows-x64).\\n` +
-    `Intel Mac (darwin-x64) has no npm binary; install from PyPI instead:\\n` +
+    `Supported platforms: darwin-arm64, win32-x64 (package: windows-x64), linux-x64.\\n` +
+    `Other targets (Intel Mac darwin-x64, linux-arm64, Alpine/musl) have no npm\\n` +
+    `binary; install from PyPI instead:\\n` +
     `  npm-unavailable fallback -> pipx install redfox-mcp   (or: uvx redfox-mcp)\\n`
   );
   process.exit(1);
@@ -205,11 +211,11 @@ def generate_main_package(npm_name, server_name, description, version):
 
         ## Platforms
 
-        macOS (Apple Silicon) and Windows (x64). The matching native binary is
-        pulled in automatically via optionalDependencies.
+        macOS (Apple Silicon), Windows (x64) and Linux (x64). The matching native
+        binary is pulled in automatically via optionalDependencies.
 
-        Intel Mac (darwin-x64) has no npm binary — the macos-13 CI runner is too
-        scarce to build it reliably. Install from PyPI instead:
+        Other targets have no npm binary — Intel Mac (darwin-x64), Linux arm64 and
+        Alpine/musl. Install from PyPI instead:
         `uvx {npm_name}` or `pipx install {npm_name}` (pure Python, any platform).
 
         ## API Key

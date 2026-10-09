@@ -61,11 +61,11 @@ HTTP 模式建连时必须在请求头携带 API Key（`REDFOX_API_KEY` 或
 
 ## Platforms
 
-macOS (Apple Silicon) and Windows (x64). The matching native binary is
-pulled in automatically via optionalDependencies.
+macOS (Apple Silicon), Windows (x64) and Linux (x64). The matching native
+binary is pulled in automatically via optionalDependencies.
 
-Intel Mac (darwin-x64) has no npm binary — the macos-13 CI runner is too
-scarce to build it reliably. Install from PyPI instead:
+Other targets have no npm binary — Intel Mac (darwin-x64), Linux arm64 and
+Alpine/musl. Install from PyPI instead:
 `uvx redfox-auto-mcp` or `pipx install redfox-auto-mcp` (pure Python, any platform).
 
 ## API Key
