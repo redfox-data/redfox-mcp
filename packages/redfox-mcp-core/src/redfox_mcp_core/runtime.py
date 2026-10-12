@@ -26,6 +26,11 @@ try:
 except ImportError:  # 老版本 fastmcp 无此接口
     get_http_request = None
 
+try:
+    from fastmcp.server.dependencies import get_access_token
+except ImportError:  # 老版本 fastmcp 无此接口
+    get_access_token = None
+
 API_KEY_GUIDE = (
     "REDFOX_API_KEY 未配置或无效。请前往 "
     "https://redfox.hk/settings/api-keys?source=mcp 注册并获取 API Key，"
@@ -179,6 +184,46 @@ def _request_key() -> Optional[str]:
     return api_key_from_headers(getattr(req, "headers", None))
 
 
+def _token_user_id(token: Any) -> Optional[str]:
+    """从 access_token 取红狐 user_id。
+
+    claims 优先——fastmcp 的 get_access_token() 把 SDK AccessToken 转成 fastmcp
+    AccessToken 时只保留 claims、丢弃 subject；subject 仅作兜底。
+    """
+    claims = getattr(token, "claims", None)
+    if isinstance(claims, dict):
+        uid = claims.get("redfox_user_id")
+        if uid:
+            return str(uid)
+    subj = getattr(token, "subject", None)
+    return str(subj) if subj else None
+
+
+def _http_key() -> Optional[str]:
+    """HTTP 模式取 Key：
+
+    - OAuth 请求（上下文存在 access_token）→ 由 token 里的红狐 user_id 解析 Key；
+      解析不到即返回 None，**不把 bearer token 当 Key**（否则红狐只会回 3107 无效，掩盖真因）。
+    - 非 OAuth（默认 apikey / multi 模式）→ 走请求头 API Key（今天的既有路径）。
+
+    默认 apikey 模式未挂 auth provider，get_access_token() 返回 None，本函数直接落到
+    请求头路径——现有行为逐字节不变。
+    """
+    if get_access_token is not None:
+        try:
+            token = get_access_token()
+        except Exception:  # 非 OAuth 上下文
+            token = None
+        if token is not None:
+            user_id = _token_user_id(token)
+            if not user_id:
+                return None
+            from redfox_mcp_core.oauth import resolve_api_key
+
+            return resolve_api_key(user_id)
+    return _request_key()
+
+
 def emit_mcp_connect(
     *,
     has_api_key: bool,
@@ -207,10 +252,11 @@ def get_client() -> RedFoxClient:
         if _client is None:
             _client = RedFoxClient()  # 零配置：自动读环境变量 REDFOX_API_KEY
         return _client
-    # HTTP 多租户：按请求头中的 key 建独立 client，互不共享额度
-    key = _request_key()
+    # HTTP 多租户：OAuth 请求由 token.subject→user_id→API Key；否则走请求头 Key。
+    # 按 key 建独立 client，互不共享额度。
+    key = _http_key()
     if not key:
-        raise ValueError("missing API key in request header")
+        raise ValueError("missing API key (OAuth subject unresolved or no header key)")
     with _tenants_lock:
         cli = _tenants.get(key)
         if cli is None:

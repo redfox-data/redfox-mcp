@@ -11,7 +11,9 @@ requires-python = ">=3.10"
 license = "MIT"
 keywords = ["mcp", "redfox"]
 dependencies = [
-    "fastmcp>=2.0",
+    # OAuth 授权层依赖 fastmcp 3.x 的 InMemoryOAuthProvider API 与 get_access_token
+    # 令牌转换契约（claims 承载 user_id），收紧版本范围锁定该契约；<4 防大版本破坏。
+    "fastmcp>=3.4,<4",
     # Intel Mac 上 cryptography 49+ 无预编译 wheel 会触发源码构建，钉住 48.x
     "cryptography<49; platform_machine == 'x86_64' and sys_platform == 'darwin'",
     "redfox-python-sdk>=0.5.2",

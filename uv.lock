@@ -1293,7 +1293,7 @@ requires-dist = [
 
 [[package]]
 name = "redfox-mcp-core"
-version = "0.1.6"
+version = "0.1.7"
 source = { editable = "packages/redfox-mcp-core" }
 dependencies = [
     { name = "cryptography", marker = "platform_machine == 'x86_64' and sys_platform == 'darwin'" },
@@ -1305,14 +1305,14 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "cryptography", marker = "platform_machine == 'x86_64' and sys_platform == 'darwin'", specifier = "<49" },
-    { name = "fastmcp", specifier = ">=2.0" },
+    { name = "fastmcp", specifier = ">=3.4,<4" },
     { name = "httpx", specifier = ">=0.24" },
     { name = "redfox-python-sdk", directory = "../redfox-python-sdk" },
 ]
 
 [[package]]
 name = "redfox-python-sdk"
-version = "0.5.2"
+version = "0.6.0"
 source = { directory = "../redfox-python-sdk" }
 dependencies = [
     { name = "httpx" },
