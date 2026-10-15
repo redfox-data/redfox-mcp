@@ -6,11 +6,11 @@
 
 ## 0. 架构分工（四方）
 
-| 角色 | 技术栈 | 职责 |
-|---|---|---|
-| 豆包 OAuth 客户端 | 第三方 | 发起 DCR / PKCE / 换 token / 带 Bearer 调 MCP |
-| 红狐前端 | **JS**（redfox.hk） | 登录页 + 同意页 + 调红狐后端验登录 + 点同意拿 ticket 跳回 MCP |
-| 红狐后端 | 账号系统 | 登录 API / session 验证 / ticket 签发与验证 / get_api_key_by_user |
+| 角色                | 技术栈                          | 职责                                                                      |
+| ------------------- | ------------------------------- | ------------------------------------------------------------------------- |
+| 豆包 OAuth 客户端   | 第三方                          | 发起 DCR / PKCE / 换 token / 带 Bearer 调 MCP                             |
+| 红狐前端            | **JS**（redfox.hk）             | 登录页 + 同意页 + 调红狐后端验登录 + 点同意拿 ticket 跳回 MCP             |
+| 红狐后端            | 账号系统                        | 登录 API / session 验证 / ticket 签发与验证 / `GET /story/web/apiKey/queryKey?uuid={ticket}` |
 | MCP 资源+授权服务器 | Python/fastmcp（mcp.redfox.hk） | OAuth 协议端点 + `/oauth/resume` 回调（验 ticket + 发 code + 302 回豆包） |
 
 **关键约定**：登录页/同意页在**红狐前端 JS**（redfox.hk 域名，天然读红狐 cookie），**不在 MCP**；MCP 不碰账号密码，只接收红狐前端回调传过来的一次性 ticket 换 user_id。
@@ -24,7 +24,7 @@
 5. MCP `/oauth/resume`：验 ticket 换 user_id → 发 code（含 code_challenge）→ `302` 回豆包 → `GET {cb}?code={code}&state={S}`
 6. 浏览器跟随 302 → 豆包回调端点收 code+state（**豆包自己实现，我们不做**）
 7. 豆包 → `POST https://mcp.redfox.hk/token`（code+client_id+redirect_uri+code_verifier）→ access_token+refresh_token（已实现）
-8. 豆包 → `https://mcp.redfox.hk/mcp` 带 `Authorization: Bearer access_token` → MCP 验 token → `claims.redfox_user_id` → `get_api_key_by_user` → 调数据（已实现）
+8. 豆包 → `https://mcp.redfox.hk/mcp` 带 `Authorization: Bearer access_token` → MCP 验 token → `claims.redfox_user_id`（即 ticket）→ `GET https://redfox.hk/story/web/apiKey/queryKey?uuid={ticket}` → 调数据（已实现）
 
 ## 2. 红狐前端（JS）要做的
 
@@ -33,8 +33,8 @@
 ```html
 <!-- https://redfox.hk/oauth/consent?txn_id={T} -->
 <form id="loginForm" hidden>
-  <input name="username" placeholder="红狐账号">
-  <input type="password" name="password" placeholder="密码">
+  <input name="username" placeholder="红狐账号" />
+  <input type="password" name="password" placeholder="密码" />
   <button type="submit">登录</button>
 </form>
 <div id="consentBox" hidden>
@@ -43,42 +43,49 @@
   <button id="deny">拒绝</button>
 </div>
 <script>
-const txn = new URLSearchParams(location.search).get('txn_id');
-const MCP_RESUME = 'https://mcp.redfox.hk/oauth/resume';
+  const txn = new URLSearchParams(location.search).get("txn_id");
+  const MCP_RESUME = "https://mcp.redfox.hk/oauth/resume";
 
-// 1) 读红狐登录态（同域 cookie 自动带上）；未登录则显示登录表单
-fetch('/api/session', { credentials: 'include' })
-  .then(r => r.ok ? r.json() : Promise.reject())
-  .then(({ user_id, username }) => showConsent(user_id, username))
-  .catch(() => { document.getElementById('loginForm').hidden = false; });
+  // 1) 读红狐登录态（同域 cookie 自动带上）；未登录则显示登录表单
+  fetch("/api/session", { credentials: "include" })
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then(({ user_id, username }) => showConsent(user_id, username))
+    .catch(() => {
+      document.getElementById("loginForm").hidden = false;
+    });
 
-function showConsent(uid, name) {
-  document.getElementById('uname').textContent = name;
-  document.getElementById('consentBox').hidden = false;
-}
+  function showConsent(uid, name) {
+    document.getElementById("uname").textContent = name;
+    document.getElementById("consentBox").hidden = false;
+  }
 
-// 2) 未登录：密码只发给红狐后端 /api/login（绝不发给 MCP）
-document.getElementById('loginForm').onsubmit = async e => {
-  e.preventDefault();
-  const r = await fetch('/api/login', { method: 'POST', credentials: 'include', body: new FormData(e.target) });
-  if (!r.ok) return alert('账号或密码错误');
-  const { user_id, username } = await r.json();
-  showConsent(user_id, username);
-};
+  // 2) 未登录：密码只发给红狐后端 /api/login（绝不发给 MCP）
+  document.getElementById("loginForm").onsubmit = async (e) => {
+    e.preventDefault();
+    const r = await fetch("/api/login", {
+      method: "POST",
+      credentials: "include",
+      body: new FormData(e.target),
+    });
+    if (!r.ok) return alert("账号或密码错误");
+    const { user_id, username } = await r.json();
+    showConsent(user_id, username);
+  };
 
-// 3) 点同意：拿一次性 ticket，跳回 MCP 回调
-document.getElementById('approve').onclick = async () => {
-  const r = await fetch('/api/oauth/ticket', {
-    method: 'POST', credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ txn_id: txn }),
-  });
-  const { ticket } = await r.json();
-  location.href = `${MCP_RESUME}?txn_id=${txn}&ticket=${ticket}`;
-};
-document.getElementById('deny').onclick = () => {
-  location.href = `${MCP_RESUME}?txn_id=${txn}&consent=deny`;
-};
+  // 3) 点同意：拿一次性 ticket，跳回 MCP 回调
+  document.getElementById("approve").onclick = async () => {
+    const r = await fetch("/api/oauth/ticket", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ txn_id: txn }),
+    });
+    const { ticket } = await r.json();
+    location.href = `${MCP_RESUME}?txn_id=${txn}&ticket=${ticket}`;
+  };
+  document.getElementById("deny").onclick = () => {
+    location.href = `${MCP_RESUME}?txn_id=${txn}&consent=deny`;
+  };
 </script>
 ```
 
@@ -125,7 +132,7 @@ async def oauth_resume(request, provider):
 - `GET /api/session`：cookie → user_id（前端读登录态）
 - `POST /api/oauth/ticket`：session + txn_id → 一次性 ticket（前端点同意时调）
 - ticket 验证接口：ticket → user_id（MCP `/oauth/resume` 调用）
-- `get_api_key_by_user(user_id)` → 红狐 API Key（MCP 调数据用）
+- `GET https://redfox.hk/story/web/apiKey/queryKey?uuid={ticket}` → 红狐 API Key（MCP 调数据用；`uuid` 用同意回调里的 ticket）
 
 ## 5. FC 部署（同事）
 

@@ -50,12 +50,22 @@ def serve(mcp: FastMCP, prog: str, description: str) -> None:
                 os.getenv("REDFOX_MCP_OAUTH_BASE_URL")
                 or f"http://{args.host}:{args.port}"
             )
-            mcp.auth = build_auth(
+            provider = build_auth(
                 auth_mode,
                 base_url,
                 resource_base_url=os.getenv("REDFOX_MCP_OAUTH_RESOURCE_BASE_URL") or None,
                 issuer_url=os.getenv("REDFOX_MCP_OAUTH_ISSUER_URL") or None,
             )
+            mcp.auth = provider
+            # 同意页跳回。调试期 ticket=用户 uuid；未设置同意页地址时此路由无事务可恢复。
+            from starlette.requests import Request
+
+            from redfox_mcp_core.oauth import handle_oauth_resume
+
+            @mcp.custom_route("/oauth/resume", methods=["GET"])
+            async def _oauth_resume(request: Request):
+                return await handle_oauth_resume(request, provider)
+
             # OAuth 模式由 fastmcp 的 RequireAuthMiddleware 接管，撤掉 API Key 中间件。
             middleware = []
         mcp.run(
