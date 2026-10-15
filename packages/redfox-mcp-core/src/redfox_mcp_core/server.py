@@ -57,7 +57,7 @@ def serve(mcp: FastMCP, prog: str, description: str) -> None:
                 issuer_url=os.getenv("REDFOX_MCP_OAUTH_ISSUER_URL") or None,
             )
             mcp.auth = provider
-            # 同意页跳回。调试期 ticket=用户 uuid；未设置同意页地址时此路由无事务可恢复。
+            # 同意页跳回：验 ticket → 发 code → 302 回客户端回调。调试期 ticket=用户 uuid。
             from starlette.requests import Request
 
             from redfox_mcp_core.oauth import handle_oauth_resume

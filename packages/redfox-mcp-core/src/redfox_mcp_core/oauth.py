@@ -3,15 +3,17 @@
 启用条件：仅当 REDFOX_MCP_AUTH_MODE=oauth|multi 时由 serve() 挂载；默认 apikey
 模式下本模块完全不参与，现有 API Key 鉴权行为逐字节不变。
 
-测试期身份为 **stub**：/authorize 直接复用 fastmcp 内置的“自动发码”，并绑定一个
-固定测试用户；API Key 从环境变量解析。DCR / PKCE / token 签发 / refresh / revoke
-全部复用 fastmcp 的 InMemoryOAuthProvider，本模块只补两件事：
-    1) authorize 时把 user_id 绑定到授权码；
-    2) 换 token 时把 user_id 写进 AccessToken.subject（RFC 7662 的资源属主）。
+授权流程（oauth/multi 模式）：/authorize 不再直接发码，而是 302 到红狐登录/同意页
+（默认 https://redfox.hk/oauth/consent，可用 REDFOX_OAUTH_CONSENT_URL 覆盖）；
+同意页带回 ticket 后由 /oauth/resume 发码、302 回客户端回调。
+仅当 REDFOX_OAUTH_CONSENT_URL=stub 时退回"自动发码 + 固定测试用户"的本地协议自检模式。
+DCR / PKCE / token 签发 / refresh / revoke 全部复用 fastmcp 的 InMemoryOAuthProvider，
+本模块只补三件事：
+    1) authorize 时暂存事务（txn_id）并跳转同意页；
+    2) /oauth/resume 发码时把 user_id 绑定到授权码；
+    3) 换 token 时把 user_id 写进 AccessToken.subject（RFC 7662 的资源属主）。
 
-生产接入时只需替换两处、协议逻辑零改动：
-    - _stub_user_id()  →  从真实红狐登录 / SSO 会话取 user_id；
-    - 取 Key 已接账号侧 GET /story/web/apiKey/queryKey?uuid={ticket}。
+取 Key 已接账号侧 GET /story/web/apiKey/queryKey?uuid={ticket}。
 """
 
 from __future__ import annotations
@@ -209,8 +211,20 @@ class _PendingConsent:
         self.expires_at = time.time() + _TXN_TTL_SECONDS
 
 
-def _consent_page_url() -> str:
-    return os.getenv("REDFOX_OAUTH_CONSENT_URL", "").strip()
+_DEFAULT_CONSENT_URL = "https://redfox.hk/oauth/consent"
+_STUB_CONSENT_VALUES = {"stub", "off", "none", "disabled"}
+
+
+def _consent_page_url() -> Optional[str]:
+    """同意页地址：默认红狐同意页；仅显式 stub 才退回本地直发码自检模式。
+
+    返回 None 表示 stub 模式。默认即走同意页是为了避免"忘配环境变量就静默跳过
+    登录/同意"——那会让授权流在没有真实身份的情况下发码。
+    """
+    raw = os.getenv("REDFOX_OAUTH_CONSENT_URL", "").strip()
+    if raw.lower() in _STUB_CONSENT_VALUES:
+        return None
+    return raw or _DEFAULT_CONSENT_URL
 
 
 def _with_txn(consent_url: str, txn_id: str) -> str:
@@ -224,8 +238,9 @@ class RedFoxOAuthProvider(InMemoryOAuthProvider):
     继承：register_client(DCR) / authorize+PKCE / token 签发 / refresh / revoke。
     新增：授权码 → user_id 绑定，并把 user_id 写入 AccessToken.subject。
 
-    设置 REDFOX_OAUTH_CONSENT_URL 后，/authorize 不再直接发码，而是 302 到红狐同意页；
-    同意页带回 ticket 后由 /oauth/resume 发 code。未设置时保持 stub 自动发码，自检脚本不受影响。
+    /authorize 默认 302 到红狐登录/同意页（REDFOX_OAUTH_CONSENT_URL 可覆盖，默认
+    https://redfox.hk/oauth/consent），同意页带回 ticket 后由 /oauth/resume 发 code；
+    仅 REDFOX_OAUTH_CONSENT_URL=stub 时保持自动发码（本地协议自检）。
     """
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -238,7 +253,8 @@ class RedFoxOAuthProvider(InMemoryOAuthProvider):
     ) -> str:
         consent_url = _consent_page_url()
         if not consent_url:
-            # 未接同意页：直接复用父类自动发码，并绑定固定测试用户。
+            # 显式 stub 模式（REDFOX_OAUTH_CONSENT_URL=stub）：跳过同意页直发码并绑定
+            # 固定测试用户，仅用于本地协议自检；正常部署不会走这里。
             redirect = await super().authorize(client, params)
             user_id = _stub_user_id()
             code = _extract_code(redirect)
