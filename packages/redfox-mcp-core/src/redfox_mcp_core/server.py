@@ -33,12 +33,15 @@ def serve(mcp: FastMCP, prog: str, description: str) -> None:
     args = parser.parse_args()
     if args.transport == "http":
         set_transport("http")
+        # 无状态 HTTP：FC 多实例/冷启动会把同一会话的请求路由到不同进程，
+        # 有状态 session 绑在单进程内存里，跨实例即 404 Session not found。
         mcp.run(
             transport="streamable-http",
             host=args.host,
             port=args.port,
             path=args.path,
             middleware=[Middleware(RequireApiKeyMiddleware)],
+            stateless_http=True,
         )
     else:
         mcp.run()
