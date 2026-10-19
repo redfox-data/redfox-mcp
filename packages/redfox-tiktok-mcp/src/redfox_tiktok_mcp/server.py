@@ -17,12 +17,20 @@ mcp = create_server("redfox-tiktok", __version__)
 
 
 @mcp.tool()
-def tiktok_search_users(keyword: str, cursor: int = 0,
-                        rid: Optional[str] = None) -> Dict[str, Any]:
-    """搜索 TikTok 账号。keyword 必填；cursor 翻页游标第一页为 0、每页 +10；
-    rid 为上一页数据返回的 rid，翻页时传入。返回含 cursor/hasMore/userList。"""
+def tiktok_search_users(keyword: str, offset: str = "0", count: str = "20",
+                        follower_count_filter: Optional[int] = None,
+                        profile_type_filter: Optional[int] = None,
+                        other_pref_filter: Optional[int] = None) -> Dict[str, Any]:
+    """搜索 TikTok 账号。keyword 必填；offset 偏移量从 0 开始、翻页 +count；
+    count 每页数量默认 20；follower_count_filter 粉丝数筛选：1=0~1K，2=1K~10K，
+    3=10K~100K，4=100K 以上；profile_type_filter：1=认证用户；
+    other_pref_filter：1=按用户名相关性；三个筛选不传则不限制。"""
     return call(lambda: get_client().tiktok.search_users,
-                keyword=keyword, cursor=cursor, rid=rid, source="搜索 TikTok 账号-MCP")
+                keyword=keyword, offset=offset, count=count,
+                follower_count_filter=follower_count_filter,
+                profile_type_filter=profile_type_filter,
+                other_pref_filter=other_pref_filter,
+                source="搜索 TikTok 账号-MCP")
 
 
 @mcp.tool()

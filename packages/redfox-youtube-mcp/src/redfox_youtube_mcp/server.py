@@ -44,17 +44,12 @@ def youtube_get_comments(video_id: str, language_code: Optional[str] = None,
 
 
 @mcp.tool()
-def youtube_get_transcript(video_url: str, format: Optional[str] = None,
-                           include_timestamp: Optional[bool] = None,
-                           send_metadata: Optional[bool] = None,
-                           language: Optional[str] = None) -> Dict[str, Any]:
-    """提取 YouTube 视频字幕/文案。video_url 为视频链接（必填）；
-    format：text/srt/vtt/json3；include_timestamp 是否带时间戳；
-    language 指定语言代码（如 zh/en）。"""
+def youtube_get_transcript(video_url: str) -> Dict[str, Any]:
+    """提取 YouTube 视频字幕轨道。video_url 为视频链接（必填）。
+    返回视频信息（标题、时长、发布时间、封面、描述）及各语言、各格式
+    （srt/vtt/ttml/json3）的字幕下载地址，含人工字幕与自动生成字幕。"""
     return call(lambda: get_client().youtube.get_transcript,
-                video_url=video_url, format=format,
-                include_timestamp=include_timestamp,
-                send_metadata=send_metadata, language=language, source="提取 YouTube 视频字幕/文案-MCP")
+                video_url=video_url, source="提取 YouTube 视频字幕/文案-MCP")
 
 
 def main() -> None:

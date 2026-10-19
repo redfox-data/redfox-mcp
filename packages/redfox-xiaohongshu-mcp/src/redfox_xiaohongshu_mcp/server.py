@@ -125,11 +125,12 @@ def xiaohongshu_search_hot_notes(keyword: Optional[str] = None,
 
 
 @mcp.tool()
-def xiaohongshu_get_dark_horse_notes(keyword: str, start_date: str) -> Dict[str, Any]:
-    """小红书黑马爆文榜（低粉账号爆款笔记）。keyword 必填，多个关键词用逗号分隔、
-    最多 5 个、总长度不超过 200；start_date 为开始日期 yyyy-MM-dd（最长最近 30 天）。"""
+def xiaohongshu_get_dark_horse_notes(category: str, start_date: str) -> Dict[str, Any]:
+    """小红书黑马爆文榜（低粉账号爆款笔记）。category 为分类（必填），
+    取值如 综合全部、出行代步、医疗保健、时尚穿搭、美味佳肴 等中文分类名；
+    start_date 为榜单日期 yyyy-MM-dd（最长最近 30 天）。"""
     return call(lambda: get_client().xiaohongshu.get_dark_horse_notes,
-                keyword=keyword, start_date=start_date, source="小红书黑马爆文榜-MCP")
+                category=category, start_date=start_date, source="小红书黑马爆文榜-MCP")
 
 
 # ─── 评论（异步任务） ──────────────────────────────────────
