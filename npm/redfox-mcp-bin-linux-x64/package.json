@@ -1,6 +1,6 @@
 {
   "name": "redfox-mcp-bin-linux-x64",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "RedFox MCP native binary for linux-x64 (busybox, all servers)",
   "files": [
     "bin/",
