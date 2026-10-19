@@ -232,7 +232,11 @@ def call(fn_factory: Callable[[], Callable], **kwargs) -> Dict[str, Any]:
         tool = _fn_name(fn)
         result = fn(**args)
         _emit("mcp_call", tool=tool, arguments=args, ok=True, result=result)
-        return result
+        if isinstance(result, dict):
+            return result
+        # 部分数据接口顶层返回 JSON 数组，而工具声明的返回类型是 dict（output
+        # schema 为 object），fastmcp 会拒绝非 dict 返回值，这里统一包一层。
+        return {"list": result} if isinstance(result, list) else {"data": result}
     except (RedFoxAuthError, ValueError) as e:
         result = {"error": "auth_failed", "message": _auth_guide()}
         _emit("mcp_call", tool=tool, arguments=args, ok=False, error=type(e).__name__, result=result)
