@@ -1,0 +1,50 @@
+import unittest
+
+from redfox_data_mcp.dispatch import prepare
+from redfox_data_mcp.search import describe, find
+
+
+class FindTests(unittest.TestCase):
+    def test_douyin_hot_is_lexical(self):
+        result = find("抖音热门作品")
+        self.assertNotIn("error", result)
+        ids = [item["id"] for item in result["matches"]]
+        self.assertTrue(ids)
+        self.assertLessEqual(len(ids), 10)
+        self.assertTrue(all(item.startswith("douyin.") for item in ids))
+        self.assertIn("douyin", result["platforms"])
+
+    def test_platform_only_lists_nearest_without_matches(self):
+        result = find(platform="抖音")
+        self.assertEqual(result["matches"], [])
+        self.assertGreaterEqual(len(result["nearest"]), 10)
+        self.assertTrue(all(item["id"].startswith("douyin.") for item in result["nearest"]))
+
+    def test_unknown_need_does_not_substitute(self):
+        result = find("抖音天气预报")
+        self.assertEqual(result["matches"], [])
+        self.assertTrue(result["unknown"])
+        self.assertTrue(result["nearest"])
+
+    def test_kimi_search(self):
+        result = find("kimi 联网搜索")
+        ids = [item["id"] for item in result["matches"]]
+        self.assertEqual(ids[0], "ai_search.kimi")
+
+    def test_broad_query_caps_at_ten(self):
+        result = find("搜索")
+        self.assertLessEqual(len(result["matches"]), 10)
+
+    def test_describe_and_prepare_reject_before_call(self):
+        described = describe(["douyin.search.articles"])
+        self.assertEqual(described["missing"], [])
+        self.assertTrue(described["capabilities"][0]["params"])
+        rejected = prepare("douyin.search.articles", {})
+        self.assertIsInstance(rejected, dict)
+        self.assertEqual(rejected["error"], "invalid_argument")
+        missing_cap = prepare("douyin.private.messages", {"keyword": "x"})
+        self.assertEqual(missing_cap["error"], "invalid_argument")
+
+
+if __name__ == "__main__":
+    unittest.main()
