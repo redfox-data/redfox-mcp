@@ -19,6 +19,20 @@ class SchemaTests(unittest.TestCase):
         self.assertNotIn("ai_gen", text)
         self.assertNotIn("tools（", text)
         self.assertNotIn("上传", text)
+        from redfox_data_mcp.schema import find_param_descriptions
+
+        fields = find_param_descriptions()
+        self.assertIn("抖音体育榜单", fields["query"])
+        self.assertIn("douyin（抖音）", fields["platform"])
+        self.assertNotIn("下载与上传", fields["platform"])
+        self.assertNotIn("AI 生成", fields["platform"])
+        self.assertIn("social", fields["category"])
+        self.assertIn("auto", fields["category"])
+        self.assertNotIn("tools", fields["category"])
+        for name, desc in described.items():
+            self.assertFalse(desc.startswith("参数 "), name)
+            self.assertNotIn("上传", desc)
+            self.assertNotIn("文生图", desc)
 
 
 class HiddenPlatformTests(unittest.TestCase):

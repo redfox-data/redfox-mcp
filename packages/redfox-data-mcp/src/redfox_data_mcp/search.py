@@ -214,8 +214,8 @@ def find(query: str = "", platform: str = "", category: str = "") -> dict[str, A
             "message": f"不认识的平台 {platform}",
             "platforms": [name for name, _ in PLATFORM_ALIASES if name not in DISABLED_PLATFORMS],
         }
-    if category and category not in {"social", "auto", "ai", "tools"}:
-        return {"error": "invalid_argument", "message": "category 只能是 social、auto、ai、tools"}
+    if category and category not in {"social", "auto", "ai"}:
+        return {"error": "invalid_argument", "message": "category 只能是 social、auto、ai"}
     if not query and not explicit and not category:
         return {"error": "invalid_argument", "message": "至少给 query 或 platform"}
 

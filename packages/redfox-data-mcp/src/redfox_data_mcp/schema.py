@@ -42,6 +42,26 @@ def platform_line() -> str:
     return ", ".join(f"{name}（{PLATFORM_LABELS.get(name, name)}）" for name in seen)
 
 
+def find_param_descriptions() -> dict[str, str]:
+    return {
+        "query": "要找的能力，中英文都可以。例如「抖音体育榜单」「kimi 联网搜索」。编号已经在 call 的列表里时不要调用。",
+        "platform": "只查一个已开放平台，用编号或中文名。可选：" + platform_line() + "。",
+        "category": "只查一个类别：social 是社媒，auto 是汽车，ai 是 AI 搜索。不传则不按类别限制。",
+    }
+
+
+# 目录摘要里没有写到参数名时，用这里的说明，避免模型只看到「参数 xxx」。
+PARAM_TEXT = {
+    "timeout_seconds": "异步能力等待上游的秒数，默认 240。到时仍未完成会返回 taskId，再用 result 查询。",
+    "size": "每页条数。快手和微信视频号的搜索、用户作品列表默认 20。",
+    "publish_time_end": "发布时间上限，与 publish_time_start 一起用。公众号如 2026-07-01，小红书为 yyyy-MM-dd。",
+    "work_uuid": "公众号作品 UUID。wechat.get.work 和 wechat.get.work.wide 必填。",
+    "country_code": "YouTube 评论的国家或地区代码，例如 US。不传则用接口默认。",
+    "language_code": "YouTube 评论的语言代码，例如 zh-Hans、en。不传则用接口默认。",
+    "search_id": "今日头条搜索账号的翻页标识。上一页 hasMore 为 1 时，把返回的 searchId 传到这里，并带上 offset。",
+}
+
+
 def instructions() -> str:
     example = "douyin.get.daily.hot.rank"
     return (
@@ -88,9 +108,12 @@ def param_specs() -> list[dict[str, Any]]:
                     break
             if len(notes) >= 2:
                 break
-        description = "；".join(notes) if notes else f"参数 {name}"
-        if len(owners[name]) > 1:
-            description += "。不同能力的含义以 describe 为准。"
+        if notes:
+            description = "；".join(notes)
+            if len(owners[name]) > 1:
+                description += "。不同能力的含义以 describe 为准。"
+        else:
+            description = PARAM_TEXT.get(name, name)
         if name == "type":
             description = "榜单或推荐的分类，例如体育、美食、二次元、全部。不传时多数榜单查全部。具体可选值以 describe 为准。"
         specs.append({

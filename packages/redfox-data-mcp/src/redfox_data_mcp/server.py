@@ -16,7 +16,7 @@ from redfox_mcp_core.runtime import _emit
 
 from redfox_data_mcp import __version__
 from redfox_data_mcp.dispatch import invoke, query_result
-from redfox_data_mcp.schema import async_ids, capability_ids, instructions, param_specs
+from redfox_data_mcp.schema import async_ids, capability_ids, find_param_descriptions, instructions, param_specs
 from redfox_data_mcp.search import FIND_LIMIT, describe as describe_catalog
 from redfox_data_mcp.search import find as find_catalog
 
@@ -50,12 +50,18 @@ def _bind(fn, parameters: list[inspect.Parameter]) -> None:
     fn.__annotations__["return"] = dict[str, Any]
 
 
+_FIND = find_param_descriptions()
+
+
 @mcp.tool()
-def find(query: str = "", platform: str = "", category: str = "") -> dict[str, Any]:
+def find(
+    query: Annotated[str, Field(description=_FIND["query"])] = "",
+    platform: Annotated[str, Field(description=_FIND["platform"])] = "",
+    category: Annotated[str, Field(description=_FIND["category"])] = "",
+) -> dict[str, Any]:
     """编号在 call 的 capability 列表里看不出来时，才用一句话找能力。中英文都可以，最多 10 条。
 
-    query 例如「抖音体育榜单」「kimi 联网搜索」。platform 用编号里的平台名，如 douyin、xiaohongshu，也可以写抖音、小红书。
-    category 为 social、auto、ai、tools。没有匹配时 matches 为空；点了名的平台会在 nearest 列出它有的能力，那些不能拿来顶替调用。
+    当前开放社媒、汽车和 AI 搜索。没有匹配时 matches 为空；点了名的平台会在 nearest 列出它有的能力，那些不能拿来顶替调用。
     """
     result = find_catalog(query=query, platform=platform, category=category)
     _emit(
@@ -69,9 +75,9 @@ def find(query: str = "", platform: str = "", category: str = "") -> dict[str, A
 
 
 def describe(ids: list[str]) -> dict[str, Any]:
-    """读取 1 到 10 个能力的参数、必填项、是否异步，以及一条示例调用。
+    """读取 1 到 10 个已开放能力的参数、必填项、是否异步，以及一条示例调用。
 
-    ids 用 call 列出的能力编号。参数名能从 call 上看懂时可以不调用；取值、多选一或是否异步不确定时再调用。
+    ids 只能用 call 列出的编号。参数名能从 call 上看懂时可以不调用；取值、多选一或是否异步不确定时再调用。
     """
     if not isinstance(ids, list) or any(not isinstance(item, str) for item in ids):
         result = {"error": "invalid_argument", "message": "ids 必须是字符串数组"}
@@ -97,10 +103,10 @@ mcp.tool()(describe)
 
 
 def call(capability: str, **kwargs: Any) -> dict[str, Any]:
-    """调用一个能力。capability 用列表中的编号；列表里有就直接调用，不要先 find。
+    """调用一个已开放的能力。capability 用列表中的编号；列表里有就直接调用，不要先 find。
 
-    只填这个能力自己的参数。参数名或取值不确定时先 describe。编号不存在或参数不合法时不会请求上游。
-    异步能力超时返回 taskId，再用 result 查询。榜单分类（体育、美食等）填 type 或 category。
+    只填这个能力自己的参数，参数名和含义写在下面。取值或是否必填不确定时先 describe。编号不存在或参数不合法时不会请求上游。
+    异步能力超时返回 taskId，再用 result 查询。榜单分类（体育、美食等）填 type。
     """
     arguments = {key: value for key, value in kwargs.items() if value is not None}
     return invoke(capability, arguments)
@@ -130,7 +136,10 @@ mcp.tool()(call)
 
 
 def result(capability: str, task_id: str) -> dict[str, Any]:
-    """查询异步任务。capability 用当时 call 的同一个编号，task_id 用返回里的 taskId。只对会超时返回 taskId 的能力有效。"""
+    """查询异步任务。capability 用当时 call 的同一个编号，task_id 用返回里的 taskId。
+
+    当前会超时并返回 taskId 的是 AI 搜索、各平台视频文案提取，以及小红书笔记评论。
+    """
     return query_result(capability, task_id)
 
 
