@@ -19,10 +19,10 @@ from redfox_mcp_core.runtime import _emit
 from redfox_data_mcp import __version__
 from redfox_data_mcp.dispatch import invoke, query_result
 from redfox_data_mcp.schema import async_ids, capability_ids, find_param_descriptions, find_tool_description, instructions, param_specs
-from redfox_data_mcp.search import FIND_LIMIT, describe as describe_catalog
+from redfox_data_mcp.search import DESCRIBE_LIMIT, describe as describe_catalog
 from redfox_data_mcp.search import find as find_catalog
 
-mcp = create_server("redfox-data", __version__)
+mcp = create_server("红狐数据", __version__)
 mcp.instructions = instructions()
 
 
@@ -82,8 +82,8 @@ def describe(ids: list[str]) -> dict[str, Any]:
     """
     if not isinstance(ids, list) or any(not isinstance(item, str) for item in ids):
         result = {"error": "invalid_argument", "message": "ids 必须是字符串数组"}
-    elif len(ids) > FIND_LIMIT:
-        result = {"error": "invalid_argument", "message": f"一次最多描述 {FIND_LIMIT} 个能力"}
+    elif len(ids) > DESCRIBE_LIMIT:
+        result = {"error": "invalid_argument", "message": f"一次最多描述 {DESCRIBE_LIMIT} 个能力"}
     else:
         result = describe_catalog(ids)
     _emit(

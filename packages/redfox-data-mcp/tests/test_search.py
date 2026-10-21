@@ -9,6 +9,7 @@ class SchemaTests(unittest.TestCase):
         from redfox_data_mcp.schema import capability_ids, instructions, param_specs
 
         text = instructions()
+        self.assertTrue(text.startswith("红狐数据(RedFox)提供抖音、快手、小红书、微信公众号、微信视频号、B站、头条、TikTok、Instagram、X（推特）、YouTube、懂车帝、汽车之家、易车等平台的公开数据能力。"))
         self.assertIn("douyin.get.daily.hot.rank", text)
         self.assertIn("抖音：", text)
         self.assertIn("体育", text)
@@ -61,7 +62,7 @@ class FindTests(unittest.TestCase):
         self.assertNotIn("error", result)
         ids = [item["id"] for item in result["matches"]]
         self.assertTrue(ids)
-        self.assertLessEqual(len(ids), 10)
+        self.assertLessEqual(len(ids), 6)
         self.assertTrue(all(item.startswith("douyin.") for item in ids))
         self.assertIn("douyin", result["platforms"])
 
@@ -82,9 +83,9 @@ class FindTests(unittest.TestCase):
         ids = [item["id"] for item in result["matches"]]
         self.assertNotIn("ai_search.kimi", ids)
 
-    def test_broad_query_caps_at_ten(self):
+    def test_broad_query_caps_at_six(self):
         result = find("搜索")
-        self.assertLessEqual(len(result["matches"]), 10)
+        self.assertLessEqual(len(result["matches"]), 6)
 
     def test_describe_and_prepare_reject_before_call(self):
         described = describe(["douyin.search.articles"])

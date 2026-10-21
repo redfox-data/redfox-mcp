@@ -83,7 +83,7 @@ def platform_capabilities_text() -> str:
 
 def find_tool_description() -> str:
     return (
-        "编号在 call 的 capability 列表里看不出来时，才用一句话找能力。中英文都可以，最多 10 条。\n\n"
+        "编号在 call 的 capability 列表里看不出来时，才用一句话找能力。中英文都可以，最多 6 条。\n\n"
         + platform_capabilities_text()
         + "\n没有匹配时 matches 为空；点了名的平台会在 nearest 列出它有的能力，那些不能拿来顶替调用。"
     )
@@ -112,7 +112,7 @@ PARAM_TEXT = {
 def instructions() -> str:
     example = "douyin.get.daily.hot.rank"
     return (
-        "RedFox 提供下列平台的公开数据。一次 call 只调一个能力。\n"
+        "红狐数据(RedFox)提供抖音、快手、小红书、微信公众号、微信视频号、B站、头条、TikTok、Instagram、X（推特）、YouTube、懂车帝、汽车之家、易车等平台的公开数据能力。一次 call 只调一个能力。\n"
         f"能力编号形如 platform.resource.action，例如 {example}。\n"
         f"{platform_capabilities_text()}\n"
         "编号能从 call 的 capability 列表里看出来时，直接 call；参数名或取值不确定时先 describe。"

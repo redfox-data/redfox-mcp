@@ -8,7 +8,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-FIND_LIMIT = 10
+FIND_LIMIT = 6
+DESCRIBE_LIMIT = 10
 QUERY_MAX = 200
 
 # 暂时不对外提供。目录文件仍保留，恢复时从这里删掉即可。
@@ -275,8 +276,8 @@ def find(query: str = "", platform: str = "", category: str = "") -> dict[str, A
 
 
 def describe(ids: list[str]) -> dict[str, Any]:
-    if not ids or len(ids) > FIND_LIMIT:
-        return {"error": "invalid_argument", "message": f"ids 需要 1 到 {FIND_LIMIT} 个能力编号"}
+    if not ids or len(ids) > DESCRIBE_LIMIT:
+        return {"error": "invalid_argument", "message": f"ids 需要 1 到 {DESCRIBE_LIMIT} 个能力编号"}
     found = []
     missing = []
     for cap_id in ids:
