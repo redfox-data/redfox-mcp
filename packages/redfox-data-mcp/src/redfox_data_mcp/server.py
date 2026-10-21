@@ -1,55 +1,61 @@
 """RedFox 数据 MCP：find、describe、call、result。
 
 能力执行沿用各平台 server 里同一条 SDK 调用。本服务不注册那 100 多个工具。
-鉴权和业务日志走 redfox-mcp-core：HTTP 模式由前置 API Key 中间件拦截，
-真正打到 SDK 的调用经 call() 打 mcp_call。
+模型看到的服务说明、能力编号枚举和参数名从目录生成，和线上 tools/list 一致。
+鉴权和业务日志走 redfox-mcp-core。
 """
 
 from __future__ import annotations
 
-import json
-from typing import Any, Optional
+import inspect
+from typing import Annotated, Any, Literal, Optional
 
+from pydantic import Field
 from redfox_mcp_core import create_server, serve
 from redfox_mcp_core.runtime import _emit
 
 from redfox_data_mcp import __version__
 from redfox_data_mcp.dispatch import invoke, query_result
+from redfox_data_mcp.schema import async_ids, capability_ids, instructions, param_specs
 from redfox_data_mcp.search import FIND_LIMIT, describe as describe_catalog
 from redfox_data_mcp.search import find as find_catalog
 
-INSTRUCTIONS = (
-    "RedFox 公开数据与工具，只通过 4 个工具使用：find、describe、call、result。"
-    "能力编号形如 douyin.search.articles。"
-    "编号不确定时用 find（最多 10 条，按词匹配）。find 没有匹配就告诉用户目录里没有，不要改用别的平台。"
-    "参数不确定时用 describe。call 一次只调一个能力。"
-    "异步能力超时会返回 taskId，再用 result，传入同一个能力编号和 task_id。"
-    "上传类能力的 file 是服务端本地路径。"
-)
-
 mcp = create_server("redfox-data", __version__)
-mcp.instructions = INSTRUCTIONS
+mcp.instructions = instructions()
 
 
-def _arguments(value: Any) -> dict[str, Any] | tuple[dict[str, Any], None]:
-    if value is None or value == "":
-        return {}
-    if isinstance(value, str):
-        try:
-            value = json.loads(value)
-        except json.JSONDecodeError:
-            return {"error": "invalid_argument", "message": "arguments 不是合法 JSON"}, None
-    if not isinstance(value, dict):
-        return {"error": "invalid_argument", "message": "arguments 必须是对象"}, None
-    return value
+def _literal(values: list[str]):
+    return Literal.__getitem__(tuple(values))
+
+
+Capability = _literal(capability_ids())
+AsyncCapability = _literal(async_ids())
+
+
+def _optional(json_type: str | list[str]):
+    if json_type == "integer":
+        return Optional[int]
+    if json_type == "boolean":
+        return Optional[bool]
+    if json_type == "array":
+        return Optional[list[Any]]
+    if json_type == "string":
+        return Optional[str]
+    return Optional[Any]
+
+
+def _bind(fn, parameters: list[inspect.Parameter]) -> None:
+    fn.__signature__ = inspect.Signature(parameters)
+    fn.__annotations__ = {param.name: param.annotation for param in parameters}
+    fn.__annotations__["return"] = dict[str, Any]
 
 
 @mcp.tool()
 def find(query: str = "", platform: str = "", category: str = "") -> dict[str, Any]:
-    """用一句话找能力。中英文都可以，最多返回 10 条，附带必填参数和一条示例调用。
+    """编号在 call 的 capability 列表里看不出来时，才用一句话找能力。中英文都可以，最多 10 条。
 
-    query 例如「抖音热门作品」「kimi 联网搜索」。platform 可写 douyin、抖音、小红书。
-    category 可写 social、auto、ai、tools。没有匹配时 matches 为空；点了名的平台会在 nearest 列出它有的能力，那些不能拿来顶替调用。
+    query 例如「抖音体育榜单」「kimi 联网搜索」。platform 用编号里的平台名，如 douyin、xiaohongshu，也可以写抖音、小红书。
+    category 为 social、auto、ai、tools。没有匹配时 matches 为空；点了名的平台会在 nearest 列出它有的能力，那些不能拿来顶替调用。
     """
     result = find_catalog(query=query, platform=platform, category=category)
     _emit(
@@ -62,9 +68,11 @@ def find(query: str = "", platform: str = "", category: str = "") -> dict[str, A
     return result
 
 
-@mcp.tool()
 def describe(ids: list[str]) -> dict[str, Any]:
-    """读取 1 到 10 个能力的参数、必填项、是否异步，以及一条示例调用。调用前参数不清楚时用它。"""
+    """读取 1 到 10 个能力的参数、必填项、是否异步，以及一条示例调用。
+
+    ids 用 call 列出的能力编号。参数名能从 call 上看懂时可以不调用；取值、多选一或是否异步不确定时再调用。
+    """
     if not isinstance(ids, list) or any(not isinstance(item, str) for item in ids):
         result = {"error": "invalid_argument", "message": "ids 必须是字符串数组"}
     elif len(ids) > FIND_LIMIT:
@@ -81,22 +89,64 @@ def describe(ids: list[str]) -> dict[str, Any]:
     return result
 
 
-@mcp.tool()
-def call(capability: str, arguments: Optional[dict[str, Any]] = None) -> dict[str, Any]:
-    """调用一个能力。capability 是 find 或 describe 给出的编号，arguments 只放这个能力自己的参数。
+describe.__annotations__["ids"] = Annotated[
+    list[Capability],
+    Field(description="能力编号，1 到 10 个，取 call 的 capability 列表里的值"),
+]
+mcp.tool()(describe)
 
-    异步能力会先等待；超时返回 taskId，再用 result 查询。参数缺失或编号不存在时不会请求上游。
+
+def call(capability: str, **kwargs: Any) -> dict[str, Any]:
+    """调用一个能力。capability 用列表中的编号；列表里有就直接调用，不要先 find。
+
+    只填这个能力自己的参数。参数名或取值不确定时先 describe。编号不存在或参数不合法时不会请求上游。
+    异步能力超时返回 taskId，再用 result 查询。榜单分类（体育、美食等）填 type 或 category。
     """
-    parsed = _arguments(arguments)
-    if isinstance(parsed, tuple):
-        return parsed[0]
-    return invoke(capability, parsed)
+    arguments = {key: value for key, value in kwargs.items() if value is not None}
+    return invoke(capability, arguments)
 
 
-@mcp.tool()
+_call_params = [
+    inspect.Parameter(
+        "capability",
+        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=Annotated[Capability, Field(description="能力编号。列表里有就直接用；对不上再 find")],
+    )
+]
+for _spec in param_specs():
+    _call_params.append(
+        inspect.Parameter(
+            _spec["name"],
+            inspect.Parameter.KEYWORD_ONLY,
+            default=None,
+            annotation=Annotated[
+                _optional(_spec["json_type"]),
+                Field(description=_spec["description"]),
+            ],
+        )
+    )
+_bind(call, _call_params)
+mcp.tool()(call)
+
+
 def result(capability: str, task_id: str) -> dict[str, Any]:
     """查询异步任务。capability 用当时 call 的同一个编号，task_id 用返回里的 taskId。只对会超时返回 taskId 的能力有效。"""
     return query_result(capability, task_id)
+
+
+_bind(result, [
+    inspect.Parameter(
+        "capability",
+        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=Annotated[AsyncCapability, Field(description="异步能力编号，与当时的 call 相同")],
+    ),
+    inspect.Parameter(
+        "task_id",
+        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        annotation=Annotated[str, Field(description="call 超时返回的 taskId")],
+    ),
+])
+mcp.tool()(result)
 
 
 def main() -> None:

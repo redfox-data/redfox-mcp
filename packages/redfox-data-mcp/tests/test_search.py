@@ -4,6 +4,19 @@ from redfox_data_mcp.dispatch import prepare
 from redfox_data_mcp.search import describe, find
 
 
+class SchemaTests(unittest.TestCase):
+    def test_instructions_name_platforms_and_rank_category(self):
+        from redfox_data_mcp.schema import instructions, param_specs
+
+        text = instructions()
+        self.assertIn("douyin（抖音）", text)
+        self.assertIn("douyin.get.daily.hot.rank", text)
+        self.assertIn("体育", text)
+        described = {item["name"]: item["description"] for item in param_specs()}
+        self.assertIn("体育", described["type"])
+        self.assertIn("keyword", described)
+
+
 class FindTests(unittest.TestCase):
     def test_douyin_hot_is_lexical(self):
         result = find("抖音热门作品")
