@@ -11,6 +11,9 @@ from typing import Any
 FIND_LIMIT = 10
 QUERY_MAX = 200
 
+# 暂时不对外提供。目录文件仍保留，恢复时从这里删掉即可。
+DISABLED_PLATFORMS = frozenset({"ai_gen", "tools"})
+
 # 长的别名放前面，避免「微信视频号」被截成公众号。
 PLATFORM_ALIASES: list[tuple[str, list[str]]] = [
     ("wechat_channels", ["wechat_channels", "wechat-channels", "微信视频号", "视频号"]),
@@ -68,7 +71,8 @@ _LATIN = re.compile(r"[a-z0-9_]+")
 
 def load_catalog() -> list[dict[str, Any]]:
     path = Path(__file__).with_name("catalog.json")
-    return json.loads(path.read_text())
+    items = json.loads(path.read_text())
+    return [item for item in items if item["platform"] not in DISABLED_PLATFORMS]
 
 
 @lru_cache(maxsize=1)
@@ -102,6 +106,8 @@ def _platforms_in(text: str) -> list[str]:
     remaining = text.lower()
     raw = text
     for platform, aliases in PLATFORM_ALIASES:
+        if platform in DISABLED_PLATFORMS:
+            continue
         for alias in aliases:
             if alias.isascii():
                 if re.search(rf"(?<![a-z0-9]){re.escape(alias.lower())}(?![a-z0-9])", remaining):
@@ -189,6 +195,8 @@ def resolve_platform(value: str) -> str | None:
     if not text:
         return None
     for platform, aliases in PLATFORM_ALIASES:
+        if platform in DISABLED_PLATFORMS:
+            continue
         if text == platform or text.lower() in {a.lower() for a in aliases}:
             return platform
     return None
@@ -204,7 +212,7 @@ def find(query: str = "", platform: str = "", category: str = "") -> dict[str, A
         return {
             "error": "invalid_argument",
             "message": f"不认识的平台 {platform}",
-            "platforms": [name for name, _ in PLATFORM_ALIASES],
+            "platforms": [name for name, _ in PLATFORM_ALIASES if name not in DISABLED_PLATFORMS],
         }
     if category and category not in {"social", "auto", "ai", "tools"}:
         return {"error": "invalid_argument", "message": "category 只能是 social、auto、ai、tools"}

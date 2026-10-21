@@ -45,7 +45,7 @@ def platform_line() -> str:
 def instructions() -> str:
     example = "douyin.get.daily.hot.rank"
     return (
-        "RedFox 提供社媒和内容平台的公开数据，以及 AI 搜索、AI 生成、作品下载和素材上传。"
+        "RedFox 提供社媒和内容平台的公开数据，以及 AI 搜索。"
         "一次 call 只调一个能力。\n"
         f"能力编号形如 platform.resource.action，例如 {example}。"
         f"平台：{platform_line()}。\n"
@@ -54,7 +54,6 @@ def instructions() -> str:
         "榜单里的体育、美食、二次元这类分类，填在该榜单能力的 type 或 category 参数上，不要另造编号。"
         "只传这个能力接受的参数，参数名就列在 call 上。\n"
         "异步能力超时会返回 taskId，再用 result，capability 用同一次 call 的编号，task_id 用返回的 taskId。"
-        "上传能力的 file 是服务端本地路径。"
     )
 
 

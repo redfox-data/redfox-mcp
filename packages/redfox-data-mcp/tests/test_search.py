@@ -16,6 +16,24 @@ class SchemaTests(unittest.TestCase):
         self.assertTrue(described["type"].startswith("榜单或推荐的分类"))
         self.assertIn("体育", described["type"])
         self.assertIn("keyword", described)
+        self.assertNotIn("ai_gen", text)
+        self.assertNotIn("tools（", text)
+        self.assertNotIn("上传", text)
+
+
+class HiddenPlatformTests(unittest.TestCase):
+    def test_download_and_image_gen_stay_out_of_the_catalog(self):
+        from redfox_data_mcp.search import load_catalog
+
+        ids = [item["id"] for item in load_catalog()]
+        self.assertEqual(len(ids), 102)
+        self.assertFalse(any(item.startswith(("tools.", "ai_gen.")) for item in ids))
+        hidden = describe(["tools.download", "ai_gen.gpt.image.generate", "douyin.get.daily.hot.rank"])
+        self.assertEqual(hidden["missing"], ["tools.download", "ai_gen.gpt.image.generate"])
+        self.assertEqual([item["id"] for item in hidden["capabilities"]], ["douyin.get.daily.hot.rank"])
+        looked = find("下载图片")
+        self.assertFalse(any(item["id"].startswith(("tools.", "ai_gen.")) for item in looked["matches"] + looked["nearest"]))
+        self.assertIsInstance(prepare("tools.upload.image", {"file": "a.png", "format": "png"}), dict)
 
 
 class FindTests(unittest.TestCase):
