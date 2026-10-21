@@ -13,6 +13,7 @@ class SchemaTests(unittest.TestCase):
         self.assertIn("douyin.get.daily.hot.rank", text)
         self.assertIn("体育", text)
         described = {item["name"]: item["description"] for item in param_specs()}
+        self.assertTrue(described["type"].startswith("榜单或推荐的分类"))
         self.assertIn("体育", described["type"])
         self.assertIn("keyword", described)
 

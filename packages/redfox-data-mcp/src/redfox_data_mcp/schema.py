@@ -59,7 +59,8 @@ def instructions() -> str:
 
 
 def _sentences(text: str) -> list[str]:
-    return [part.strip() for part in re.split(r"[。\n；;]", text or "") if part.strip()]
+    flat = re.sub(r"\s+", " ", text or "").strip()
+    return [part.strip() for part in re.split(r"[。；;]", flat) if part.strip()]
 
 
 def param_specs() -> list[dict[str, Any]]:
@@ -92,7 +93,7 @@ def param_specs() -> list[dict[str, Any]]:
         if len(owners[name]) > 1:
             description += "。不同能力的含义以 describe 为准。"
         if name == "type":
-            description += " 榜单分类（体育、美食、二次元等）填在这里。"
+            description = "榜单或推荐的分类，例如体育、美食、二次元、全部。不传时多数榜单查全部。具体可选值以 describe 为准。"
         specs.append({
             "name": name,
             "description": description[:400],
