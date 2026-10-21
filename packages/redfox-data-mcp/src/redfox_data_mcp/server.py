@@ -7,7 +7,9 @@
 
 from __future__ import annotations
 
+import argparse
 import inspect
+import os
 from typing import Annotated, Any, Literal, Optional
 
 from pydantic import Field
@@ -16,7 +18,7 @@ from redfox_mcp_core.runtime import _emit
 
 from redfox_data_mcp import __version__
 from redfox_data_mcp.dispatch import invoke, query_result
-from redfox_data_mcp.schema import async_ids, capability_ids, find_param_descriptions, instructions, param_specs
+from redfox_data_mcp.schema import async_ids, capability_ids, find_param_descriptions, find_tool_description, instructions, param_specs
 from redfox_data_mcp.search import FIND_LIMIT, describe as describe_catalog
 from redfox_data_mcp.search import find as find_catalog
 
@@ -53,16 +55,11 @@ def _bind(fn, parameters: list[inspect.Parameter]) -> None:
 _FIND = find_param_descriptions()
 
 
-@mcp.tool()
 def find(
     query: Annotated[str, Field(description=_FIND["query"])] = "",
     platform: Annotated[str, Field(description=_FIND["platform"])] = "",
     category: Annotated[str, Field(description=_FIND["category"])] = "",
 ) -> dict[str, Any]:
-    """编号在 call 的 capability 列表里看不出来时，才用一句话找能力。中英文都可以，最多 10 条。
-
-    当前开放社媒、汽车和 AI 搜索。没有匹配时 matches 为空；点了名的平台会在 nearest 列出它有的能力，那些不能拿来顶替调用。
-    """
     result = find_catalog(query=query, platform=platform, category=category)
     _emit(
         "mcp_call",
@@ -72,6 +69,10 @@ def find(
         result={"matches": [m["id"] for m in result.get("matches") or []], "unknown": result.get("unknown"), "error": result.get("error")},
     )
     return result
+
+
+find.__doc__ = find_tool_description()
+mcp.tool()(find)
 
 
 def describe(ids: list[str]) -> dict[str, Any]:
@@ -138,7 +139,7 @@ mcp.tool()(call)
 def result(capability: str, task_id: str) -> dict[str, Any]:
     """查询异步任务。capability 用当时 call 的同一个编号，task_id 用返回里的 taskId。
 
-    当前会超时并返回 taskId 的是 AI 搜索、各平台视频文案提取，以及小红书笔记评论。
+    当前会超时并返回 taskId 的是各平台视频文案提取，以及小红书笔记评论。
     """
     return query_result(capability, task_id)
 
@@ -159,6 +160,12 @@ mcp.tool()(result)
 
 
 def main() -> None:
+    mode = os.getenv("REDFOX_MCP_AUTH_MODE", "apikey").strip().lower()
+    if mode in {"oauth", "multi"}:
+        from redfox_data_mcp.oauth_http import serve as serve_oauth
+
+        serve_oauth(mcp)
+        return
     serve(mcp, prog="redfox-data-mcp", description="RedFox 数据 MCP：find / describe / call / result")
 
 

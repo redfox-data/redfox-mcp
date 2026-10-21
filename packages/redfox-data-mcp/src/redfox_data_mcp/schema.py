@@ -42,11 +42,58 @@ def platform_line() -> str:
     return ", ".join(f"{name}（{PLATFORM_LABELS.get(name, name)}）" for name in seen)
 
 
+def _short_name(name: str) -> str:
+    head = (name or "").split("。")[0]
+    return re.split(r"[，,]提交", head)[0].strip()
+
+
+def _capability_groups() -> list[tuple[str, list[str]]]:
+    """按用户能认出的平台列出能力，汽车拆成懂车帝、汽车之家、易车。"""
+    rules = [
+        ("抖音", lambda item: item["platform"] == "douyin"),
+        ("快手", lambda item: item["platform"] == "kuaishou"),
+        ("TikTok", lambda item: item["platform"] == "tiktok"),
+        ("小红书", lambda item: item["platform"] == "xiaohongshu"),
+        ("微信公众号", lambda item: item["platform"] == "wechat"),
+        ("微信视频号", lambda item: item["platform"] == "wechat_channels"),
+        ("B站", lambda item: item["platform"] == "bilibili"),
+        ("头条", lambda item: item["platform"] == "toutiao"),
+        ("Instagram", lambda item: item["platform"] == "instagram"),
+        ("X（推特）", lambda item: item["platform"] == "twitter"),
+        ("YouTube", lambda item: item["platform"] == "youtube"),
+        ("懂车帝", lambda item: item["id"].startswith("auto.dongchedi.")),
+        ("汽车之家", lambda item: item["id"].startswith("auto.autohome.")),
+        ("易车", lambda item: item["id"].startswith("auto.yiche.")),
+    ]
+    catalog = load_catalog()
+    groups = []
+    for label, match in rules:
+        names = [_short_name(item["name_zh"]) for item in catalog if match(item)]
+        if names:
+            groups.append((label, names))
+    return groups
+
+
+def platform_capabilities_text() -> str:
+    lines = ["当前开放的平台和能力："]
+    for label, names in _capability_groups():
+        lines.append(f"{label}：{'、'.join(names)}")
+    return "\n".join(lines)
+
+
+def find_tool_description() -> str:
+    return (
+        "编号在 call 的 capability 列表里看不出来时，才用一句话找能力。中英文都可以，最多 10 条。\n\n"
+        + platform_capabilities_text()
+        + "\n没有匹配时 matches 为空；点了名的平台会在 nearest 列出它有的能力，那些不能拿来顶替调用。"
+    )
+
+
 def find_param_descriptions() -> dict[str, str]:
     return {
-        "query": "要找的能力，中英文都可以。例如「抖音体育榜单」「kimi 联网搜索」。编号已经在 call 的列表里时不要调用。",
+        "query": "要找的能力，中英文都可以。例如「抖音体育榜单」「快手搜索作品」。编号已经在 call 的列表里时不要调用。",
         "platform": "只查一个已开放平台，用编号或中文名。可选：" + platform_line() + "。",
-        "category": "只查一个类别：social 是社媒，auto 是汽车，ai 是 AI 搜索。不传则不按类别限制。",
+        "category": "只查一个类别：social 是社媒，auto 是汽车（懂车帝、汽车之家、易车）。不传则不按类别限制。",
     }
 
 
@@ -65,10 +112,9 @@ PARAM_TEXT = {
 def instructions() -> str:
     example = "douyin.get.daily.hot.rank"
     return (
-        "RedFox 提供社媒和内容平台的公开数据，以及 AI 搜索。"
-        "一次 call 只调一个能力。\n"
-        f"能力编号形如 platform.resource.action，例如 {example}。"
-        f"平台：{platform_line()}。\n"
+        "RedFox 提供下列平台的公开数据。一次 call 只调一个能力。\n"
+        f"能力编号形如 platform.resource.action，例如 {example}。\n"
+        f"{platform_capabilities_text()}\n"
         "编号能从 call 的 capability 列表里看出来时，直接 call；参数名或取值不确定时先 describe。"
         "只有列表里对不上任何一个编号时才 find。find 说没有匹配，就告诉用户目录里没有，不要换一个平台的能力来顶上。\n"
         "榜单里的体育、美食、二次元这类分类，填在该榜单能力的 type 或 category 参数上，不要另造编号。"

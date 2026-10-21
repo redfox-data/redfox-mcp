@@ -5,9 +5,10 @@ from __future__ import annotations
 from typing import Any
 
 from redfox_mcp_core import call as sdk_call
-from redfox_mcp_core import get_client, run_task
+from redfox_mcp_core import run_task
 from redfox_mcp_core.runtime import _emit
 
+from redfox_data_mcp.clients import get_client
 from redfox_data_mcp.search import by_id
 
 
