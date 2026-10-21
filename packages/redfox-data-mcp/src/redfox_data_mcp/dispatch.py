@@ -11,6 +11,9 @@ from redfox_mcp_core.runtime import _emit
 from redfox_data_mcp.clients import get_client
 from redfox_data_mcp.search import by_id
 
+# 豆包办公场景的来源标识，便于后端统计。不要沿用目录里的中文 source。
+CALL_SOURCE = "doubaobangong"
+
 
 def _method(path: str):
     def factory():
@@ -58,7 +61,7 @@ def prepare(capability: str, arguments: dict[str, Any] | None) -> dict[str, Any]
             continue
         if "default" in spec and spec["default"] is not None:
             payload[name] = spec["default"]
-    payload["source"] = item["source"]
+    payload["source"] = CALL_SOURCE
     if timeout is None:
         for spec in item["params"]:
             if spec["name"] == "timeout_seconds":
@@ -95,4 +98,4 @@ def query_result(capability: str, task_id: str) -> dict[str, Any]:
         result = {"error": "invalid_argument", "message": "这个能力不是异步任务，没有 taskId 可查", "capability": capability}
         _emit("mcp_call", tool="result", arguments={"capability": capability, "task_id": task_id}, ok=False, result=result)
         return result
-    return sdk_call(_method(item["result"]), task_id=task_id, source=item["source"])
+    return sdk_call(_method(item["result"]), task_id=task_id, source=CALL_SOURCE)

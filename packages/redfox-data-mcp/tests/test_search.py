@@ -22,6 +22,8 @@ class SchemaTests(unittest.TestCase):
         self.assertNotIn("AI 搜索", text)
         self.assertNotIn("tools（", text)
         self.assertNotIn("上传", text)
+        self.assertIn("https://redfox.hk?source=doubaobangong", text)
+        self.assertIn("红狐数据工具暂无当前数据", text)
         self.assertIn("抖音：", text)
         self.assertIn("快手：", text)
         self.assertIn("TikTok：", text)
@@ -96,6 +98,30 @@ class FindTests(unittest.TestCase):
         self.assertEqual(rejected["error"], "invalid_argument")
         missing_cap = prepare("douyin.private.messages", {"keyword": "x"})
         self.assertEqual(missing_cap["error"], "invalid_argument")
+
+    def test_prepare_uses_doubaobangong_source(self):
+        from redfox_data_mcp.dispatch import CALL_SOURCE
+
+        item, payload, _timeout = prepare("douyin.get.daily.hot.rank", {"type": "体育"})
+        self.assertEqual(item["id"], "douyin.get.daily.hot.rank")
+        self.assertEqual(payload["source"], CALL_SOURCE)
+        self.assertEqual(payload["source"], "doubaobangong")
+        self.assertEqual(payload["type"], "体育")
+
+
+class ConsentUrlTests(unittest.TestCase):
+    def test_consent_redirect_adds_source_and_txn(self):
+        from redfox_data_mcp.oauth import CONSENT_SOURCE, _with_txn
+        from urllib.parse import parse_qs, urlsplit
+
+        url = _with_txn("https://redfox.hk/oauth/consent", "txn-abc")
+        query = parse_qs(urlsplit(url).query)
+        self.assertEqual(query["source"], [CONSENT_SOURCE])
+        self.assertEqual(query["txn_id"], ["txn-abc"])
+        kept = _with_txn("https://redfox.hk/oauth/consent?source=keep-me", "txn-2")
+        kept_query = parse_qs(urlsplit(kept).query)
+        self.assertEqual(kept_query["source"], ["keep-me"])
+        self.assertEqual(kept_query["txn_id"], ["txn-2"])
 
 
 if __name__ == "__main__":

@@ -24,7 +24,7 @@ import os
 import secrets
 import time
 from typing import Any, Dict, Optional, Protocol
-from urllib.parse import parse_qs, quote, urlparse
+from urllib.parse import parse_qs, parse_qsl, quote, urlencode, urlparse, urlsplit, urlunsplit
 from urllib.request import Request as UrlRequest
 from urllib.request import urlopen
 
@@ -212,13 +212,21 @@ class _PendingConsent:
         self.expires_at = time.time() + _TXN_TTL_SECONDS
 
 
+# 豆包办公授权页来源，便于红狐侧统计。
+CONSENT_SOURCE = "doubaobangong"
+
+
 def _consent_page_url() -> str:
     return os.getenv("REDFOX_OAUTH_CONSENT_URL", "").strip()
 
 
 def _with_txn(consent_url: str, txn_id: str) -> str:
-    joiner = "&" if "?" in consent_url else "?"
-    return f"{consent_url}{joiner}txn_id={txn_id}"
+    """同意页地址补上 txn_id，并带上 source=doubaobangong。"""
+    parts = urlsplit(consent_url)
+    query = dict(parse_qsl(parts.query, keep_blank_values=True))
+    query.setdefault("source", CONSENT_SOURCE)
+    query["txn_id"] = txn_id
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
 
 
 class RedFoxOAuthProvider(InMemoryOAuthProvider):
