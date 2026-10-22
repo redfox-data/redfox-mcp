@@ -13,7 +13,7 @@ DESCRIBE_LIMIT = 10
 QUERY_MAX = 200
 
 # 暂时不对外提供。目录文件仍保留，恢复时从这里删掉即可。
-DISABLED_PLATFORMS = frozenset({"ai_gen", "ai_search", "tools"})
+DISABLED_PLATFORMS = frozenset({"ai_gen", "ai_search", "tools", "xiaohongshu"})
 
 # 长的别名放前面，避免「微信视频号」被截成公众号。
 PLATFORM_ALIASES: list[tuple[str, list[str]]] = [

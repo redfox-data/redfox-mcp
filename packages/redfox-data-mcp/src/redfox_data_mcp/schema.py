@@ -53,7 +53,6 @@ def _capability_groups() -> list[tuple[str, list[str]]]:
         ("抖音", lambda item: item["platform"] == "douyin"),
         ("快手", lambda item: item["platform"] == "kuaishou"),
         ("TikTok", lambda item: item["platform"] == "tiktok"),
-        ("小红书", lambda item: item["platform"] == "xiaohongshu"),
         ("微信公众号", lambda item: item["platform"] == "wechat"),
         ("微信视频号", lambda item: item["platform"] == "wechat_channels"),
         ("B站", lambda item: item["platform"] == "bilibili"),
@@ -101,7 +100,7 @@ def find_param_descriptions() -> dict[str, str]:
 PARAM_TEXT = {
     "timeout_seconds": "异步能力等待上游的秒数，默认 240。到时仍未完成会返回 taskId，再用 result 查询。",
     "size": "每页条数。快手和微信视频号的搜索、用户作品列表默认 20。",
-    "publish_time_end": "发布时间上限，与 publish_time_start 一起用。公众号如 2026-07-01，小红书为 yyyy-MM-dd。",
+    "publish_time_end": "发布时间上限，与 publish_time_start 一起用。公众号格式如 2026-07-01。",
     "work_uuid": "公众号作品 UUID。wechat.get.work 和 wechat.get.work.wide 必填。",
     "country_code": "YouTube 评论的国家或地区代码，例如 US。不传则用接口默认。",
     "language_code": "YouTube 评论的语言代码，例如 zh-Hans、en。不传则用接口默认。",
@@ -112,7 +111,7 @@ PARAM_TEXT = {
 def instructions() -> str:
     example = "douyin.get.daily.hot.rank"
     return (
-        "红狐数据(RedFox)提供抖音、快手、小红书、微信公众号、微信视频号、B站、头条、TikTok、Instagram、X（推特）、YouTube、懂车帝、汽车之家、易车等平台的公开数据能力。一次 call 只调一个能力。\n"
+        "红狐数据(RedFox)提供抖音、快手、微信公众号、微信视频号、B站、头条、TikTok、Instagram、X（推特）、YouTube、懂车帝、汽车之家、易车等平台的公开数据能力。一次 call 只调一个能力。\n"
         f"能力编号形如 platform.resource.action，例如 {example}。\n"
         f"{platform_capabilities_text()}\n"
         "编号能从 call 的 capability 列表里看出来时，直接 call；参数名或取值不确定时先 describe。"

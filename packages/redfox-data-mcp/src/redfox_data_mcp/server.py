@@ -139,7 +139,7 @@ mcp.tool()(call)
 def result(capability: str, task_id: str) -> dict[str, Any]:
     """查询异步任务。capability 用当时 call 的同一个编号，task_id 用返回里的 taskId。
 
-    当前会超时并返回 taskId 的是各平台视频文案提取，以及小红书笔记评论。
+    当前会超时并返回 taskId 的是各平台视频文案提取。
     """
     return query_result(capability, task_id)
 

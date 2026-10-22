@@ -9,10 +9,12 @@ class SchemaTests(unittest.TestCase):
         from redfox_data_mcp.schema import capability_ids, instructions, param_specs
 
         text = instructions()
-        self.assertTrue(text.startswith("红狐数据(RedFox)提供抖音、快手、小红书、微信公众号、微信视频号、B站、头条、TikTok、Instagram、X（推特）、YouTube、懂车帝、汽车之家、易车等平台的公开数据能力。"))
+        self.assertTrue(text.startswith("红狐数据(RedFox)提供抖音、快手、微信公众号、微信视频号、B站、头条、TikTok、Instagram、X（推特）、YouTube、懂车帝、汽车之家、易车等平台的公开数据能力。"))
         self.assertIn("douyin.get.daily.hot.rank", text)
         self.assertIn("抖音：", text)
         self.assertIn("体育", text)
+        self.assertNotIn("小红书", text)
+        self.assertNotIn("xiaohongshu", text)
         described = {item["name"]: item["description"] for item in param_specs()}
         self.assertTrue(described["type"].startswith("榜单或推荐的分类"))
         self.assertIn("体育", described["type"])
@@ -34,6 +36,7 @@ class SchemaTests(unittest.TestCase):
         self.assertIn("douyin（抖音）", fields["platform"])
         self.assertNotIn("下载与上传", fields["platform"])
         self.assertNotIn("AI 生成", fields["platform"])
+        self.assertNotIn("小红书", fields["platform"])
         self.assertIn("social", fields["category"])
         self.assertIn("auto", fields["category"])
         self.assertNotIn("tools", fields["category"])
@@ -41,6 +44,7 @@ class SchemaTests(unittest.TestCase):
             self.assertFalse(desc.startswith("参数 "), name)
             self.assertNotIn("上传", desc)
             self.assertNotIn("文生图", desc)
+            self.assertNotIn("小红书", desc)
 
 
 class HiddenPlatformTests(unittest.TestCase):
@@ -48,14 +52,26 @@ class HiddenPlatformTests(unittest.TestCase):
         from redfox_data_mcp.search import load_catalog
 
         ids = [item["id"] for item in load_catalog()]
-        self.assertEqual(len(ids), 96)
-        self.assertFalse(any(item.startswith(("tools.", "ai_gen.", "ai_search.")) for item in ids))
-        hidden = describe(["tools.download", "ai_gen.gpt.image.generate", "ai_search.kimi", "douyin.get.daily.hot.rank"])
-        self.assertEqual(hidden["missing"], ["tools.download", "ai_gen.gpt.image.generate", "ai_search.kimi"])
+        self.assertEqual(len(ids), 83)
+        self.assertFalse(any(item.startswith(("tools.", "ai_gen.", "ai_search.", "xiaohongshu.")) for item in ids))
+        hidden = describe([
+            "tools.download",
+            "ai_gen.gpt.image.generate",
+            "ai_search.kimi",
+            "xiaohongshu.search.articles",
+            "douyin.get.daily.hot.rank",
+        ])
+        self.assertEqual(
+            hidden["missing"],
+            ["tools.download", "ai_gen.gpt.image.generate", "ai_search.kimi", "xiaohongshu.search.articles"],
+        )
         self.assertEqual([item["id"] for item in hidden["capabilities"]], ["douyin.get.daily.hot.rank"])
         looked = find("下载图片")
         self.assertFalse(any(item["id"].startswith(("tools.", "ai_gen.")) for item in looked["matches"] + looked["nearest"]))
         self.assertIsInstance(prepare("tools.upload.image", {"file": "a.png", "format": "png"}), dict)
+        xhs = find("小红书笔记")
+        self.assertFalse(any(item["id"].startswith("xiaohongshu.") for item in xhs["matches"] + xhs["nearest"]))
+        self.assertIsInstance(prepare("xiaohongshu.search.articles", {"keyword": "露营"}), dict)
 
 
 class FindTests(unittest.TestCase):
