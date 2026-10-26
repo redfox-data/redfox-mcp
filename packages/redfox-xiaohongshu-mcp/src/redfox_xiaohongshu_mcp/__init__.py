@@ -1,3 +1,3 @@
 """RedFox 小红书数据 MCP Server"""
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"

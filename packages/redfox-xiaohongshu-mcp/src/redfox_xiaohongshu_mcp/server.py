@@ -9,7 +9,7 @@ REDFOX_API_KEY（或 Authorization: Bearer <key>）取 key。
 
 from typing import Any, Dict, Optional
 
-from redfox_mcp_core import call, create_server, get_client, run_task, serve
+from redfox_mcp_core import call, create_server, get_client, serve
 
 from redfox_xiaohongshu_mcp import __version__
 
@@ -150,7 +150,7 @@ def xiaohongshu_get_comments(opus_id: str, data_num: int,
 
 @mcp.tool()
 def xiaohongshu_get_comments_result(task_id: str) -> Dict[str, Any]:
-    """查询小红书评论任务结果。仅在 xiaohongshu_get_comments 超时返回 taskId 后使用。"""
+    """查询小红书评论任务结果。传 xiaohongshu_get_comments 提交返回的 taskId。"""
     return call(lambda: get_client().xiaohongshu.comment_result, task_id=task_id, source="查询小红书评论任务结果-MCP")
 
 
@@ -158,17 +158,18 @@ def xiaohongshu_get_comments_result(task_id: str) -> Dict[str, Any]:
 
 
 @mcp.tool()
-def xiaohongshu_transcript(url: str, timeout_seconds: int = 240) -> Dict[str, Any]:
-    """小红书视频提文案：提取视频完整文案，提交后自动等待并返回结果。
-    url 为笔记/视频链接；超时未完成时返回 taskId，可用 xiaohongshu_transcript_result 再查。"""
-    return run_task(lambda: get_client().xiaohongshu.transcript_submit,
-                    lambda: get_client().xiaohongshu.transcript_result,
-                    timeout_seconds, url=url, source="小红书视频提文案-MCP")
+def xiaohongshu_transcript(url: str, timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
+    """提交小红书视频提文案任务，立即返回 taskId，不自动查询结果。
+    url 为笔记/视频链接。请稍后用 xiaohongshu_transcript_result(task_id)
+    自行查询结果。timeout_seconds 为可选参数，可传可不传，传与不传都不影响本调用
+    （本工具只提交任务、不自动轮询结果）。"""
+    return call(lambda: get_client().xiaohongshu.transcript_submit,
+                url=url, source="小红书视频提文案-MCP")
 
 
 @mcp.tool()
 def xiaohongshu_transcript_result(task_id: str) -> Dict[str, Any]:
-    """查询小红书视频提文案任务结果。仅在 xiaohongshu_transcript 超时返回 taskId 后使用。"""
+    """查询小红书视频提文案任务结果。传 xiaohongshu_transcript 提交返回的 taskId。"""
     return call(lambda: get_client().xiaohongshu.transcript_result, task_id=task_id, source="查询小红书视频提文案任务结果-MCP")
 
 

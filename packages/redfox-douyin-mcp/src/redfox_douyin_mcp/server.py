@@ -9,7 +9,7 @@ REDFOX_API_KEY（或 Authorization: Bearer <key>）取 key。
 
 from typing import Any, Dict, Optional
 
-from redfox_mcp_core import call, create_server, get_client, run_task, serve
+from redfox_mcp_core import call, create_server, get_client, serve
 
 from redfox_douyin_mcp import __version__
 
@@ -162,17 +162,18 @@ def douyin_get_hot_accounts(date_type: str, rank_date: str,
 
 
 @mcp.tool()
-def douyin_transcript(url: str, timeout_seconds: int = 240) -> Dict[str, Any]:
-    """抖音视频提文案：提取视频完整文案（含带时间戳分句），提交后自动等待并返回结果。
-    url 为视频链接（支持口令分享文本）；超时未完成时返回 taskId，可用 douyin_transcript_result 再查。"""
-    return run_task(lambda: get_client().douyin.transcript_submit,
-                    lambda: get_client().douyin.transcript_result,
-                    timeout_seconds, url=url, source="抖音视频提文案-MCP")
+def douyin_transcript(url: str, timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
+    """提交抖音视频提文案任务（含带时间戳分句），立即返回 taskId，不自动查询结果。
+    url 为视频链接（支持口令分享文本）。请稍后用 douyin_transcript_result(task_id)
+    自行查询结果。timeout_seconds 为可选参数，可传可不传，传与不传都不影响本调用
+    （本工具只提交任务、不自动轮询结果）。"""
+    return call(lambda: get_client().douyin.transcript_submit,
+                url=url, source="抖音视频提文案-MCP")
 
 
 @mcp.tool()
 def douyin_transcript_result(task_id: str) -> Dict[str, Any]:
-    """查询抖音视频提文案任务结果。仅在 douyin_transcript 超时返回 taskId 后使用。"""
+    """查询抖音视频提文案任务结果。传 douyin_transcript 提交返回的 taskId。"""
     return call(lambda: get_client().douyin.transcript_result, task_id=task_id, source="查询抖音视频提文案任务结果-MCP")
 
 

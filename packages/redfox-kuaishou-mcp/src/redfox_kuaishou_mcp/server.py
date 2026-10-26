@@ -9,7 +9,7 @@ REDFOX_API_KEY（或 Authorization: Bearer <key>）取 key。
 
 from typing import Any, Dict, Optional
 
-from redfox_mcp_core import call, create_server, get_client, run_task, serve
+from redfox_mcp_core import call, create_server, get_client, serve
 
 from redfox_kuaishou_mcp import __version__
 
@@ -49,17 +49,18 @@ def kuaishou_search_users(account_name: str, page: int = 1,
 
 
 @mcp.tool()
-def kuaishou_transcript(url: str, timeout_seconds: int = 240) -> Dict[str, Any]:
-    """快手视频字幕/文案提取，提交后自动等待并返回完整文案。
-    url 为作品链接（必填）；超时未完成时返回 taskId，可用 kuaishou_transcript_result 再查。"""
-    return run_task(lambda: get_client().kuaishou.transcript_submit,
-                    lambda: get_client().kuaishou.transcript_result,
-                    timeout_seconds, url=url, source="快手视频字幕/文案提取-MCP")
+def kuaishou_transcript(url: str, timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
+    """提交快手视频字幕/文案提取任务，立即返回 taskId，不自动查询结果。
+    url 为作品链接（必填）。请稍后用 kuaishou_transcript_result(task_id)
+    自行查询结果。timeout_seconds 为可选参数，可传可不传，传与不传都不影响本调用
+    （本工具只提交任务、不自动轮询结果）。"""
+    return call(lambda: get_client().kuaishou.transcript_submit,
+                url=url, source="快手视频字幕/文案提取-MCP")
 
 
 @mcp.tool()
 def kuaishou_transcript_result(task_id: str) -> Dict[str, Any]:
-    """查询快手字幕提取任务结果。仅在 kuaishou_transcript 超时返回 taskId 后使用。"""
+    """查询快手字幕提取任务结果。传 kuaishou_transcript 提交返回的 taskId。"""
     return call(lambda: get_client().kuaishou.transcript_result, task_id=task_id, source="查询快手字幕提取任务结果-MCP")
 
 

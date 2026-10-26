@@ -3,7 +3,6 @@
 为各平台 MCP server 提供统一的基础设施：
 - RedFoxClient 管理（stdio 单例 / HTTP 多租户按 key 缓存）
 - 统一异常转结构化结果（agent 可直接读取出错引导）
-- 异步任务提交 + 自动轮询
 
 认证：stdio 模式读环境变量 REDFOX_API_KEY；
 HTTP 模式从请求头 REDFOX_API_KEY（或 Authorization: Bearer <key>）取 key。
@@ -14,7 +13,6 @@ import json
 import logging
 import os
 import threading
-import time
 from collections import OrderedDict
 from typing import Any, Callable, Dict, Optional
 
@@ -37,19 +35,6 @@ API_KEY_GUIDE_HTTP = (
     "https://redfox.hk/settings/api-keys?source=mcp 注册并获取 API Key，"
     "然后在 MCP 客户端的请求头中配置 REDFOX_API_KEY（或 Authorization: Bearer <key>）。"
 )
-
-TASK_PENDING_MSG = (
-    "任务仍在进行中，已超过本次等待时间。"
-    "请稍后使用对应的 result 工具并传入此 taskId 查询结果。"
-)
-
-TERMINAL_STATUSES = {
-    "succeeded", "success", "completed", "complete", "done",
-    "failed", "error", "cancelled", "canceled",
-}
-
-# 非终态（仅作说明）：各品类还有 queued / in_progress / processing / running 等
-# 中间态，不在上表内即视为未完成，poll() 会继续轮询。
 
 _TRANSPORT = "stdio"  # serve() 启动时按实际 transport 设置
 
@@ -249,53 +234,3 @@ def call(fn_factory: Callable[[], Callable], **kwargs) -> Dict[str, Any]:
         result = {"error": "api_error", "code": e.code, "message": e.message}
         _emit("mcp_call", tool=tool, arguments=args, ok=False, error=type(e).__name__, result=result)
         return result
-
-
-def is_done(res: Any) -> bool:
-    """判断异步任务是否到达终态（兼容各品类不同的响应结构）"""
-    if not isinstance(res, dict):
-        return True
-    if res.get("error"):
-        return True
-    if res.get("completed") is True:
-        return True
-    status = res.get("status")
-    if isinstance(status, str) and status.lower() in TERMINAL_STATUSES:
-        return True
-    # imageUrls: GPT-Image-2 等新图片接口的结果字段；imagePaths 为其旧版字段
-    for field in ("content", "imageUrls", "imagePaths", "images",
-                  "videoUrl", "videoUrls", "video"):
-        if res.get(field):
-            return True
-    return False
-
-
-def poll(result_fn: Callable[[], Callable], task_id: str,
-         timeout_seconds: int, interval: float = 3.0,
-         source: Optional[str] = None) -> Dict[str, Any]:
-    deadline = time.monotonic() + timeout_seconds
-    while True:
-        kw: Dict[str, Any] = {"task_id": task_id}
-        if source is not None:
-            kw["source"] = source
-        res = call(result_fn, **kw)
-        if is_done(res):
-            return res
-        if time.monotonic() >= deadline:
-            return {"completed": False, "taskId": task_id, "message": TASK_PENDING_MSG}
-        time.sleep(interval)
-
-
-def run_task(submit_fn: Callable[[], Callable], result_fn: Callable[[], Callable],
-             timeout_seconds: int, **kwargs) -> Dict[str, Any]:
-    """提交异步任务并自动轮询至完成；超时则返回 taskId 供 result 工具后续查询
-
-    kwargs 中的 source（调用来源标识）会同时透传给提交与轮询两个 SDK 方法。
-    """
-    submitted = call(submit_fn, **kwargs)
-    if not isinstance(submitted, dict) or submitted.get("error"):
-        return submitted
-    task_id = submitted.get("taskId") or submitted.get("task_id")
-    if not task_id:
-        return submitted
-    return poll(result_fn, task_id, timeout_seconds, source=kwargs.get("source"))
