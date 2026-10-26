@@ -138,13 +138,14 @@ def xiaohongshu_get_dark_horse_notes(category: str, start_date: str) -> Dict[str
 
 @mcp.tool()
 def xiaohongshu_get_comments(opus_id: str, data_num: int,
-                             timeout_seconds: int = 240) -> Dict[str, Any]:
-    """获取小红书笔记一级评论（广域库），提交后自动等待并返回结果。
-    opus_id 为作品 id（笔记链接 explore/ 后的部分）；data_num 为所需条数，-1=全部；
-    超时未完成时返回 taskId，可用 xiaohongshu_get_comments_result 再查。"""
-    return run_task(lambda: get_client().xiaohongshu.comment_submit,
-                    lambda: get_client().xiaohongshu.comment_result,
-                    timeout_seconds, opus_id=opus_id, data_num=data_num, source="获取小红书笔记一级评论-MCP")
+                             timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
+    """提交小红书笔记一级评论任务（广域库），立即返回 taskId，不自动查询结果。
+    opus_id 为作品 id（笔记链接 explore/ 后的部分）；data_num 为所需条数，-1=全部。
+    评论数据约 24 小时后才可见，请稍后用 xiaohongshu_get_comments_result(task_id)
+    自行查询结果。timeout_seconds 为可选参数，可传可不传，传与不传都不影响本调用
+    （本工具只提交任务、不再自动轮询结果）。"""
+    return call(lambda: get_client().xiaohongshu.comment_submit,
+                opus_id=opus_id, data_num=data_num, source="获取小红书笔记一级评论-MCP")
 
 
 @mcp.tool()
