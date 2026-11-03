@@ -21,6 +21,9 @@ class OAuthRouteTests(unittest.TestCase):
             self.assertIn("/authorize", body["authorization_endpoint"])
             self.assertIn("/token", body["token_endpoint"])
             self.assertIn("/register", body["registration_endpoint"])
+            methods = body["token_endpoint_auth_methods_supported"]
+            self.assertEqual(methods[:2], ["client_secret_post", "client_secret_basic"])
+            self.assertEqual(methods[-1], "none")
             protected = client.get("/.well-known/oauth-protected-resource/mcp")
             self.assertEqual(protected.status_code, 200, protected.text)
             self.assertIn("https://mcp.redfox.hk/mcp", protected.text)

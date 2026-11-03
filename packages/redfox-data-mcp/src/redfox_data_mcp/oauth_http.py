@@ -16,6 +16,10 @@ from redfox_mcp_core.runtime import set_transport
 
 from redfox_data_mcp.oauth import build_auth, handle_oauth_resume
 
+# 公开客户端换令牌不带 client_secret。SDK 的元数据只公布带密钥的两种方式，
+# 豆包审核要求 token_endpoint_auth_methods_supported 包含 none。
+_PUBLIC_CLIENT_AUTH_METHOD = "none"
+
 
 class AcceptApiKeyMiddleware:
     """请求头里已有 API Key 时，不再强制 OAuth Bearer。"""
@@ -45,6 +49,35 @@ def _wrap_mcp_route(app) -> None:
             return
 
 
+def _advertise_public_client(metadata):
+    """在授权服务器元数据末尾补上 none，不改变已有方式的顺序。"""
+    methods = list(getattr(metadata, "token_endpoint_auth_methods_supported", None) or [])
+    if _PUBLIC_CLIENT_AUTH_METHOD not in methods:
+        methods.append(_PUBLIC_CLIENT_AUTH_METHOD)
+        metadata.token_endpoint_auth_methods_supported = methods
+    return metadata
+
+
+def install_public_client_metadata() -> None:
+    """让 /.well-known/oauth-authorization-server 公布公开客户端。
+
+    SDK 在 build_metadata 里写死了 client_secret_post 和 client_secret_basic。
+    注册时未声明方式的客户端仍默认 client_secret_post，这里只补元数据。
+    """
+    import mcp.server.auth.routes as routes
+
+    current = routes.build_metadata
+    if getattr(current, "_redfox_public_client", False):
+        return
+    original = current
+
+    def build_metadata(*args, **kwargs):
+        return _advertise_public_client(original(*args, **kwargs))
+
+    build_metadata._redfox_public_client = True  # type: ignore[attr-defined]
+    routes.build_metadata = build_metadata
+
+
 def build_app(mcp):
     configure(mcp)
     app = mcp.http_app(path="/mcp", stateless_http=False, transport="streamable-http")
@@ -53,6 +86,7 @@ def build_app(mcp):
 
 
 def configure(mcp) -> None:
+    install_public_client_metadata()
     mode = os.getenv("REDFOX_MCP_AUTH_MODE", "apikey").strip().lower()
     base_url = os.getenv("REDFOX_MCP_OAUTH_BASE_URL") or "https://mcp.redfox.hk"
     provider = build_auth(
