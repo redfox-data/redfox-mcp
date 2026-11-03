@@ -7,6 +7,7 @@ REDFOX_MCP_AUTH_MODE=oauth 或 multi 时启用。OAuth 端点不要求 API Key�
 from __future__ import annotations
 
 import argparse
+import json
 import os
 
 from starlette.requests import Request
@@ -78,10 +79,70 @@ def install_public_client_metadata() -> None:
     routes.build_metadata = build_metadata
 
 
+class _PublicClientMetadataMiddleware:
+    """改写授权服务器元数据响应，保证对外公布 none。"""
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope.get("type") != "http":
+            await self.app(scope, receive, send)
+            return
+        start: dict | None = None
+        body = bytearray()
+
+        async def buffer_send(message: dict) -> None:
+            nonlocal start
+            if message["type"] == "http.response.start":
+                start = message
+                return
+            if message["type"] != "http.response.body":
+                await send(message)
+                return
+            body.extend(message.get("body") or b"")
+            if message.get("more_body"):
+                return
+            payload = _inject_public_client(bytes(body))
+            headers = [
+                (key, value)
+                for key, value in (start or {}).get("headers") or []
+                if key.lower() != b"content-length"
+            ]
+            headers.append((b"content-length", str(len(payload)).encode()))
+            await send({**(start or {"type": "http.response.start", "status": 200}), "headers": headers})
+            await send({"type": "http.response.body", "body": payload})
+
+        await self.app(scope, receive, buffer_send)
+
+
+def _inject_public_client(body: bytes) -> bytes:
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError:
+        return body
+    if not isinstance(payload, dict):
+        return body
+    methods = list(payload.get("token_endpoint_auth_methods_supported") or [])
+    if _PUBLIC_CLIENT_AUTH_METHOD not in methods:
+        methods.append(_PUBLIC_CLIENT_AUTH_METHOD)
+        payload["token_endpoint_auth_methods_supported"] = methods
+        return json.dumps(payload, separators=(",", ":")).encode()
+    return body
+
+
+def _wrap_authorization_metadata(app) -> None:
+    for route in getattr(app, "routes", []):
+        if getattr(route, "path", None) == "/.well-known/oauth-authorization-server":
+            route.app = _PublicClientMetadataMiddleware(route.app)
+            return
+
+
 def build_app(mcp):
     configure(mcp)
     app = mcp.http_app(path="/mcp", stateless_http=False, transport="streamable-http")
     _wrap_mcp_route(app)
+    _wrap_authorization_metadata(app)
     return app
 
 
