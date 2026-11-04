@@ -8,7 +8,8 @@ REDFOX_API_KEY（或 Authorization: Bearer <key>）取 key。
 获取地址 https://redfox.hk/settings/api-keys?source=mcp
 """
 
-from typing import Any, Dict, Optional
+from typing import Annotated, Any, Dict, Optional
+from pydantic import Field
 
 from redfox_mcp_core import call, create_server, get_client, serve
 
@@ -18,92 +19,116 @@ mcp = create_server("redfox-ai-search", __version__)
 
 
 @mcp.tool()
-def ai_search_kimi(inquiry_text: str, timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
+def ai_search_kimi(inquiry_text: Annotated[str, Field(description="输入文本，[必填]，示例: 夏日茶饮推荐")], timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
     """提交 Kimi 联网 AI 搜索任务，立即返回 taskId，不自动查询结果。
     inquiry_text 为搜索提问文本。请稍后用 ai_search_kimi_result(task_id) 自行查询结果
-    （含 content/webPages）。timeout_seconds 为可选参数，传与不传都不影响本调用。"""
+    （含 content/webPages）。timeout_seconds 为可选参数，传与不传都不影响本调用。
+
+接口: POST /story/api/kimi/submit"""
     return call(lambda: get_client().ai_search.kimi_submit,
                 inquiry_text=inquiry_text, source="Kimi 联网 AI 搜索-MCP")
 
 
 @mcp.tool()
-def ai_search_doubao(inquiry_text: str, timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
+def ai_search_doubao(inquiry_text: Annotated[str, Field(description="搜索文本，[必填]，示例: 羽绒服购买推荐")], timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
     """提交豆包联网 AI 搜索任务，立即返回 taskId，不自动查询结果。
     inquiry_text 为搜索提问文本。请稍后用 ai_search_doubao_result(task_id) 自行查询结果。
-    timeout_seconds 为可选参数，传与不传都不影响本调用。"""
+    timeout_seconds 为可选参数，传与不传都不影响本调用。
+
+接口: POST /story/api/deepSearch/dbSubmit"""
     return call(lambda: get_client().ai_search.doubao_submit,
                 inquiry_text=inquiry_text, source="豆包联网 AI 搜索-MCP")
 
 
 @mcp.tool()
-def ai_search_deepseek(inquiry_text: str, timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
+def ai_search_deepseek(inquiry_text: Annotated[str, Field(description="inquiryText，[必填]，示例: 羽绒服购买推荐")], timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
     """提交 Deepseek 联网 AI 搜索任务，立即返回 taskId，不自动查询结果。
     inquiry_text 为搜索提问文本。请稍后用 ai_search_deepseek_result(task_id) 自行查询结果。
-    timeout_seconds 为可选参数，传与不传都不影响本调用。"""
+    timeout_seconds 为可选参数，传与不传都不影响本调用。
+
+接口: POST /story/api/deepSearch/dsSubmit"""
     return call(lambda: get_client().ai_search.deepseek_submit,
                 inquiry_text=inquiry_text, source="Deepseek 联网 AI 搜索-MCP")
 
 
 @mcp.tool()
-def ai_search_yuanbao(inquiry_text: str, timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
+def ai_search_yuanbao(inquiry_text: Annotated[str, Field(description="搜索文本，[必填]，示例: 新媒体找什么平台？")], timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
     """提交元宝联网 AI 搜索任务，立即返回 taskId，不自动查询结果。
     inquiry_text 为搜索提问文本。请稍后用 ai_search_yuanbao_result(task_id) 自行查询结果。
-    timeout_seconds 为可选参数，传与不传都不影响本调用。"""
+    timeout_seconds 为可选参数，传与不传都不影响本调用。
+
+接口: POST /story/api/deepSearch/ybSubmit"""
     return call(lambda: get_client().ai_search.yuanbao_submit,
                 inquiry_text=inquiry_text, source="元宝联网 AI 搜索-MCP")
 
 
 @mcp.tool()
-def ai_search_qianwen(inquiry_text: str, timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
+def ai_search_qianwen(inquiry_text: Annotated[str, Field(description="搜索文本，[必填]，示例: 新媒体找什么平台？")], timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
     """提交千问联网 AI 搜索任务，立即返回 taskId，不自动查询结果。
     inquiry_text 为搜索提问文本。请稍后用 ai_search_qianwen_result(task_id) 自行查询结果。
-    timeout_seconds 为可选参数，传与不传都不影响本调用。"""
+    timeout_seconds 为可选参数，传与不传都不影响本调用。
+
+接口: POST /story/api/deepSearch/qwSubmit"""
     return call(lambda: get_client().ai_search.qianwen_submit,
                 inquiry_text=inquiry_text, source="千问联网 AI 搜索-MCP")
 
 
 @mcp.tool()
-def ai_search_baidu(inquiry_text: str, timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
+def ai_search_baidu(inquiry_text: Annotated[str, Field(description="搜索文本，[必填]，示例: 新媒体找什么平台？")], timeout_seconds: Optional[int] = None) -> Dict[str, Any]:
     """提交百度联网 AI 搜索任务，立即返回 taskId，不自动查询结果。
     inquiry_text 为搜索提问文本。请稍后用 ai_search_baidu_result(task_id) 自行查询结果。
-    timeout_seconds 为可选参数，传与不传都不影响本调用。"""
+    timeout_seconds 为可选参数，传与不传都不影响本调用。
+
+接口: POST /story/api/deepSearch/bdSubmit"""
     return call(lambda: get_client().ai_search.baidu_submit,
                 inquiry_text=inquiry_text, source="百度联网 AI 搜索-MCP")
 
 
 @mcp.tool()
-def ai_search_kimi_result(task_id: str) -> Dict[str, Any]:
-    """查询 Kimi 搜索任务结果（含 content/webPages）。传 ai_search_kimi 提交返回的 taskId。"""
+def ai_search_kimi_result(task_id: Annotated[str, Field(description="任务id，[必填]，示例: dkhkhlzyk4mmraw46a55d73c0000000000000011")]) -> Dict[str, Any]:
+    """查询 Kimi 搜索任务结果（含 content/webPages）。传 ai_search_kimi 提交返回的 taskId。
+
+接口: POST /story/api/kimi/result"""
     return call(lambda: get_client().ai_search.kimi_result, task_id=task_id, source="查询 Kimi 搜索任务结果-MCP")
 
 
 @mcp.tool()
-def ai_search_doubao_result(task_id: str) -> Dict[str, Any]:
-    """查询豆包搜索任务结果。传 ai_search_doubao 提交返回的 taskId。"""
+def ai_search_doubao_result(task_id: Annotated[str, Field(description="搜索任务ID（由 dbSubmit 接口返回），[必填]，示例: ark_abc123def456")]) -> Dict[str, Any]:
+    """查询豆包搜索任务结果。传 ai_search_doubao 提交返回的 taskId。
+
+接口: POST /story/api/deepSearch/dbResult"""
     return call(lambda: get_client().ai_search.doubao_result, task_id=task_id, source="查询豆包搜索任务结果-MCP")
 
 
 @mcp.tool()
-def ai_search_deepseek_result(task_id: str) -> Dict[str, Any]:
-    """查询 Deepseek 搜索任务结果。传 ai_search_deepseek 提交返回的 taskId。"""
+def ai_search_deepseek_result(task_id: Annotated[str, Field(description="生成任务ID（由 dsSubmit 接口返回），[必填]，示例: ark_abc123def456")]) -> Dict[str, Any]:
+    """查询 Deepseek 搜索任务结果。传 ai_search_deepseek 提交返回的 taskId。
+
+接口: POST /story/api/deepSearch/dsResult"""
     return call(lambda: get_client().ai_search.deepseek_result, task_id=task_id, source="查询 Deepseek 搜索任务结果-MCP")
 
 
 @mcp.tool()
-def ai_search_yuanbao_result(task_id: str) -> Dict[str, Any]:
-    """查询元宝搜索任务结果。传 ai_search_yuanbao 提交返回的 taskId。"""
+def ai_search_yuanbao_result(task_id: Annotated[str, Field(description="搜索任务ID（由 ybSubmit 接口返回），[必填]，示例: 6xo6gms7k4mmraw46a8fef970000000000000002")]) -> Dict[str, Any]:
+    """查询元宝搜索任务结果。传 ai_search_yuanbao 提交返回的 taskId。
+
+接口: POST /story/api/deepSearch/ybResult"""
     return call(lambda: get_client().ai_search.yuanbao_result, task_id=task_id, source="查询元宝搜索任务结果-MCP")
 
 
 @mcp.tool()
-def ai_search_qianwen_result(task_id: str) -> Dict[str, Any]:
-    """查询千问搜索任务结果。传 ai_search_qianwen 提交返回的 taskId。"""
+def ai_search_qianwen_result(task_id: Annotated[str, Field(description="搜索任务ID（由 qwSubmit 接口返回），[必填]，示例: ptvp2pngk4mmraw46a8ff0650000000000000002")]) -> Dict[str, Any]:
+    """查询千问搜索任务结果。传 ai_search_qianwen 提交返回的 taskId。
+
+接口: POST /story/api/deepSearch/qwResult"""
     return call(lambda: get_client().ai_search.qianwen_result, task_id=task_id, source="查询千问搜索任务结果-MCP")
 
 
 @mcp.tool()
-def ai_search_baidu_result(task_id: str) -> Dict[str, Any]:
-    """查询百度搜索任务结果。传 ai_search_baidu 提交返回的 taskId。"""
+def ai_search_baidu_result(task_id: Annotated[str, Field(description="搜索任务ID（由 bdSubmit 接口返回），[必填]，示例: bg4jbv4nk4mmraw46a8fecdc0000000000000001")]) -> Dict[str, Any]:
+    """查询百度搜索任务结果。传 ai_search_baidu 提交返回的 taskId。
+
+接口: POST /story/api/deepSearch/bdResult"""
     return call(lambda: get_client().ai_search.baidu_result, task_id=task_id, source="查询百度搜索任务结果-MCP")
 
 
