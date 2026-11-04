@@ -11,7 +11,7 @@ requires-python = ">=3.10"
 license = "MIT"
 keywords = ["mcp", "redfox", "ai-search", "kimi", "doubao", "deepseek", "yuanbao", "qianwen", "baidu"]
 dependencies = [
-    "redfox-mcp-core>=0.1.6",
+    "redfox-mcp-core>=0.3.0",
 ]
 
 [project.urls]

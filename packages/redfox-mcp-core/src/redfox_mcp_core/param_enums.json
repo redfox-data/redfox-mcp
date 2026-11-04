@@ -1,0 +1,342 @@
+{
+ "AutohomeAPI.get_video": {
+  "video_type": [
+   "0",
+   "4"
+  ]
+ },
+ "AutohomeAPI.search_works": {
+  "source_type": [
+   "club",
+   "article",
+   "video"
+  ]
+ },
+ "BilibiliAPI.get_user_works": {
+  "order": [
+   "time",
+   "play",
+   "like"
+  ]
+ },
+ "BilibiliAPI.search_articles": {
+  "order": [
+   "time",
+   "play",
+   "like",
+   "comment",
+   "favorite"
+  ]
+ },
+ "BilibiliAPI.search_users": {
+  "order": [
+   "follower",
+   "like"
+  ]
+ },
+ "DongchediAPI.get_work": {
+  "work_type": [
+   "video",
+   "article"
+  ]
+ },
+ "DongchediAPI.search_works": {
+  "source_type": [
+   "1",
+   "2"
+  ]
+ },
+ "YicheAPI.search_works": {
+  "source_type": [
+   "club",
+   "shipin",
+   "xinwen"
+  ]
+ },
+ "KuaishouAPI.search_works": {
+  "sort": [
+   "综合",
+   "最新",
+   "最多点赞",
+   "最多收藏"
+  ]
+ },
+ "TikTokAPI.search_users": {
+  "follower_count_filter": [
+   "1",
+   "2",
+   "3",
+   "4"
+  ],
+  "profile_type_filter": [
+   "1"
+  ],
+  "other_pref_filter": [
+   "1"
+  ]
+ },
+ "WechatAPI.get_strength_rank": {
+  "rank_type": [
+   "day",
+   "week",
+   "month"
+  ]
+ },
+ "ToolsAPI.upload_image": {
+  "format": [
+   "png",
+   "jpeg",
+   "webp"
+  ]
+ },
+ "ToolsAPI.upload_file": {
+  "format": [
+   "mp4",
+   "avi",
+   "mov",
+   "mkv",
+   "webm",
+   "mp3",
+   "wav",
+   "aac",
+   "ogg",
+   "flac",
+   "png",
+   "jpg",
+   "jpeg",
+   "webp",
+   "gif",
+   "bmp"
+  ]
+ },
+ "DouyinAPI.get_user_works": {
+  "sort_type": [
+   "_0",
+   "_2",
+   "_4",
+   "default"
+  ]
+ },
+ "DouyinAPI.search_articles": {
+  "sort_type": [
+   "_0",
+   "_2",
+   "_4",
+   "default"
+  ]
+ },
+ "DouyinAPI.search_users": {
+  "sort_type": [
+   "_0",
+   "_2",
+   "_4"
+  ]
+ },
+ "WechatAPI.get_user_works": {
+  "sort_type": [
+   "_0",
+   "_2",
+   "_4"
+  ]
+ },
+ "WechatAPI.get_user_works_wide": {
+  "sort_type": [
+   "0",
+   "2",
+   "4"
+  ]
+ },
+ "WechatAPI.search_articles": {
+  "sort_type": [
+   "_0",
+   "_2",
+   "_4"
+  ]
+ },
+ "WechatAPI.search_articles_wide": {
+  "sort_type": [
+   "0",
+   "2",
+   "4"
+  ]
+ },
+ "WechatAPI.search_users": {
+  "sort_type": [
+   "_0",
+   "_2",
+   "_4"
+  ]
+ },
+ "XiaohongshuAPI.get_user_works": {
+  "sort_type": [
+   "_0",
+   "_2",
+   "_4"
+  ]
+ },
+ "XiaohongshuAPI.search_articles": {
+  "sort_type": [
+   "_0",
+   "_2",
+   "_4"
+  ]
+ },
+ "XiaohongshuAPI.search_users": {
+  "sort_type": [
+   "_0",
+   "_2",
+   "_4"
+  ]
+ },
+ "DouyinAPI.get_daily_hot_rank": {
+  "type": [
+   "小剧场",
+   "财富理财",
+   "二次元",
+   "身体锻炼",
+   "居家装修",
+   "数码科技",
+   "科学普及",
+   "旅行",
+   "美食",
+   "动物",
+   "明星娱乐",
+   "汽车",
+   "亲子",
+   "人文",
+   "三农",
+   "潮流风尚",
+   "游戏",
+   "生活记录",
+   "体育",
+   "舞蹈才艺",
+   "学习教育",
+   "休闲玩乐",
+   "影视",
+   "音乐",
+   "颜值造型",
+   "健康医学",
+   "综艺",
+   "个人成长"
+  ]
+ },
+ "DouyinAPI.get_hot_accounts": {
+  "type": [
+   "全部",
+   "个人才艺",
+   "生活vlog",
+   "财富理财",
+   "二次元",
+   "居家装修",
+   "学习教育",
+   "小剧场",
+   "数码科技",
+   "旅行",
+   "美食",
+   "化妆美容",
+   "动物",
+   "亲子",
+   "汽车",
+   "情感",
+   "三农",
+   "健康医学",
+   "潮流风尚",
+   "舞蹈才艺",
+   "颜值造型",
+   "人文",
+   "音乐",
+   "影视",
+   "身体锻炼",
+   "体育",
+   "明星娱乐",
+   "游戏"
+  ]
+ },
+ "XiaohongshuAPI.get_hot_accounts": {
+  "type": [
+   "综合全部",
+   "出行代步",
+   "医疗保健",
+   "休闲爱好",
+   "综合杂项",
+   "婚庆婚礼",
+   "居家装修",
+   "影视娱乐",
+   "星座情感",
+   "拍摄记录",
+   "学习教育",
+   "旅行度假",
+   "亲子育儿",
+   "日常生活",
+   "科学探索",
+   "数码科技",
+   "时尚穿搭",
+   "化妆美容",
+   "个人护理",
+   "美味佳肴",
+   "职业发展",
+   "宠物天地",
+   "新闻资讯",
+   "体育锻炼",
+   "潮流鞋包"
+  ]
+ },
+ "XiaohongshuAPI.get_weekly_hot_rank": {
+  "category": [
+   "综合全部",
+   "出行代步",
+   "医疗保健",
+   "休闲爱好",
+   "综合杂项",
+   "婚庆婚礼",
+   "居家装修",
+   "影视娱乐",
+   "星座情感",
+   "拍摄记录",
+   "学习教育",
+   "旅行度假",
+   "亲子育儿",
+   "日常生活",
+   "科学探索",
+   "数码科技",
+   "时尚穿搭",
+   "化妆美容",
+   "个人护理",
+   "美味佳肴",
+   "职业发展",
+   "宠物天地",
+   "新闻资讯",
+   "体育锻炼",
+   "潮流鞋包"
+  ]
+ },
+ "XiaohongshuAPI.get_dark_horse_notes": {
+  "category": [
+   "综合全部",
+   "出行代步",
+   "医疗保健",
+   "休闲爱好",
+   "综合杂项",
+   "婚庆婚礼",
+   "居家装修",
+   "影视娱乐",
+   "星座情感",
+   "拍摄记录",
+   "学习教育",
+   "旅行度假",
+   "亲子育儿",
+   "日常生活",
+   "科学探索",
+   "数码科技",
+   "时尚穿搭",
+   "化妆美容",
+   "个人护理",
+   "美味佳肴",
+   "职业发展",
+   "宠物天地",
+   "新闻资讯",
+   "体育锻炼",
+   "潮流鞋包"
+  ]
+ }
+}

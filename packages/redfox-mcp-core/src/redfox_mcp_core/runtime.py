@@ -3,6 +3,7 @@
 为各平台 MCP server 提供统一的基础设施：
 - RedFoxClient 管理（stdio 单例 / HTTP 多租户按 key 缓存）
 - 统一异常转结构化结果（agent 可直接读取出错引导）
+- 参数枚举软提示（值不在官方文档枚举内时返回附 warning，不拦截调用）
 
 认证：stdio 模式读环境变量 REDFOX_API_KEY；
 HTTP 模式从请求头 REDFOX_API_KEY（或 Authorization: Bearer <key>）取 key。
@@ -14,6 +15,7 @@ import logging
 import os
 import threading
 from collections import OrderedDict
+from pathlib import Path as _Path
 from typing import Any, Callable, Dict, Optional
 
 from redfox import RedFoxClient
@@ -119,6 +121,34 @@ _tenants: "OrderedDict[str, RedFoxClient]" = OrderedDict()  # http 模式：按 
 _tenants_lock = threading.Lock()
 _TENANT_MAX = 1000
 
+# 枚举取值来自 https://redfox.hk/apis 官方文档（软提示用，不拦截调用）。
+# 键为 SDK 方法全名（与 _fn_name 一致，如 "DouyinAPI.search_articles"）。
+with open(_Path(__file__).resolve().parent / "param_enums.json", encoding="utf-8") as _f:
+    PARAM_ENUMS: Dict[str, Dict[str, list]] = json.load(_f)
+
+
+def _enum_warning(tool: str, args: Dict[str, Any]) -> str:
+    """枚举软提示：值不在文档枚举内时生成提示文本，空串表示无提示。
+
+    不拦截调用（文档枚举可能不全，严格校验会误杀合法值，
+    如日榜返回数据里的「时政社会」并不在文档类别列表中）。
+    """
+    enums = PARAM_ENUMS.get(tool)
+    if not enums:
+        return ""
+    parts = []
+    for name, allowed in enums.items():
+        value = args.get(name)
+        if not isinstance(value, str) or value in allowed:
+            continue
+        shown = " | ".join(allowed[:8])
+        if len(allowed) > 8:
+            shown += f" | …共{len(allowed)}个取值"
+        parts.append(f"参数 {name} 的值 {value!r} 不在文档枚举范围内（可选: {shown}）")
+    if not parts:
+        return ""
+    return "；".join(parts) + "。已按原值调用，接口可能忽略该参数或按默认处理，请核对取值"
+
 
 def set_transport(transport: str) -> None:
     """由 serve() 在启动时调用，按实际 transport 设置全局模式"""
@@ -215,13 +245,19 @@ def call(fn_factory: Callable[[], Callable], **kwargs) -> Dict[str, Any]:
     try:
         fn = fn_factory()
         tool = _fn_name(fn)
+        warning = _enum_warning(tool, args)
         result = fn(**args)
         _emit("mcp_call", tool=tool, arguments=args, ok=True, result=result)
         if isinstance(result, dict):
+            if warning:
+                result["warning"] = warning
             return result
         # 部分数据接口顶层返回 JSON 数组，而工具声明的返回类型是 dict（output
         # schema 为 object），fastmcp 会拒绝非 dict 返回值，这里统一包一层。
-        return {"list": result} if isinstance(result, list) else {"data": result}
+        wrapped = {"list": result} if isinstance(result, list) else {"data": result}
+        if warning:
+            wrapped["warning"] = warning
+        return wrapped
     except (RedFoxAuthError, ValueError) as e:
         result = {"error": "auth_failed", "message": _auth_guide()}
         _emit("mcp_call", tool=tool, arguments=args, ok=False, error=type(e).__name__, result=result)
