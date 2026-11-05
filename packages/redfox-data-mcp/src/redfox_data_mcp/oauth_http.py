@@ -7,6 +7,7 @@ REDFOX_MCP_AUTH_MODE=oauth 或 multi 时启用。OAuth 端点不要求 API Key�
 from __future__ import annotations
 
 import argparse
+import hmac
 import json
 import os
 
@@ -23,24 +24,47 @@ _PUBLIC_CLIENT_AUTH_METHOD = "none"
 
 
 class AcceptApiKeyMiddleware:
-    """请求头里已有 API Key 时，不再强制 OAuth Bearer。"""
+    """请求头里的 API Key 与 REDFOX_API_KEY 一致时，不再强制 OAuth Bearer。
+
+    Key 不匹配（或服务端未配置 REDFOX_API_KEY）一律 401，不能让任意 x-api-key 头绕过鉴权。
+    """
 
     def __init__(self, app: ASGIApp) -> None:
         self.app = app
+        self._expected_key = os.getenv("REDFOX_API_KEY", "").strip()
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope.get("type") == "http" and _api_key_header(scope) and hasattr(self.app, "app"):
+        if scope.get("type") == "http" and _api_key_value(scope) and hasattr(self.app, "app"):
+            if not self._expected_key or not hmac.compare_digest(
+                _api_key_value(scope), self._expected_key
+            ):
+                await _send_unauthorized(send)
+                return
             await self.app.app(scope, receive, send)
             return
         await self.app(scope, receive, send)
 
 
-def _api_key_header(scope: Scope) -> bool:
+def _api_key_value(scope: Scope) -> str:
     headers = {
         key.decode("latin1").lower(): value.decode("latin1")
         for key, value in scope.get("headers") or []
     }
-    return bool(headers.get("redfox_api_key") or headers.get("x-api-key"))
+    return headers.get("redfox_api_key") or headers.get("x-api-key") or ""
+
+
+async def _send_unauthorized(send: Send) -> None:
+    await send(
+        {
+            "type": "http.response.start",
+            "status": 401,
+            "headers": [
+                (b"content-length", b"0"),
+                (b"www-authenticate", b'Bearer error="invalid_token"'),
+            ],
+        }
+    )
+    await send({"type": "http.response.body", "body": b""})
 
 
 def _wrap_mcp_route(app) -> None:

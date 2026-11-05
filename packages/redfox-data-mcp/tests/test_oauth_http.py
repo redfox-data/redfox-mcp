@@ -6,6 +6,7 @@ from starlette.testclient import TestClient
 os.environ.setdefault("REDFOX_MCP_AUTH_MODE", "oauth")
 os.environ.setdefault("REDFOX_MCP_OAUTH_BASE_URL", "https://mcp.redfox.hk")
 os.environ.setdefault("REDFOX_OAUTH_STATE_SECRET", "test-secret")
+os.environ.setdefault("REDFOX_API_KEY", "test-key")
 
 
 class OAuthRouteTests(unittest.TestCase):
@@ -49,6 +50,26 @@ class OAuthRouteTests(unittest.TestCase):
                 },
             )
             self.assertNotEqual(keyed.status_code, 401, keyed.text)
+            # 任意 x-api-key 头不能绕过鉴权
+            faked = client.post(
+                "/mcp",
+                headers={
+                    "X-API-Key": "not-the-key",
+                    "Accept": "application/json, text/event-stream",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "jsonrpc": "2.0",
+                    "id": 2,
+                    "method": "initialize",
+                    "params": {
+                        "protocolVersion": "2025-03-26",
+                        "capabilities": {},
+                        "clientInfo": {"name": "t", "version": "0"},
+                    },
+                },
+            )
+            self.assertEqual(faked.status_code, 401)
 
 
 if __name__ == "__main__":
