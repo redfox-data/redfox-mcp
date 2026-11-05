@@ -5,6 +5,7 @@ from starlette.testclient import TestClient
 
 os.environ.setdefault("REDFOX_MCP_AUTH_MODE", "oauth")
 os.environ.setdefault("REDFOX_MCP_OAUTH_BASE_URL", "https://mcp.redfox.hk")
+os.environ.setdefault("REDFOX_OAUTH_STATE_SECRET", "test-secret")
 
 
 class OAuthRouteTests(unittest.TestCase):
