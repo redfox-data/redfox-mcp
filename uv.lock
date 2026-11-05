@@ -1224,15 +1224,11 @@ name = "redfox-cloud-mcp"
 version = "0.1.0"
 source = { editable = "packages/redfox-cloud-mcp" }
 dependencies = [
-    { name = "redfox-data-mcp" },
     { name = "redfox-mcp-core" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "redfox-data-mcp", editable = "packages/redfox-data-mcp" },
-    { name = "redfox-mcp-core", editable = "packages/redfox-mcp-core" },
-]
+requires-dist = [{ name = "redfox-mcp-core", editable = "packages/redfox-mcp-core" }]
 
 [[package]]
 name = "redfox-data-mcp"

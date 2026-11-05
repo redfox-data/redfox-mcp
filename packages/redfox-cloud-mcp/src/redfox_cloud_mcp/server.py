@@ -1,7 +1,7 @@
 """RedFox 云市场 MCP：find、describe、call、result。
 
-能力执行与目录沿用 redfox-data-mcp 的同一套逻辑（catalog / search / schema / prepare）。
-与 data-mcp 的差异：
+目录、检索、参数表与校验均在本包内自包含（catalog.json / search / schema / dispatch），
+不依赖 redfox-data-mcp。特点：
 - 鉴权走普通 apikey（HTTP 时从 Authorization: Bearer <key> 或 REDFOX_API_KEY 头读取），不接 OAuth。
 - 工具返回按云市场返回规范包成 {isError, content:[{type:text,text:<json>}]}，
   成功码仅上游 2000 / 3801，其余为失败（见 wrap.py）。
@@ -10,19 +10,16 @@
 from __future__ import annotations
 
 import inspect
-import os
 from typing import Annotated, Any, Literal, Optional
 
 from pydantic import Field
 from fastmcp.exceptions import ValidationError as FastMCPValidationError
 from fastmcp.server.middleware import Middleware
-from redfox_mcp_core import create_server, serve
+from redfox_mcp_core import create_server, get_client, serve
 
 from redfox_cloud_mcp import __version__
-from redfox_cloud_mcp.wrap import CALL_SOURCE, envelope, run_task, sdk_raw
-from redfox_data_mcp.clients import get_client
-from redfox_data_mcp.dispatch import prepare
-from redfox_data_mcp.schema import (
+from redfox_cloud_mcp.dispatch import prepare
+from redfox_cloud_mcp.schema import (
     async_ids,
     capability_ids,
     find_param_descriptions,
@@ -30,9 +27,10 @@ from redfox_data_mcp.schema import (
     instructions,
     param_specs,
 )
-from redfox_data_mcp.search import DESCRIBE_LIMIT, by_id
-from redfox_data_mcp.search import describe as describe_catalog
-from redfox_data_mcp.search import find as find_catalog
+from redfox_cloud_mcp.search import DESCRIBE_LIMIT, by_id
+from redfox_cloud_mcp.search import describe as describe_catalog
+from redfox_cloud_mcp.search import find as find_catalog
+from redfox_cloud_mcp.wrap import CALL_SOURCE, envelope, run_task, sdk_raw
 
 mcp = create_server("红狐数据(云市场)", __version__)
 mcp.instructions = instructions()

@@ -1,6 +1,6 @@
 # redfox-cloud-mcp
 
-面向云市场 MCP 渠道的红狐数据聚合服务：用 `find / describe / call / result` 四个工具访问红狐全部已开放接口（目录与参数逻辑复用 `redfox-data-mcp`）。
+面向云市场 MCP 渠道的红狐数据聚合服务：用 `find / describe / call / result` 四个工具访问红狐全部已开放接口（目录与参数逻辑本包自包含）。
 
 ## 鉴权
 

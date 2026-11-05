@@ -1,0 +1,4542 @@
+[
+  {
+    "legacy_tool": "gpt_image_generate",
+    "summary_zh": "GPT-Image-2 图片生成，支持文生图与参考图生图，提交后自动等待并返回 imageUrls。\nresolution：1k/2k/4k；size 为宽高比，支持 1:1、3:2、2:3、4:3、3:4、5:4、4:5、\n16:9、9:16、2:1、1:2、21:9、9:21；n 为生成数量，最多 4 张；\nreference_images 传参考图 URL 列表（最多 2 张）即为图生图，不传为纯文生图，\n参考图需公网可访问。实测 1k 单张约 40~75 秒。\n超时返回 taskId，可用 gpt_image_result 再查。",
+    "name_zh": "GPT-Image-2 图片生成，支持文生图与参考图生图，提交后自动等待并返回 imageUrls",
+    "params": [
+      {
+        "name": "prompt",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "resolution",
+        "type": "str",
+        "required": false,
+        "default": "1k"
+      },
+      {
+        "name": "size",
+        "type": "str",
+        "required": false,
+        "default": "1:1"
+      },
+      {
+        "name": "n",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "reference_images",
+        "type": "Optional[List[str]]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "gpt_image.submit",
+    "result": "gpt_image.result",
+    "source": "GPT-Image-2 图片生成-MCP",
+    "platform": "ai_gen",
+    "category": "ai",
+    "id": "ai_gen.gpt.image.generate",
+    "name_en": "gpt image generate",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "gpt_image_generate",
+        "gpt image generate"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "doubao_image_pro_generate",
+    "summary_zh": "豆包 Seedream 5.0 Pro 图片生成，提交后自动等待结果。\nsize 支持 \"1K\"/\"2K\" 或像素值如 \"2048x2048\"；image 为图生图输入（URL 或 Base64，\n可传单个字符串或字符串列表）；optimize_prompt 开启提示词优化（standard/fast）。\n超时返回 taskId，可用 doubao_image_pro_result 再查。",
+    "name_zh": "豆包 Seedream 5.0 Pro 图片生成，提交后自动等待结果",
+    "params": [
+      {
+        "name": "prompt",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "size",
+        "type": "str",
+        "required": false,
+        "default": "2048x2048"
+      },
+      {
+        "name": "image",
+        "type": "Optional[Any]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "output_format",
+        "type": "str",
+        "required": false,
+        "default": "jpeg"
+      },
+      {
+        "name": "response_format",
+        "type": "str",
+        "required": false,
+        "default": "url"
+      },
+      {
+        "name": "watermark",
+        "type": "bool",
+        "required": false,
+        "default": true
+      },
+      {
+        "name": "optimize_prompt",
+        "type": "bool",
+        "required": false,
+        "default": false
+      },
+      {
+        "name": "optimize_mode",
+        "type": "str",
+        "required": false,
+        "default": "standard"
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "doubao_image.pro_submit",
+    "result": "doubao_image.pro_result",
+    "source": "豆包 Seedream 5.0 Pro 图片生成-MCP",
+    "platform": "ai_gen",
+    "category": "ai",
+    "id": "ai_gen.doubao.image.pro.generate",
+    "name_en": "doubao image pro generate",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "doubao_image_pro_generate",
+        "doubao image pro generate"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "doubao_image_lite_generate",
+    "summary_zh": "豆包 Seedream 5.0 Lite 图片生成，支持组图，提交后自动等待结果。\nsize 支持 \"2K\"/\"3K\"/\"4K\" 或像素值；sequential 设为 \"auto\" 时生成组图，\nmax_images 控制组图数量（1~10）。超时返回 taskId，可用 doubao_image_lite_result 再查。",
+    "name_zh": "豆包 Seedream 5.0 Lite 图片生成，支持组图，提交后自动等待结果",
+    "params": [
+      {
+        "name": "prompt",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "size",
+        "type": "str",
+        "required": false,
+        "default": "2048x2048"
+      },
+      {
+        "name": "image",
+        "type": "Optional[Any]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "output_format",
+        "type": "str",
+        "required": false,
+        "default": "jpeg"
+      },
+      {
+        "name": "response_format",
+        "type": "str",
+        "required": false,
+        "default": "url"
+      },
+      {
+        "name": "watermark",
+        "type": "bool",
+        "required": false,
+        "default": true
+      },
+      {
+        "name": "sequential",
+        "type": "str",
+        "required": false,
+        "default": "disabled"
+      },
+      {
+        "name": "max_images",
+        "type": "int",
+        "required": false,
+        "default": 4
+      },
+      {
+        "name": "optimize_prompt",
+        "type": "bool",
+        "required": false,
+        "default": false
+      },
+      {
+        "name": "optimize_mode",
+        "type": "str",
+        "required": false,
+        "default": "standard"
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "doubao_image.lite_submit",
+    "result": "doubao_image.lite_result",
+    "source": "豆包 Seedream 5.0 Lite 图片生成-MCP",
+    "platform": "ai_gen",
+    "category": "ai",
+    "id": "ai_gen.doubao.image.lite.generate",
+    "name_en": "doubao image lite generate",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "doubao_image_lite_generate",
+        "doubao image lite generate"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "doubao_video_generate",
+    "summary_zh": "豆包 Seedance 2.0 视频生成，提交后自动等待结果。\ncontent 为输入内容列表（必填），每项形如：\n{\"type\": \"text\", \"text\": \"描述文字\"}；\n{\"type\": \"image_url\", \"imageUrl\": \"图片URL\", \"imageRole\": \"first_frame/reference_image\"}；\n{\"type\": \"video_url\", \"videoUrl\": \"视频URL\", \"videoRole\": \"reference_video\"}；\n{\"type\": \"audio_url\", \"audioUrl\": \"音频URL\", \"audioRole\": \"reference_audio\"}。\nresolution：480p/720p/1080p；ratio：adaptive/16:9/4:3/1:1/3:4/9:16/21:9；\nduration 秒数 [4,15] 或 -1 智能。超时返回 taskId，可用 doubao_video_result 再查。",
+    "name_zh": "豆包 Seedance 2.0 视频生成，提交后自动等待结果",
+    "params": [
+      {
+        "name": "content",
+        "type": "List[Dict[any]]",
+        "required": true
+      },
+      {
+        "name": "model",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "resolution",
+        "type": "str",
+        "required": false,
+        "default": "720p"
+      },
+      {
+        "name": "ratio",
+        "type": "str",
+        "required": false,
+        "default": "adaptive"
+      },
+      {
+        "name": "duration",
+        "type": "int",
+        "required": false,
+        "default": 5
+      },
+      {
+        "name": "seed",
+        "type": "int",
+        "required": false,
+        "default": -1
+      },
+      {
+        "name": "watermark",
+        "type": "bool",
+        "required": false,
+        "default": false
+      },
+      {
+        "name": "generate_audio",
+        "type": "bool",
+        "required": false,
+        "default": true
+      },
+      {
+        "name": "return_last_frame",
+        "type": "bool",
+        "required": false,
+        "default": false
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 480
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "doubao_video.submit",
+    "result": "doubao_video.result",
+    "source": "豆包 Seedance 2.0 视频生成-MCP",
+    "platform": "ai_gen",
+    "category": "ai",
+    "id": "ai_gen.doubao.video.generate",
+    "name_en": "doubao video generate",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "doubao_video_generate",
+        "doubao video generate"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "ai_search_kimi",
+    "summary_zh": "Kimi 联网 AI 搜索，提交后自动等待并返回完整结果（含 content/webPages）。\ninquiry_text 为搜索提问文本；超时未完成时返回 taskId，可用 ai_search_kimi_result 再查。",
+    "name_zh": "Kimi 联网 AI 搜索，提交后自动等待并返回完整结果（含 content/webPages）",
+    "params": [
+      {
+        "name": "inquiry_text",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "ai_search.kimi_submit",
+    "result": "ai_search.kimi_result",
+    "source": "Kimi 联网 AI 搜索-MCP",
+    "platform": "ai_search",
+    "category": "ai",
+    "id": "ai_search.kimi",
+    "name_en": "kimi",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "ai_search_kimi",
+        "kimi"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "ai_search_doubao",
+    "summary_zh": "豆包联网 AI 搜索，提交后自动等待并返回完整结果。\ninquiry_text 为搜索提问文本；超时未完成时返回 taskId，可用 ai_search_doubao_result 再查。",
+    "name_zh": "豆包联网 AI 搜索，提交后自动等待并返回完整结果",
+    "params": [
+      {
+        "name": "inquiry_text",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "ai_search.doubao_submit",
+    "result": "ai_search.doubao_result",
+    "source": "豆包联网 AI 搜索-MCP",
+    "platform": "ai_search",
+    "category": "ai",
+    "id": "ai_search.doubao",
+    "name_en": "doubao",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "ai_search_doubao",
+        "doubao"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "ai_search_deepseek",
+    "summary_zh": "Deepseek 联网 AI 搜索，提交后自动等待并返回完整结果。\ninquiry_text 为搜索提问文本；超时未完成时返回 taskId，可用 ai_search_deepseek_result 再查。",
+    "name_zh": "Deepseek 联网 AI 搜索，提交后自动等待并返回完整结果",
+    "params": [
+      {
+        "name": "inquiry_text",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "ai_search.deepseek_submit",
+    "result": "ai_search.deepseek_result",
+    "source": "Deepseek 联网 AI 搜索-MCP",
+    "platform": "ai_search",
+    "category": "ai",
+    "id": "ai_search.deepseek",
+    "name_en": "deepseek",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "ai_search_deepseek",
+        "deepseek"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "ai_search_yuanbao",
+    "summary_zh": "元宝联网 AI 搜索，提交后自动等待并返回完整结果。\ninquiry_text 为搜索提问文本；超时未完成时返回 taskId，可用 ai_search_yuanbao_result 再查。",
+    "name_zh": "元宝联网 AI 搜索，提交后自动等待并返回完整结果",
+    "params": [
+      {
+        "name": "inquiry_text",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "ai_search.yuanbao_submit",
+    "result": "ai_search.yuanbao_result",
+    "source": "元宝联网 AI 搜索-MCP",
+    "platform": "ai_search",
+    "category": "ai",
+    "id": "ai_search.yuanbao",
+    "name_en": "yuanbao",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "ai_search_yuanbao",
+        "yuanbao"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "ai_search_qianwen",
+    "summary_zh": "千问联网 AI 搜索，提交后自动等待并返回完整结果。\ninquiry_text 为搜索提问文本；超时未完成时返回 taskId，可用 ai_search_qianwen_result 再查。",
+    "name_zh": "千问联网 AI 搜索，提交后自动等待并返回完整结果",
+    "params": [
+      {
+        "name": "inquiry_text",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "ai_search.qianwen_submit",
+    "result": "ai_search.qianwen_result",
+    "source": "千问联网 AI 搜索-MCP",
+    "platform": "ai_search",
+    "category": "ai",
+    "id": "ai_search.qianwen",
+    "name_en": "qianwen",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "ai_search_qianwen",
+        "qianwen"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "ai_search_baidu",
+    "summary_zh": "百度联网 AI 搜索，提交后自动等待并返回完整结果。\ninquiry_text 为搜索提问文本；超时未完成时返回 taskId，可用 ai_search_baidu_result 再查。",
+    "name_zh": "百度联网 AI 搜索，提交后自动等待并返回完整结果",
+    "params": [
+      {
+        "name": "inquiry_text",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "ai_search.baidu_submit",
+    "result": "ai_search.baidu_result",
+    "source": "百度联网 AI 搜索-MCP",
+    "platform": "ai_search",
+    "category": "ai",
+    "id": "ai_search.baidu",
+    "name_en": "baidu",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "ai_search_baidu",
+        "baidu"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "dongchedi_search_works",
+    "summary_zh": "懂车帝关键词搜索作品。keyword 必填；\nsource_type：1=综合 / 2=视频。",
+    "name_zh": "懂车帝关键词搜索作品",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "str",
+        "required": false,
+        "default": "0"
+      },
+      {
+        "name": "source_type",
+        "type": "str",
+        "required": false,
+        "default": "1"
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "dongchedi.search_works",
+    "result": null,
+    "source": "懂车帝关键词搜索作品-MCP",
+    "platform": "auto",
+    "category": "auto",
+    "id": "auto.dongchedi.search.works",
+    "name_en": "dongchedi search works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "dongchedi_search_works",
+        "dongchedi search works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "dongchedi_get_work",
+    "summary_zh": "获取懂车帝作品详情。work_id 为作品 ID（必填）；work_type：video/article。",
+    "name_zh": "获取懂车帝作品详情",
+    "params": [
+      {
+        "name": "work_id",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "work_type",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "dongchedi.get_work",
+    "result": null,
+    "source": "获取懂车帝作品详情-MCP",
+    "platform": "auto",
+    "category": "auto",
+    "id": "auto.dongchedi.get.work",
+    "name_en": "dongchedi get work",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "dongchedi_get_work",
+        "dongchedi get work"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "dongchedi_get_user_works",
+    "summary_zh": "获取懂车帝用户作品列表。user_id 为用户 ID（必填）；cursor 翻页游标。",
+    "name_zh": "获取懂车帝用户作品列表",
+    "params": [
+      {
+        "name": "user_id",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "cursor",
+        "type": "int",
+        "required": false,
+        "default": 0
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "dongchedi.get_user_works",
+    "result": null,
+    "source": "获取懂车帝用户作品列表-MCP",
+    "platform": "auto",
+    "category": "auto",
+    "id": "auto.dongchedi.get.user.works",
+    "name_en": "dongchedi get user works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "dongchedi_get_user_works",
+        "dongchedi get user works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "dongchedi_search_users",
+    "summary_zh": "懂车帝关键词搜索账号。keyword 必填；offset 翻页偏移。",
+    "name_zh": "懂车帝关键词搜索账号",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "required": false,
+        "default": 0
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "dongchedi.search_users",
+    "result": null,
+    "source": "懂车帝关键词搜索账号-MCP",
+    "platform": "auto",
+    "category": "auto",
+    "id": "auto.dongchedi.search.users",
+    "name_en": "dongchedi search users",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "dongchedi_search_users",
+        "dongchedi search users"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "autohome_search_works",
+    "summary_zh": "汽车之家关键词搜索作品。keyword 必填；\nsource_type：club=论坛 / article=文章 / video=视频。",
+    "name_zh": "汽车之家关键词搜索作品",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "str",
+        "required": false,
+        "default": "0"
+      },
+      {
+        "name": "page",
+        "type": "str",
+        "required": false,
+        "default": "1"
+      },
+      {
+        "name": "source_type",
+        "type": "str",
+        "required": false,
+        "default": "video"
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "autohome.search_works",
+    "result": null,
+    "source": "汽车之家关键词搜索作品-MCP",
+    "platform": "auto",
+    "category": "auto",
+    "id": "auto.autohome.search.works",
+    "name_en": "autohome search works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "autohome_search_works",
+        "autohome search works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "autohome_get_article",
+    "summary_zh": "获取汽车之家文章详情。work_id 为文章 ID（必填）；page 用于长文章分页。",
+    "name_zh": "获取汽车之家文章详情",
+    "params": [
+      {
+        "name": "work_id",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "page",
+        "type": "int",
+        "required": false,
+        "default": 0
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "autohome.get_article",
+    "result": null,
+    "source": "获取汽车之家文章详情-MCP",
+    "platform": "auto",
+    "category": "auto",
+    "id": "auto.autohome.get.article",
+    "name_en": "autohome get article",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "autohome_get_article",
+        "autohome get article"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "autohome_get_video",
+    "summary_zh": "获取汽车之家视频详情。video_id 为视频 ID（必填）；\nvideo_type：0=原创 / 4=车家号。",
+    "name_zh": "获取汽车之家视频详情",
+    "params": [
+      {
+        "name": "video_id",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "video_type",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "autohome.get_video",
+    "result": null,
+    "source": "获取汽车之家视频详情-MCP",
+    "platform": "auto",
+    "category": "auto",
+    "id": "auto.autohome.get.video",
+    "name_en": "autohome get video",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "autohome_get_video",
+        "autohome get video"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "autohome_get_user_works",
+    "summary_zh": "获取汽车之家作者作品列表。author_id 为作者 ID（必填）；page 翻页页码。",
+    "name_zh": "获取汽车之家作者作品列表",
+    "params": [
+      {
+        "name": "author_id",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "page",
+        "type": "int",
+        "required": false,
+        "default": 0
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "autohome.get_user_works",
+    "result": null,
+    "source": "获取汽车之家作者作品列表-MCP",
+    "platform": "auto",
+    "category": "auto",
+    "id": "auto.autohome.get.user.works",
+    "name_en": "autohome get user works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "autohome_get_user_works",
+        "autohome get user works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "yiche_search_works",
+    "summary_zh": "易车关键词搜索作品。keyword 必填；\nsource_type：club=社区 / shipin=视频 / xinwen=文章。",
+    "name_zh": "易车关键词搜索作品",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "page",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "source_type",
+        "type": "str",
+        "required": false,
+        "default": "xinwen"
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "yiche.search_works",
+    "result": null,
+    "source": "易车关键词搜索作品-MCP",
+    "platform": "auto",
+    "category": "auto",
+    "id": "auto.yiche.search.works",
+    "name_en": "yiche search works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "yiche_search_works",
+        "yiche search works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "yiche_get_article",
+    "summary_zh": "获取易车文章详情。url 为文章 URL（必填）。",
+    "name_zh": "获取易车文章详情",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "yiche.get_article",
+    "result": null,
+    "source": "获取易车文章详情-MCP",
+    "platform": "auto",
+    "category": "auto",
+    "id": "auto.yiche.get.article",
+    "name_en": "yiche get article",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "yiche_get_article",
+        "yiche get article"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "yiche_get_video",
+    "summary_zh": "获取易车视频详情。work_id 为易车视频作品 ID（必填）。",
+    "name_zh": "获取易车视频详情",
+    "params": [
+      {
+        "name": "work_id",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "yiche.get_video",
+    "result": null,
+    "source": "获取易车视频详情-MCP",
+    "platform": "auto",
+    "category": "auto",
+    "id": "auto.yiche.get.video",
+    "name_en": "yiche get video",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "yiche_get_video",
+        "yiche get video"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "yiche_get_user_works",
+    "summary_zh": "获取易车用户作品列表。user_id 为用户 ID（必填）；\ntimestamp 第一页不传，翻页传前一页返回的最后一条的 publishTime。",
+    "name_zh": "获取易车用户作品列表",
+    "params": [
+      {
+        "name": "user_id",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "timestamp",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "yiche.get_user_works",
+    "result": null,
+    "source": "获取易车用户作品列表-MCP",
+    "platform": "auto",
+    "category": "auto",
+    "id": "auto.yiche.get.user.works",
+    "name_en": "yiche get user works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "yiche_get_user_works",
+        "yiche get user works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "yiche_search_users",
+    "summary_zh": "易车关键词搜索账号。keyword 必填；page 从 1 开始。",
+    "name_zh": "易车关键词搜索账号",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "page",
+        "type": "int",
+        "required": false,
+        "default": 1
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "yiche.search_users",
+    "result": null,
+    "source": "易车关键词搜索账号-MCP",
+    "platform": "auto",
+    "category": "auto",
+    "id": "auto.yiche.search.users",
+    "name_en": "yiche search users",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "yiche_search_users",
+        "yiche search users"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "bilibili_search_articles",
+    "summary_zh": "搜索 B 站视频（优质库）。keyword 必填；page 从 1 开始；page_size 默认 10、最大 50；\norder：time=发布时间 / play=播放数 / like=点赞数 / comment=评论数 / favorite=收藏数。",
+    "name_zh": "搜索 B 站视频（优质库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "page",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "page_size",
+        "type": "Optional[int]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "order",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "bilibili.search_articles",
+    "result": null,
+    "source": "搜索 B 站视频-MCP",
+    "platform": "bilibili",
+    "category": "social",
+    "id": "bilibili.search.articles",
+    "name_en": "search articles",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "bilibili_search_articles",
+        "search articles"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "bilibili_search_users",
+    "summary_zh": "搜索 B 站 UP 主（优质库）。keyword 必填；\norder：follower=粉丝数 / like=获赞数，默认按相关性。",
+    "name_zh": "搜索 B 站 UP 主（优质库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "page",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "page_size",
+        "type": "Optional[int]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "order",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "bilibili.search_users",
+    "result": null,
+    "source": "搜索 B 站 UP 主-MCP",
+    "platform": "bilibili",
+    "category": "social",
+    "id": "bilibili.search.users",
+    "name_en": "search users",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "bilibili_search_users",
+        "search users"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "bilibili_get_account",
+    "summary_zh": "获取 B 站 UP 主信息（优质库）。mid 为 B 站用户唯一 ID。",
+    "name_zh": "获取 B 站 UP 主信息（优质库）",
+    "params": [
+      {
+        "name": "mid",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "bilibili.get_account",
+    "result": null,
+    "source": "获取 B 站 UP 主信息-MCP",
+    "platform": "bilibili",
+    "category": "social",
+    "id": "bilibili.get.account",
+    "name_en": "get account",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "bilibili_get_account",
+        "get account"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "bilibili_get_user_works",
+    "summary_zh": "获取 B 站 UP 主视频列表（优质库）。mid 与 account_url（主页链接）至少传一个；\norder：time=发布时间 / play=播放数 / like=点赞数。",
+    "name_zh": "获取 B 站 UP 主视频列表（优质库）",
+    "params": [
+      {
+        "name": "mid",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "account_url",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "page",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "page_size",
+        "type": "Optional[int]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "order",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [
+      "mid",
+      "account_url"
+    ],
+    "kind": "sync",
+    "sdk": "bilibili.get_user_works",
+    "result": null,
+    "source": "获取 B 站 UP 主视频列表-MCP",
+    "platform": "bilibili",
+    "category": "social",
+    "id": "bilibili.get.user.works",
+    "name_en": "get user works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "bilibili_get_user_works",
+        "get user works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "bilibili_get_work",
+    "summary_zh": "获取 B 站视频详情（优质库）。bvid 与 work_url 至少传一个，\nwork_url 支持 bilibili.com/video/BVxxx 或 b23.tv 短链。",
+    "name_zh": "获取 B 站视频详情（优质库）",
+    "params": [
+      {
+        "name": "bvid",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "work_url",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [
+      "bvid",
+      "work_url"
+    ],
+    "kind": "sync",
+    "sdk": "bilibili.get_work",
+    "result": null,
+    "source": "获取 B 站视频详情-MCP",
+    "platform": "bilibili",
+    "category": "social",
+    "id": "bilibili.get.work",
+    "name_en": "get work",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "bilibili_get_work",
+        "get work"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "bilibili_get_audio",
+    "summary_zh": "获取 B 站视频音频地址。url 为 B 站作品链接（必填）。",
+    "name_zh": "获取 B 站视频音频地址",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "bilibili.get_audio",
+    "result": null,
+    "source": "获取 B 站视频音频地址-MCP",
+    "platform": "bilibili",
+    "category": "social",
+    "id": "bilibili.get.audio",
+    "name_en": "get audio",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "bilibili_get_audio",
+        "get audio"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "bilibili_transcript",
+    "summary_zh": "B 站视频字幕/文案提取，提交后自动等待并返回完整文案。\nurl 为作品链接（必填）；超时未完成时返回 taskId，可用 bilibili_transcript_result 再查。",
+    "name_zh": "B 站视频字幕/文案提取，提交后自动等待并返回完整文案",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "bilibili.transcript_submit",
+    "result": "bilibili.transcript_result",
+    "source": "B 站视频字幕/文案提取-MCP",
+    "platform": "bilibili",
+    "category": "social",
+    "id": "bilibili.transcript",
+    "name_en": "transcript",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "bilibili_transcript",
+        "transcript"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_search_articles",
+    "summary_zh": "搜索抖音作品（优质库）。keyword 必填；offset 分页偏移从 0 开始、每次 +20；\nsort_type 排序方式，如 \"default\"。返回含 total/hasMore/list。",
+    "name_zh": "搜索抖音作品（优质库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "required": false,
+        "default": 0
+      },
+      {
+        "name": "sort_type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "douyin.search_articles",
+    "result": null,
+    "source": "搜索抖音作品（优质库）-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.search.articles",
+    "name_en": "search articles",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_search_articles",
+        "search articles"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_search_users",
+    "summary_zh": "搜索抖音账号（优质库）。keyword 必填；offset 分页偏移从 0 开始。",
+    "name_zh": "搜索抖音账号（优质库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "required": false,
+        "default": 0
+      },
+      {
+        "name": "sort_type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "douyin.search_users",
+    "result": null,
+    "source": "搜索抖音账号（优质库）-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.search.users",
+    "name_en": "search users",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_search_users",
+        "search users"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_get_user",
+    "summary_zh": "获取抖音账号信息（优质库）。account_id 为抖音账号 ID，\n支持 unique_id、short_id、uid 任一匹配。",
+    "name_zh": "获取抖音账号信息（优质库）",
+    "params": [
+      {
+        "name": "account_id",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "douyin.get_user",
+    "result": null,
+    "source": "获取抖音账号信息-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.get.user",
+    "name_en": "get user",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_get_user",
+        "get user"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_get_user_works",
+    "summary_zh": "获取抖音账号作品列表（优质库）。account_id（抖音号）/ author_url（主页链接）/\nsec_user_id 至少传一个；offset 每页 +20；sort_type：0=默认，2=最新，4=最热。",
+    "name_zh": "获取抖音账号作品列表（优质库）",
+    "params": [
+      {
+        "name": "account_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "author_url",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "sec_user_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "required": false,
+        "default": 0
+      },
+      {
+        "name": "sort_type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [
+      "account_id",
+      "author_url",
+      "sec_user_id"
+    ],
+    "kind": "sync",
+    "sdk": "douyin.get_user_works",
+    "result": null,
+    "source": "获取抖音账号作品列表（优质库）-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.get.user.works",
+    "name_en": "get user works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_get_user_works",
+        "get user works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_get_work",
+    "summary_zh": "获取抖音作品详情（优质库）。work_id 与 work_url（作品链接）至少传一个，\n返回互动数据、作者信息等。",
+    "name_zh": "获取抖音作品详情（优质库）",
+    "params": [
+      {
+        "name": "work_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "work_url",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [
+      "work_id",
+      "work_url"
+    ],
+    "kind": "sync",
+    "sdk": "douyin.get_work",
+    "result": null,
+    "source": "获取抖音作品详情（优质库）-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.get.work",
+    "name_en": "get work",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_get_work",
+        "get work"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_search_ai_articles",
+    "summary_zh": "搜索抖音 AI 相关作品（优质库）。keyword 必填；\nstart_time/end_time 格式如 \"2026-06-01 00:00:00\"。",
+    "name_zh": "搜索抖音 AI 相关作品（优质库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "page_num",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "page_size",
+        "type": "int",
+        "required": false,
+        "default": 20
+      },
+      {
+        "name": "start_time",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "end_time",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "douyin.search_ai_articles",
+    "result": null,
+    "source": "搜索抖音 AI 相关作品-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.search.ai.articles",
+    "name_en": "search ai articles",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_search_ai_articles",
+        "search ai articles"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_search_works_wide",
+    "summary_zh": "搜索抖音作品（广域库，覆盖范围大于优质库）。keyword 必填（匹配作品正文）；\nstart_date/end_date 格式 yyyy-MM-dd；page_num 从 1 开始，page_size 最大 50。",
+    "name_zh": "搜索抖音作品（广域库，覆盖范围大于优质库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "start_date",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "end_date",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "page_num",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "page_size",
+        "type": "int",
+        "required": false,
+        "default": 10
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "douyin.search_works_wide",
+    "result": null,
+    "source": "搜索抖音作品（广域库）-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.search.works.wide",
+    "name_en": "search works wide",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_search_works_wide",
+        "search works wide"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_search_accounts_wide",
+    "summary_zh": "搜索抖音账号（广域库）。keyword 必填（匹配账号名）；\npage_num 从 1 开始，page_size 最大 50。",
+    "name_zh": "搜索抖音账号（广域库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "page_num",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "page_size",
+        "type": "int",
+        "required": false,
+        "default": 10
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "douyin.search_accounts_wide",
+    "result": null,
+    "source": "搜索抖音账号（广域库）-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.search.accounts.wide",
+    "name_en": "search accounts wide",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_search_accounts_wide",
+        "search accounts wide"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_get_work_wide",
+    "summary_zh": "获取抖音作品详情（广域库）。video_id 为作品 ID（对应 aweme_id，必填）。",
+    "name_zh": "获取抖音作品详情（广域库）",
+    "params": [
+      {
+        "name": "video_id",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "douyin.get_work_wide",
+    "result": null,
+    "source": "获取抖音作品详情（广域库）-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.get.work.wide",
+    "name_en": "get work wide",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_get_work_wide",
+        "get work wide"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_get_user_works_wide",
+    "summary_zh": "获取抖音账号作品列表（广域库）。user_id（uid）/ unique_name（抖音号）/\nshort_id 三选一必填；page_num 从 1 开始，page_size 最大 50；\nstart_date/end_date 格式 yyyy-MM-dd。",
+    "name_zh": "获取抖音账号作品列表（广域库）",
+    "params": [
+      {
+        "name": "user_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "unique_name",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "short_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "page_num",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "page_size",
+        "type": "int",
+        "required": false,
+        "default": 10
+      },
+      {
+        "name": "start_date",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "end_date",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [
+      "user_id",
+      "unique_name",
+      "short_id"
+    ],
+    "kind": "sync",
+    "sdk": "douyin.get_user_works_wide",
+    "result": null,
+    "source": "获取抖音账号作品列表（广域库）-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.get.user.works.wide",
+    "name_en": "get user works wide",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_get_user_works_wide",
+        "get user works wide"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_get_daily_hot_rank",
+    "summary_zh": "抖音每日热门作品榜（按点赞排名，日度收录）。type 为类别（如 二次元、美食，\n不传查全部）；start_time/end_time 格式 yyyy-MM-dd，不传默认昨日（每日 10 点后更新）。",
+    "name_zh": "抖音每日热门作品榜（按点赞排名，日度收录）",
+    "params": [
+      {
+        "name": "type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "start_time",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "end_time",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "douyin.get_daily_hot_rank",
+    "result": null,
+    "source": "抖音每日热门作品榜-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.get.daily.hot.rank",
+    "name_en": "get daily hot rank",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_get_daily_hot_rank",
+        "get daily hot rank"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_get_daily_surge_rank",
+    "summary_zh": "抖音每日点赞飙升榜（单日新增点赞排名）。type 为分类（如 小剧场、财富理财，\n不传或\"全部\"查全部分类）；start_time 为榜单日期 yyyy-MM-dd，不传默认昨日（每日 16 点更新）。",
+    "name_zh": "抖音每日点赞飙升榜（单日新增点赞排名）",
+    "params": [
+      {
+        "name": "type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "start_time",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "douyin.get_daily_surge_rank",
+    "result": null,
+    "source": "抖音每日点赞飙升榜-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.get.daily.surge.rank",
+    "name_en": "get daily surge rank",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_get_daily_surge_rank",
+        "get daily surge rank"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_get_weekly_surge_rank",
+    "summary_zh": "抖音七日点赞飙升榜（七日新增点赞排名）。type 为分类，不传或\"全部\"查全部分类；\nstart_time 为榜单日期 yyyy-MM-dd，不传默认昨日（每日 16:30 更新）。",
+    "name_zh": "抖音七日点赞飙升榜（七日新增点赞排名）",
+    "params": [
+      {
+        "name": "type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "start_time",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "douyin.get_weekly_surge_rank",
+    "result": null,
+    "source": "抖音七日点赞飙升榜-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.get.weekly.surge.rank",
+    "name_en": "get weekly surge rank",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_get_weekly_surge_rank",
+        "get weekly surge rank"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_get_hot_accounts",
+    "summary_zh": "抖音热门账号推荐（日/周/月榜）。date_type：days=日、weeks=周、months=月；\nrank_date 格式 yyyy-MM-dd（日榜传当日日期、周榜传周一日期、月榜传一号）；\ntype 为类别（如 全部、个人才艺、美食）。",
+    "name_zh": "抖音热门账号推荐（日/周/月榜）",
+    "params": [
+      {
+        "name": "date_type",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "rank_date",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "type",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "douyin.get_hot_accounts",
+    "result": null,
+    "source": "抖音热门账号推荐-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.get.hot.accounts",
+    "name_en": "get hot accounts",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_get_hot_accounts",
+        "get hot accounts"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "douyin_transcript",
+    "summary_zh": "抖音视频提文案：提取视频完整文案（含带时间戳分句），提交后自动等待并返回结果。\nurl 为视频链接（支持口令分享文本）；超时未完成时返回 taskId，可用 douyin_transcript_result 再查。",
+    "name_zh": "抖音视频提文案：提取视频完整文案（含带时间戳分句），提交后自动等待并返回结果",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "douyin.transcript_submit",
+    "result": "douyin.transcript_result",
+    "source": "抖音视频提文案-MCP",
+    "platform": "douyin",
+    "category": "social",
+    "id": "douyin.transcript",
+    "name_en": "transcript",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "douyin_transcript",
+        "transcript"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "instagram_search",
+    "summary_zh": "Instagram 关键词搜索。keyword 必填；pagination_token 用于翻页。",
+    "name_zh": "Instagram 关键词搜索",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "pagination_token",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "instagram.search",
+    "result": null,
+    "source": "Instagram 关键词搜索-MCP",
+    "platform": "instagram",
+    "category": "social",
+    "id": "instagram.search",
+    "name_en": "search",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "instagram_search",
+        "search"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "instagram_get_post",
+    "summary_zh": "获取 Instagram 单个帖子详情。code_or_url 为帖子 code 或完整链接（必填）。",
+    "name_zh": "获取 Instagram 单个帖子详情",
+    "params": [
+      {
+        "name": "code_or_url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "instagram.get_post",
+    "result": null,
+    "source": "获取 Instagram 单个帖子详情-MCP",
+    "platform": "instagram",
+    "category": "social",
+    "id": "instagram.get.post",
+    "name_en": "get post",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "instagram_get_post",
+        "get post"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "instagram_get_comments",
+    "summary_zh": "获取 Instagram 帖子评论。code_or_url 必填；sort_by：recent=最新/top=最热；\npagination_token 用于翻页。",
+    "name_zh": "获取 Instagram 帖子评论",
+    "params": [
+      {
+        "name": "code_or_url",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "sort_by",
+        "type": "str",
+        "required": false,
+        "default": "recent"
+      },
+      {
+        "name": "pagination_token",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "instagram.get_comments",
+    "result": null,
+    "source": "获取 Instagram 帖子评论-MCP",
+    "platform": "instagram",
+    "category": "social",
+    "id": "instagram.get.comments",
+    "name_en": "get comments",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "instagram_get_comments",
+        "get comments"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "instagram_get_user",
+    "summary_zh": "获取 Instagram 用户信息。username 与 user_id 至少传一个，user_id 优先。",
+    "name_zh": "获取 Instagram 用户信息",
+    "params": [
+      {
+        "name": "username",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "user_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [
+      "username",
+      "user_id"
+    ],
+    "kind": "sync",
+    "sdk": "instagram.get_user",
+    "result": null,
+    "source": "获取 Instagram 用户信息-MCP",
+    "platform": "instagram",
+    "category": "social",
+    "id": "instagram.get.user",
+    "name_en": "get user",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "instagram_get_user",
+        "get user"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "kuaishou_search_works",
+    "summary_zh": "快手关键词搜索作品。keyword 必填；page 从 1 开始；\nsort：综合/最新/最热。",
+    "name_zh": "快手关键词搜索作品",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "page",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "size",
+        "type": "int",
+        "required": false,
+        "default": 20
+      },
+      {
+        "name": "sort",
+        "type": "str",
+        "required": false,
+        "default": "综合"
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "kuaishou.search_works",
+    "result": null,
+    "source": "快手关键词搜索作品-MCP",
+    "platform": "kuaishou",
+    "category": "social",
+    "id": "kuaishou.search.works",
+    "name_en": "search works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "kuaishou_search_works",
+        "search works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "kuaishou_get_work",
+    "summary_zh": "获取快手单个作品详情。photo_id 为作品 ID（必填）。",
+    "name_zh": "获取快手单个作品详情",
+    "params": [
+      {
+        "name": "photo_id",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "kuaishou.get_work",
+    "result": null,
+    "source": "获取快手单个作品详情-MCP",
+    "platform": "kuaishou",
+    "category": "social",
+    "id": "kuaishou.get.work",
+    "name_en": "get work",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "kuaishou_get_work",
+        "get work"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "kuaishou_get_user_works",
+    "summary_zh": "获取快手用户作品列表。kwai_id 与 three_x_id 至少传一个。",
+    "name_zh": "获取快手用户作品列表",
+    "params": [
+      {
+        "name": "kwai_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "three_x_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "page",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "size",
+        "type": "int",
+        "required": false,
+        "default": 20
+      }
+    ],
+    "one_of": [
+      "kwai_id",
+      "three_x_id"
+    ],
+    "kind": "sync",
+    "sdk": "kuaishou.get_user_works",
+    "result": null,
+    "source": "获取快手用户作品列表-MCP",
+    "platform": "kuaishou",
+    "category": "social",
+    "id": "kuaishou.get.user.works",
+    "name_en": "get user works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "kuaishou_get_user_works",
+        "get user works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "kuaishou_search_users",
+    "summary_zh": "快手关键词搜索账号。account_name 为搜索关键词（必填）。",
+    "name_zh": "快手关键词搜索账号",
+    "params": [
+      {
+        "name": "account_name",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "page",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "page_size",
+        "type": "int",
+        "required": false,
+        "default": 20
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "kuaishou.search_users",
+    "result": null,
+    "source": "快手关键词搜索账号-MCP",
+    "platform": "kuaishou",
+    "category": "social",
+    "id": "kuaishou.search.users",
+    "name_en": "search users",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "kuaishou_search_users",
+        "search users"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "kuaishou_transcript",
+    "summary_zh": "快手视频字幕/文案提取，提交后自动等待并返回完整文案。\nurl 为作品链接（必填）；超时未完成时返回 taskId，可用 kuaishou_transcript_result 再查。",
+    "name_zh": "快手视频字幕/文案提取，提交后自动等待并返回完整文案",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "kuaishou.transcript_submit",
+    "result": "kuaishou.transcript_result",
+    "source": "快手视频字幕/文案提取-MCP",
+    "platform": "kuaishou",
+    "category": "social",
+    "id": "kuaishou.transcript",
+    "name_en": "transcript",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "kuaishou_transcript",
+        "transcript"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tiktok_search_users",
+    "summary_zh": "搜索 TikTok 账号。keyword 必填；offset 偏移量从 0 开始、翻页 +count；\ncount 每页数量默认 20；follower_count_filter 粉丝数筛选：1=0~1K，2=1K~10K，\n3=10K~100K，4=100K 以上；profile_type_filter：1=认证用户；\nother_pref_filter：1=按用户名相关性；三个筛选不传则不限制。",
+    "name_zh": "搜索 TikTok 账号",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "str",
+        "required": false,
+        "default": "0"
+      },
+      {
+        "name": "count",
+        "type": "str",
+        "required": false,
+        "default": "20"
+      },
+      {
+        "name": "follower_count_filter",
+        "type": "Optional[int]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "profile_type_filter",
+        "type": "Optional[int]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "other_pref_filter",
+        "type": "Optional[int]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "tiktok.search_users",
+    "result": null,
+    "source": "搜索 TikTok 账号-MCP",
+    "platform": "tiktok",
+    "category": "social",
+    "id": "tiktok.search.users",
+    "name_en": "search users",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tiktok_search_users",
+        "search users"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tiktok_search_videos",
+    "summary_zh": "TikTok 关键词视频搜索。keyword 必填；\nsort_type：0=相关度，1=最多点赞；\npublish_time：0=不限，1=最近一天，7=最近一周，30=最近一个月，90=最近三个月，180=最近半年；\nregion 默认 US（美国），参考 ISO 3166-1 alpha-2 国家代码。",
+    "name_zh": "TikTok 关键词视频搜索",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "str",
+        "required": false,
+        "default": "0"
+      },
+      {
+        "name": "count",
+        "type": "str",
+        "required": false,
+        "default": "20"
+      },
+      {
+        "name": "sort_type",
+        "type": "str",
+        "required": false,
+        "default": "0"
+      },
+      {
+        "name": "publish_time",
+        "type": "str",
+        "required": false,
+        "default": "0"
+      },
+      {
+        "name": "region",
+        "type": "str",
+        "required": false,
+        "default": "US"
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "tiktok.search_videos",
+    "result": null,
+    "source": "TikTok 关键词视频搜索-MCP",
+    "platform": "tiktok",
+    "category": "social",
+    "id": "tiktok.search.videos",
+    "name_en": "search videos",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tiktok_search_videos",
+        "search videos"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tiktok_get_work",
+    "summary_zh": "获取 TikTok 单个作品数据。aweme_id 为作品 ID（必填）。",
+    "name_zh": "获取 TikTok 单个作品数据",
+    "params": [
+      {
+        "name": "aweme_id",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "tiktok.get_work",
+    "result": null,
+    "source": "获取 TikTok 单个作品数据-MCP",
+    "platform": "tiktok",
+    "category": "social",
+    "id": "tiktok.get.work",
+    "name_en": "get work",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tiktok_get_work",
+        "get work"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tiktok_get_user_works",
+    "summary_zh": "获取 TikTok 用户主页作品数据。sec_user_id 为用户 ID（必填）。",
+    "name_zh": "获取 TikTok 用户主页作品数据",
+    "params": [
+      {
+        "name": "sec_user_id",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "tiktok.get_user_works",
+    "result": null,
+    "source": "获取 TikTok 用户主页作品数据-MCP",
+    "platform": "tiktok",
+    "category": "social",
+    "id": "tiktok.get.user.works",
+    "name_en": "get user works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tiktok_get_user_works",
+        "get user works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tools_download",
+    "summary_zh": "通用作品下载：传入任意平台作品链接，自动解析返回下载信息。",
+    "name_zh": "通用作品下载：传入任意平台作品链接，自动解析返回下载信息",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "tools.download",
+    "result": null,
+    "source": "通用作品下载-MCP",
+    "platform": "tools",
+    "category": "tools",
+    "id": "tools.download",
+    "name_en": "download",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tools_download",
+        "download"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tools_download_douyin",
+    "summary_zh": "抖音作品下载。url 为抖音作品链接（必填）。",
+    "name_zh": "抖音作品下载",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "tools.download_douyin",
+    "result": null,
+    "source": "抖音作品下载-MCP",
+    "platform": "tools",
+    "category": "tools",
+    "id": "tools.download.douyin",
+    "name_en": "download douyin",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tools_download_douyin",
+        "download douyin"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tools_download_kuaishou",
+    "summary_zh": "快手作品下载。url 为快手作品链接（必填）。",
+    "name_zh": "快手作品下载",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "tools.download_kuaishou",
+    "result": null,
+    "source": "快手作品下载-MCP",
+    "platform": "tools",
+    "category": "tools",
+    "id": "tools.download.kuaishou",
+    "name_en": "download kuaishou",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tools_download_kuaishou",
+        "download kuaishou"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tools_download_xiaohongshu",
+    "summary_zh": "小红书作品下载。url 为小红书作品链接（必填）。",
+    "name_zh": "小红书作品下载",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "tools.download_xiaohongshu",
+    "result": null,
+    "source": "小红书作品下载-MCP",
+    "platform": "tools",
+    "category": "tools",
+    "id": "tools.download.xiaohongshu",
+    "name_en": "download xiaohongshu",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tools_download_xiaohongshu",
+        "download xiaohongshu"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tools_download_bilibili",
+    "summary_zh": "B 站作品下载。url 为 B 站作品链接（必填）。",
+    "name_zh": "B 站作品下载",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "tools.download_bilibili",
+    "result": null,
+    "source": "B 站作品下载-MCP",
+    "platform": "tools",
+    "category": "tools",
+    "id": "tools.download.bilibili",
+    "name_en": "download bilibili",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tools_download_bilibili",
+        "download bilibili"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tools_download_wechat_channels",
+    "summary_zh": "微信视频号作品下载。url 为视频号作品链接（必填）。",
+    "name_zh": "微信视频号作品下载",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "tools.download_wechat_channels",
+    "result": null,
+    "source": "微信视频号作品下载-MCP",
+    "platform": "tools",
+    "category": "tools",
+    "id": "tools.download.wechat.channels",
+    "name_en": "download wechat channels",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tools_download_wechat_channels",
+        "download wechat channels"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tools_download_tiktok",
+    "summary_zh": "TikTok 作品下载。url 为 TikTok 作品链接（必填）。",
+    "name_zh": "TikTok 作品下载",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "tools.download_tiktok",
+    "result": null,
+    "source": "TikTok 作品下载-MCP",
+    "platform": "tools",
+    "category": "tools",
+    "id": "tools.download.tiktok",
+    "name_en": "download tiktok",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tools_download_tiktok",
+        "download tiktok"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tools_download_youtube",
+    "summary_zh": "YouTube 视频下载。url 为 YouTube 视频链接（必填）。",
+    "name_zh": "YouTube 视频下载",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "tools.download_youtube",
+    "result": null,
+    "source": "YouTube 视频下载-MCP",
+    "platform": "tools",
+    "category": "tools",
+    "id": "tools.download.youtube",
+    "name_en": "download youtube",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tools_download_youtube",
+        "download youtube"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tools_download_instagram",
+    "summary_zh": "Instagram 作品下载。url 为 Instagram 帖子/Reel 链接（必填）。",
+    "name_zh": "Instagram 作品下载",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "tools.download_instagram",
+    "result": null,
+    "source": "Instagram 作品下载-MCP",
+    "platform": "tools",
+    "category": "tools",
+    "id": "tools.download.instagram",
+    "name_en": "download instagram",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tools_download_instagram",
+        "download instagram"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tools_download_twitter",
+    "summary_zh": "X(Twitter) 作品下载。url 为推文链接（必填）。",
+    "name_zh": "X(Twitter) 作品下载",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "tools.download_twitter",
+    "result": null,
+    "source": "X(Twitter) 作品下载-MCP",
+    "platform": "tools",
+    "category": "tools",
+    "id": "tools.download.twitter",
+    "name_en": "download twitter",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tools_download_twitter",
+        "download twitter"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tools_upload_image",
+    "summary_zh": "上传图片到红狐素材库。file 为本地图片文件路径（必填）；\nformat：png/jpeg/webp。返回上传后的 URL。",
+    "name_zh": "上传图片到红狐素材库",
+    "params": [
+      {
+        "name": "file",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "format",
+        "type": "str",
+        "required": false,
+        "default": "png"
+      }
+    ],
+    "one_of": [],
+    "kind": "upload",
+    "sdk": "tools.upload_image",
+    "result": null,
+    "source": "上传图片到红狐素材库-MCP",
+    "platform": "tools",
+    "category": "tools",
+    "id": "tools.upload.image",
+    "name_en": "upload image",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tools_upload_image",
+        "upload image"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "tools_upload_file",
+    "summary_zh": "上传文件到红狐素材库（视频≤50MB / 音频≤20MB / 图像≤10MB）。\nfile 为本地文件路径（必填）；format 为文件扩展名（如 mp4/mp3/png）。\n返回上传后的 URL。",
+    "name_zh": "上传文件到红狐素材库（视频≤50MB / 音频≤20MB / 图像≤10MB）",
+    "params": [
+      {
+        "name": "file",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "format",
+        "type": "str",
+        "required": false,
+        "default": "mp4"
+      }
+    ],
+    "one_of": [],
+    "kind": "upload",
+    "sdk": "tools.upload_file",
+    "result": null,
+    "source": "上传文件到红狐素材库-MCP",
+    "platform": "tools",
+    "category": "tools",
+    "id": "tools.upload.file",
+    "name_en": "upload file",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "tools_upload_file",
+        "upload file"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "toutiao_search_works",
+    "summary_zh": "搜索今日头条内容（实时）。keyword 必填；offset 翻页偏移从 0 开始、每页 +1。",
+    "name_zh": "搜索今日头条内容（实时）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "required": false,
+        "default": 0
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "toutiao.search_works",
+    "result": null,
+    "source": "搜索今日头条内容-MCP",
+    "platform": "toutiao",
+    "category": "social",
+    "id": "toutiao.search.works",
+    "name_en": "search works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "toutiao_search_works",
+        "search works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "toutiao_get_work",
+    "summary_zh": "获取今日头条作品详情（实时）。opus_id 为作品 ID。",
+    "name_zh": "获取今日头条作品详情（实时）",
+    "params": [
+      {
+        "name": "opus_id",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "toutiao.get_work",
+    "result": null,
+    "source": "获取今日头条作品详情-MCP",
+    "platform": "toutiao",
+    "category": "social",
+    "id": "toutiao.get.work",
+    "name_en": "get work",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "toutiao_get_work",
+        "get work"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "toutiao_get_comments",
+    "summary_zh": "获取今日头条作品评论（实时）。opus_id 为作品 ID（必填）；offset 为翻页偏移量。",
+    "name_zh": "获取今日头条作品评论（实时）",
+    "params": [
+      {
+        "name": "opus_id",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "toutiao.get_comments",
+    "result": null,
+    "source": "获取今日头条作品评论-MCP",
+    "platform": "toutiao",
+    "category": "social",
+    "id": "toutiao.get.comments",
+    "name_en": "get comments",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "toutiao_get_comments",
+        "get comments"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "toutiao_search_users",
+    "summary_zh": "今日头条关键词搜索账号（实时）。name 为搜索关键词（必填）；\nhasMore 为 1 时使用返回的 offset 与 searchId 翻页。",
+    "name_zh": "今日头条关键词搜索账号（实时）",
+    "params": [
+      {
+        "name": "name",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "search_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "toutiao.search_users",
+    "result": null,
+    "source": "今日头条关键词搜索账号-MCP",
+    "platform": "toutiao",
+    "category": "social",
+    "id": "toutiao.search.users",
+    "name_en": "search users",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "toutiao_search_users",
+        "search users"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "toutiao_get_user_works",
+    "summary_zh": "获取今日头条账号作品列表（实时）。\ncategory：profile_all=全部 / pc_profile_article=文章 / pc_profile_video=视频\n/ pc_profile_ugc=微头条 / profile_wenda=问答 / pc_profile_short_video=小视频；\ntoken 为 web 端 uid（必填）。",
+    "name_zh": "获取今日头条账号作品列表（实时）",
+    "params": [
+      {
+        "name": "category",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "token",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "toutiao.get_user_works",
+    "result": null,
+    "source": "获取今日头条账号作品列表-MCP",
+    "platform": "toutiao",
+    "category": "social",
+    "id": "toutiao.get.user.works",
+    "name_en": "get user works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "toutiao_get_user_works",
+        "get user works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "twitter_search_tweets",
+    "summary_zh": "X(Twitter) 关键词搜索推文。keyword 必填；\nsearch_type：Top/Latest/Media/People/Lists；cursor 用于翻页。",
+    "name_zh": "X(Twitter) 关键词搜索推文",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "search_type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "cursor",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "twitter.search_tweets",
+    "result": null,
+    "source": "X(Twitter) 关键词搜索推文-MCP",
+    "platform": "twitter",
+    "category": "social",
+    "id": "twitter.search.tweets",
+    "name_en": "search tweets",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "twitter_search_tweets",
+        "search tweets"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "twitter_get_tweet",
+    "summary_zh": "获取 X(Twitter) 单条推文详情。tweet_id 为推文 ID（必填）。",
+    "name_zh": "获取 X(Twitter) 单条推文详情",
+    "params": [
+      {
+        "name": "tweet_id",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "twitter.get_tweet",
+    "result": null,
+    "source": "获取 X(Twitter) 单条推文详情-MCP",
+    "platform": "twitter",
+    "category": "social",
+    "id": "twitter.get.tweet",
+    "name_en": "get tweet",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "twitter_get_tweet",
+        "get tweet"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "twitter_get_user",
+    "summary_zh": "获取 X(Twitter) 用户信息。screen_name 与 rest_id 至少传一个。",
+    "name_zh": "获取 X(Twitter) 用户信息",
+    "params": [
+      {
+        "name": "screen_name",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "rest_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [
+      "screen_name",
+      "rest_id"
+    ],
+    "kind": "sync",
+    "sdk": "twitter.get_user",
+    "result": null,
+    "source": "获取 X(Twitter) 用户信息-MCP",
+    "platform": "twitter",
+    "category": "social",
+    "id": "twitter.get.user",
+    "name_en": "get user",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "twitter_get_user",
+        "get user"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "twitter_get_comments",
+    "summary_zh": "获取 X(Twitter) 推文评论/回复。tweet_id 必填；cursor 用于翻页。",
+    "name_zh": "获取 X(Twitter) 推文评论/回复",
+    "params": [
+      {
+        "name": "tweet_id",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "cursor",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "twitter.get_comments",
+    "result": null,
+    "source": "获取 X(Twitter) 推文评论/回复-MCP",
+    "platform": "twitter",
+    "category": "social",
+    "id": "twitter.get.comments",
+    "name_en": "get comments",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "twitter_get_comments",
+        "get comments"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_channels_search_works",
+    "summary_zh": "微信视频号关键词搜索作品。keyword 必填；\nsort：最新/最多点赞/最多收藏/综合；page 从 1 开始。",
+    "name_zh": "微信视频号关键词搜索作品",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "sort",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "page",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "size",
+        "type": "int",
+        "required": false,
+        "default": 20
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat_channels.search_works",
+    "result": null,
+    "source": "微信视频号关键词搜索作品-MCP",
+    "platform": "wechat_channels",
+    "category": "social",
+    "id": "wechat_channels.search.works",
+    "name_en": "search works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_channels_search_works",
+        "search works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_channels_get_work",
+    "summary_zh": "获取微信视频号单个作品详情。video_id 为作品 ID（必填）。",
+    "name_zh": "获取微信视频号单个作品详情",
+    "params": [
+      {
+        "name": "video_id",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat_channels.get_work",
+    "result": null,
+    "source": "获取微信视频号单个作品详情-MCP",
+    "platform": "wechat_channels",
+    "category": "social",
+    "id": "wechat_channels.get.work",
+    "name_en": "get work",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_channels_get_work",
+        "get work"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_channels_get_user_works",
+    "summary_zh": "获取微信视频号用户作品列表。nickname 为用户昵称（必填）；page 从 1 开始。",
+    "name_zh": "获取微信视频号用户作品列表",
+    "params": [
+      {
+        "name": "nickname",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "page",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "size",
+        "type": "int",
+        "required": false,
+        "default": 20
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat_channels.get_user_works",
+    "result": null,
+    "source": "获取微信视频号用户作品列表-MCP",
+    "platform": "wechat_channels",
+    "category": "social",
+    "id": "wechat_channels.get.user.works",
+    "name_en": "get user works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_channels_get_user_works",
+        "get user works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_channels_get_work_by_link",
+    "summary_zh": "通过链接获取微信视频号作品详情。url 为作品链接（必填）。",
+    "name_zh": "通过链接获取微信视频号作品详情",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat_channels.get_work_by_link",
+    "result": null,
+    "source": "通过链接获取微信视频号作品详情-MCP",
+    "platform": "wechat_channels",
+    "category": "social",
+    "id": "wechat_channels.get.work.by.link",
+    "name_en": "get work by link",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_channels_get_work_by_link",
+        "get work by link"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_channels_search_users",
+    "summary_zh": "微信视频号关键词搜索账号。account_name 为搜索关键词（必填）。",
+    "name_zh": "微信视频号关键词搜索账号",
+    "params": [
+      {
+        "name": "account_name",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "page",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "page_size",
+        "type": "int",
+        "required": false,
+        "default": 20
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat_channels.search_users",
+    "result": null,
+    "source": "微信视频号关键词搜索账号-MCP",
+    "platform": "wechat_channels",
+    "category": "social",
+    "id": "wechat_channels.search.users",
+    "name_en": "search users",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_channels_search_users",
+        "search users"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_channels_transcript",
+    "summary_zh": "微信视频号视频字幕/文案提取，提交后自动等待并返回完整文案。\nurl 为作品链接（必填）；超时未完成时返回 taskId，可用 wechat_channels_transcript_result 再查。",
+    "name_zh": "微信视频号视频字幕/文案提取，提交后自动等待并返回完整文案",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "wechat_channels.transcript_submit",
+    "result": "wechat_channels.transcript_result",
+    "source": "微信视频号视频字幕/文案提取-MCP",
+    "platform": "wechat_channels",
+    "category": "social",
+    "id": "wechat_channels.transcript",
+    "name_en": "transcript",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_channels_transcript",
+        "transcript"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_search_articles",
+    "summary_zh": "搜索公众号文章（优质库）。keyword 必填；offset 从 0 开始、每页 +20。",
+    "name_zh": "搜索公众号文章（优质库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "required": false,
+        "default": 0
+      },
+      {
+        "name": "sort_type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.search_articles",
+    "result": null,
+    "source": "搜索公众号文章-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.search.articles",
+    "name_en": "search articles",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_search_articles",
+        "search articles"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_search_users",
+    "summary_zh": "搜索公众号账号（优质库）。keyword 必填；sort_type：_0=默认，_2=最新，_4=最热。",
+    "name_zh": "搜索公众号账号（优质库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "required": false,
+        "default": 0
+      },
+      {
+        "name": "sort_type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.search_users",
+    "result": null,
+    "source": "搜索公众号账号（优质库）-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.search.users",
+    "name_en": "search users",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_search_users",
+        "search users"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_get_account",
+    "summary_zh": "获取公众号账号信息（优质库）。account 为公众号微信号（必填），\naccount_name 为公众号名称（可选）。",
+    "name_zh": "获取公众号账号信息（优质库）",
+    "params": [
+      {
+        "name": "account",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "account_name",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.get_account",
+    "result": null,
+    "source": "获取公众号账号信息（优质库）-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.get.account",
+    "name_en": "get account",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_get_account",
+        "get account"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_get_user_works",
+    "summary_zh": "获取公众号文章列表（优质库）。account 为公众号微信号（必填）；\nsort_type：_0=默认，_2=最新，_4=最热；publish_time_start/end 格式如 \"2026-07-01\"。",
+    "name_zh": "获取公众号文章列表（优质库）",
+    "params": [
+      {
+        "name": "account",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "account_name",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "required": false,
+        "default": 0
+      },
+      {
+        "name": "sort_type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "publish_time_start",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "publish_time_end",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.get_user_works",
+    "result": null,
+    "source": "获取公众号文章列表-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.get.user.works",
+    "name_en": "get user works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_get_user_works",
+        "get user works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_get_work",
+    "summary_zh": "根据作品 UUID 获取公众号文章元数据（优质库）。",
+    "name_zh": "根据作品 UUID 获取公众号文章元数据（优质库）",
+    "params": [
+      {
+        "name": "work_uuid",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.get_work",
+    "result": null,
+    "source": "根据作品 UUID 获取公众号文章元数据-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.get.work",
+    "name_en": "get work",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_get_work",
+        "get work"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_get_article_detail",
+    "summary_zh": "根据文章链接获取公众号文章详情，支持全文内容（优质库）。\nurl 形如 https://mp.weixin.qq.com/s/...",
+    "name_zh": "根据文章链接获取公众号文章详情，支持全文内容（优质库）",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.get_article_detail",
+    "result": null,
+    "source": "根据文章链接获取公众号文章详情-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.get.article.detail",
+    "name_en": "get article detail",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_get_article_detail",
+        "get article detail"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_search_ai_articles",
+    "summary_zh": "搜索公众号 AI 创作相关文章（优质库）。keyword 必填；\nstart_time/end_time 格式如 \"2026-06-01 00:00:00\"。",
+    "name_zh": "搜索公众号 AI 创作相关文章（优质库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "page_num",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "page_size",
+        "type": "int",
+        "required": false,
+        "default": 20
+      },
+      {
+        "name": "start_time",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "end_time",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.search_ai_articles",
+    "result": null,
+    "source": "搜索公众号 AI 创作相关文章-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.search.ai.articles",
+    "name_en": "search ai articles",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_search_ai_articles",
+        "search ai articles"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_search_articles_wide",
+    "summary_zh": "搜索公众号作品（广域库，覆盖范围大于优质库）。keyword 必填；\noffset 从 0 开始、每页 +20；sort_type：0=默认，2=最新，4=最热。",
+    "name_zh": "搜索公众号作品（广域库，覆盖范围大于优质库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "required": false,
+        "default": 0
+      },
+      {
+        "name": "sort_type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.search_articles_wide",
+    "result": null,
+    "source": "搜索公众号作品-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.search.articles.wide",
+    "name_en": "search articles wide",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_search_articles_wide",
+        "search articles wide"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_search_users_wide",
+    "summary_zh": "搜索公众号账号（广域库）。keyword 必填；offset 从 0 开始、每页 +20。",
+    "name_zh": "搜索公众号账号（广域库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "required": false,
+        "default": 0
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.search_users_wide",
+    "result": null,
+    "source": "搜索公众号账号（广域库）-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.search.users.wide",
+    "name_en": "search users wide",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_search_users_wide",
+        "search users wide"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_get_work_wide",
+    "summary_zh": "根据作品 UUID 获取公众号作品，含正文全文（广域库）。",
+    "name_zh": "根据作品 UUID 获取公众号作品，含正文全文（广域库）",
+    "params": [
+      {
+        "name": "work_uuid",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.get_work_wide",
+    "result": null,
+    "source": "根据作品 UUID 获取公众号作品-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.get.work.wide",
+    "name_en": "get work wide",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_get_work_wide",
+        "get work wide"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_get_user_works_wide",
+    "summary_zh": "获取公众号账号作品列表（广域库）。account（微信号）/ wx_id（原始 ID，如 gh_xxx）/\nbiz_info（采集用 ID）三者选其一；offset 从 0 开始、每页 +20；\nsort_type：0=默认，2=最新，4=最热。",
+    "name_zh": "获取公众号账号作品列表（广域库）",
+    "params": [
+      {
+        "name": "account",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "wx_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "biz_info",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "required": false,
+        "default": 0
+      },
+      {
+        "name": "sort_type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.get_user_works_wide",
+    "result": null,
+    "source": "获取公众号账号作品列表-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.get.user.works.wide",
+    "name_en": "get user works wide",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_get_user_works_wide",
+        "get user works wide"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_get_account_wide",
+    "summary_zh": "获取公众号账号信息（广域库）。account（微信号）/ wx_id（原始 ID，如 gh_xxx）/\nbiz_info（账号唯一 ID）三者选其一。",
+    "name_zh": "获取公众号账号信息（广域库）",
+    "params": [
+      {
+        "name": "account",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "wx_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "biz_info",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.get_account_wide",
+    "result": null,
+    "source": "获取公众号账号信息（广域库）-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.get.account.wide",
+    "name_en": "get account wide",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_get_account_wide",
+        "get account wide"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_get_ten_w_rank",
+    "summary_zh": "公众号 10W+ 阅读文章推荐。type 为分类（如 知识百科、科技数码、总排名）；\nstart_date/end_date 格式 yyyy-MM-dd（每日 18:30 更新昨日数据）。",
+    "name_zh": "公众号 10W+ 阅读文章推荐",
+    "params": [
+      {
+        "name": "type",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "start_date",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "end_date",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.get_ten_w_rank",
+    "result": null,
+    "source": "公众号 10W+ 阅读文章推荐-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.get.ten.w.rank",
+    "name_en": "get ten w rank",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_get_ten_w_rank",
+        "get ten w rank"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_get_original_rank",
+    "summary_zh": "公众号原创爆款文章推荐。type 为分类（如 人文资讯、财富理财、总排名）；\nstart_date/end_date 格式 yyyy-MM-dd（每日 18:30 更新昨日数据）。",
+    "name_zh": "公众号原创爆款文章推荐",
+    "params": [
+      {
+        "name": "type",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "start_date",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "end_date",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.get_original_rank",
+    "result": null,
+    "source": "公众号原创爆款文章推荐-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.get.original.rank",
+    "name_en": "get original rank",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_get_original_rank",
+        "get original rank"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_get_strength_rank",
+    "summary_zh": "公众号综合实力榜。rank_type：day/week/month；rank_date 为榜单日期 yyyy-MM-dd；\ncategory 为分类（如 人文资讯、时事新闻、总排名）。",
+    "name_zh": "公众号综合实力榜",
+    "params": [
+      {
+        "name": "rank_type",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "rank_date",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "category",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.get_strength_rank",
+    "result": null,
+    "source": "公众号综合实力榜-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.get.strength.rank",
+    "name_en": "get strength rank",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_get_strength_rank",
+        "get strength rank"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "wechat_get_reading_growth_rank",
+    "summary_zh": "公众号阅读增长榜单。rank_date 为榜单日期 yyyy-MM-dd。",
+    "name_zh": "公众号阅读增长榜单",
+    "params": [
+      {
+        "name": "rank_date",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "wechat.get_reading_growth_rank",
+    "result": null,
+    "source": "公众号阅读增长榜单-MCP",
+    "platform": "wechat",
+    "category": "social",
+    "id": "wechat.get.reading.growth.rank",
+    "name_en": "get reading growth rank",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "wechat_get_reading_growth_rank",
+        "get reading growth rank"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "xiaohongshu_search_articles",
+    "summary_zh": "搜索小红书笔记（优质库）。keyword 必填；offset 分页偏移。",
+    "name_zh": "搜索小红书笔记（优质库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "required": false,
+        "default": 0
+      },
+      {
+        "name": "sort_type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "xiaohongshu.search_articles",
+    "result": null,
+    "source": "搜索小红书笔记-MCP",
+    "platform": "xiaohongshu",
+    "category": "social",
+    "id": "xiaohongshu.search.articles",
+    "name_en": "search articles",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "xiaohongshu_search_articles",
+        "search articles"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "xiaohongshu_search_users",
+    "summary_zh": "搜索小红书博主账号（优质库）。keyword 必填；offset 分页偏移。",
+    "name_zh": "搜索小红书博主账号（优质库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "required": false,
+        "default": 0
+      },
+      {
+        "name": "sort_type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "xiaohongshu.search_users",
+    "result": null,
+    "source": "搜索小红书博主账号-MCP",
+    "platform": "xiaohongshu",
+    "category": "social",
+    "id": "xiaohongshu.search.users",
+    "name_en": "search users",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "xiaohongshu_search_users",
+        "search users"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "xiaohongshu_get_account",
+    "summary_zh": "获取小红书账号信息（优质库）。account_id 为小红书号（必填），user_id 可选。",
+    "name_zh": "获取小红书账号信息（优质库）",
+    "params": [
+      {
+        "name": "account_id",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "user_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "xiaohongshu.get_account",
+    "result": null,
+    "source": "获取小红书账号信息-MCP",
+    "platform": "xiaohongshu",
+    "category": "social",
+    "id": "xiaohongshu.get.account",
+    "name_en": "get account",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "xiaohongshu_get_account",
+        "get account"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "xiaohongshu_get_work",
+    "summary_zh": "获取小红书笔记详情（优质库）。work_id 与 work_link（笔记链接）至少传一个。",
+    "name_zh": "获取小红书笔记详情（优质库）",
+    "params": [
+      {
+        "name": "work_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "work_link",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [
+      "work_id",
+      "work_link"
+    ],
+    "kind": "sync",
+    "sdk": "xiaohongshu.get_work",
+    "result": null,
+    "source": "获取小红书笔记详情-MCP",
+    "platform": "xiaohongshu",
+    "category": "social",
+    "id": "xiaohongshu.get.work",
+    "name_en": "get work",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "xiaohongshu_get_work",
+        "get work"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "xiaohongshu_search_ai_articles",
+    "summary_zh": "搜索小红书 AI 创作相关笔记（优质库）。keyword 必填；\nstart_time/end_time 格式如 \"2026-06-01 00:00:00\"。",
+    "name_zh": "搜索小红书 AI 创作相关笔记（优质库）",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "page_num",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "page_size",
+        "type": "int",
+        "required": false,
+        "default": 20
+      },
+      {
+        "name": "start_time",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "end_time",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "xiaohongshu.search_ai_articles",
+    "result": null,
+    "source": "搜索小红书 AI 创作相关笔记-MCP",
+    "platform": "xiaohongshu",
+    "category": "social",
+    "id": "xiaohongshu.search.ai.articles",
+    "name_en": "search ai articles",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "xiaohongshu_search_ai_articles",
+        "search ai articles"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "xiaohongshu_get_user_works",
+    "summary_zh": "查询小红书账号作品列表（优质库）。red_id（小红书号）/ userid（账号主键 id）\n至少传一个；offset 从 0 开始、每页 +20；sort_type：_0=默认，_2=最新，_4=最热；\npublish_time_start/end 格式 yyyy-MM-dd。",
+    "name_zh": "查询小红书账号作品列表（优质库）",
+    "params": [
+      {
+        "name": "red_id",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "userid",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "required": false,
+        "default": 0
+      },
+      {
+        "name": "sort_type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "publish_time_start",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "publish_time_end",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [
+      "red_id",
+      "userid"
+    ],
+    "kind": "sync",
+    "sdk": "xiaohongshu.get_user_works",
+    "result": null,
+    "source": "查询小红书账号作品列表-MCP",
+    "platform": "xiaohongshu",
+    "category": "social",
+    "id": "xiaohongshu.get.user.works",
+    "name_en": "get user works",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "xiaohongshu_get_user_works",
+        "get user works"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "xiaohongshu_get_daily_hot_rank",
+    "summary_zh": "小红书每日爆款笔记榜单。rank_date 为榜单日期 yyyy-MM-dd；\ncategory 为分类（如 综合全部、时尚穿搭、美味佳肴）。",
+    "name_zh": "小红书每日爆款笔记榜单",
+    "params": [
+      {
+        "name": "rank_date",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "category",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "xiaohongshu.get_daily_hot_rank",
+    "result": null,
+    "source": "小红书每日爆款笔记榜单-MCP",
+    "platform": "xiaohongshu",
+    "category": "social",
+    "id": "xiaohongshu.get.daily.hot.rank",
+    "name_en": "get daily hot rank",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "xiaohongshu_get_daily_hot_rank",
+        "get daily hot rank"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "xiaohongshu_get_weekly_hot_rank",
+    "summary_zh": "小红书七日爆款笔记。rank_date 为榜单日期 yyyy-MM-dd（每天 19:00 更新昨日榜单）；\ncategory 为分类（如 综合全部、出行代步），均可不传。",
+    "name_zh": "小红书七日爆款笔记",
+    "params": [
+      {
+        "name": "rank_date",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "category",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "xiaohongshu.get_weekly_hot_rank",
+    "result": null,
+    "source": "小红书七日爆款笔记-MCP",
+    "platform": "xiaohongshu",
+    "category": "social",
+    "id": "xiaohongshu.get.weekly.hot.rank",
+    "name_en": "get weekly hot rank",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "xiaohongshu_get_weekly_hot_rank",
+        "get weekly hot rank"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "xiaohongshu_get_hot_accounts",
+    "summary_zh": "小红书热门账号推荐（日/周/月榜）。date_type：1=日、2=周、3=月；\nrank_date 格式 yyyy-MM-dd（日榜传当日日期、周榜传周一日期、月榜传一号）；\ntype 为类别（如 综合全部）。",
+    "name_zh": "小红书热门账号推荐（日/周/月榜）",
+    "params": [
+      {
+        "name": "date_type",
+        "type": "Optional[int]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "rank_date",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "type",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "xiaohongshu.get_hot_accounts",
+    "result": null,
+    "source": "小红书热门账号推荐-MCP",
+    "platform": "xiaohongshu",
+    "category": "social",
+    "id": "xiaohongshu.get.hot.accounts",
+    "name_en": "get hot accounts",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "xiaohongshu_get_hot_accounts",
+        "get hot accounts"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "xiaohongshu_search_hot_notes",
+    "summary_zh": "小红书爆款笔记洞察。keyword 可选，不传则按互动数降序返回最热门数据；\npage_num/page_size 在无关键词时生效（page_size 最大 50）；\nstart_date/end_date 格式 yyyy-MM-dd。",
+    "name_zh": "小红书爆款笔记洞察",
+    "params": [
+      {
+        "name": "keyword",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "page_num",
+        "type": "int",
+        "required": false,
+        "default": 1
+      },
+      {
+        "name": "page_size",
+        "type": "int",
+        "required": false,
+        "default": 10
+      },
+      {
+        "name": "start_date",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "end_date",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "xiaohongshu.search_hot_notes",
+    "result": null,
+    "source": "小红书爆款笔记洞察-MCP",
+    "platform": "xiaohongshu",
+    "category": "social",
+    "id": "xiaohongshu.search.hot.notes",
+    "name_en": "search hot notes",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "xiaohongshu_search_hot_notes",
+        "search hot notes"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "xiaohongshu_get_dark_horse_notes",
+    "summary_zh": "小红书黑马爆文榜（低粉账号爆款笔记）。category 为分类（必填），\n取值如 综合全部、出行代步、医疗保健、时尚穿搭、美味佳肴 等中文分类名；\nstart_date 为榜单日期 yyyy-MM-dd（最长最近 30 天）。",
+    "name_zh": "小红书黑马爆文榜（低粉账号爆款笔记）",
+    "params": [
+      {
+        "name": "category",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "start_date",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "xiaohongshu.get_dark_horse_notes",
+    "result": null,
+    "source": "小红书黑马爆文榜-MCP",
+    "platform": "xiaohongshu",
+    "category": "social",
+    "id": "xiaohongshu.get.dark.horse.notes",
+    "name_en": "get dark horse notes",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "xiaohongshu_get_dark_horse_notes",
+        "get dark horse notes"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "xiaohongshu_get_comments",
+    "summary_zh": "获取小红书笔记一级评论（广域库），提交后自动等待并返回结果。\nopus_id 为作品 id（笔记链接 explore/ 后的部分）；data_num 为所需条数，-1=全部；\n超时未完成时返回 taskId，可用 xiaohongshu_get_comments_result 再查。",
+    "name_zh": "获取小红书笔记一级评论（广域库），提交后自动等待并返回结果",
+    "params": [
+      {
+        "name": "opus_id",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "data_num",
+        "type": "int",
+        "required": true
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "xiaohongshu.comment_submit",
+    "result": "xiaohongshu.comment_result",
+    "source": "获取小红书笔记一级评论-MCP",
+    "platform": "xiaohongshu",
+    "category": "social",
+    "id": "xiaohongshu.get.comments",
+    "name_en": "get comments",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "xiaohongshu_get_comments",
+        "get comments"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "xiaohongshu_transcript",
+    "summary_zh": "小红书视频提文案：提取视频完整文案，提交后自动等待并返回结果。\nurl 为笔记/视频链接；超时未完成时返回 taskId，可用 xiaohongshu_transcript_result 再查。",
+    "name_zh": "小红书视频提文案：提取视频完整文案，提交后自动等待并返回结果",
+    "params": [
+      {
+        "name": "url",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "timeout_seconds",
+        "type": "int",
+        "required": false,
+        "default": 240
+      }
+    ],
+    "one_of": [],
+    "kind": "async",
+    "sdk": "xiaohongshu.transcript_submit",
+    "result": "xiaohongshu.transcript_result",
+    "source": "小红书视频提文案-MCP",
+    "platform": "xiaohongshu",
+    "category": "social",
+    "id": "xiaohongshu.transcript",
+    "name_en": "transcript",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "xiaohongshu_transcript",
+        "transcript"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "youtube_search_videos",
+    "summary_zh": "YouTube 关键词视频搜索。search_query 必填；continuation_token 用于翻页。",
+    "name_zh": "YouTube 关键词视频搜索",
+    "params": [
+      {
+        "name": "search_query",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "continuation_token",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "youtube.search_videos",
+    "result": null,
+    "source": "YouTube 关键词视频搜索-MCP",
+    "platform": "youtube",
+    "category": "social",
+    "id": "youtube.search.videos",
+    "name_en": "search videos",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "youtube_search_videos",
+        "search videos"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "youtube_get_video",
+    "summary_zh": "获取 YouTube 单个视频详情。video_id 为视频 ID（必填）。",
+    "name_zh": "获取 YouTube 单个视频详情",
+    "params": [
+      {
+        "name": "video_id",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "youtube.get_video",
+    "result": null,
+    "source": "获取 YouTube 单个视频详情-MCP",
+    "platform": "youtube",
+    "category": "social",
+    "id": "youtube.get.video",
+    "name_en": "get video",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "youtube_get_video",
+        "get video"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "youtube_get_comments",
+    "summary_zh": "获取 YouTube 视频评论。video_id 必填；sort_by：top=最热/newest=最新；\ncontinuation_token 用于翻页。",
+    "name_zh": "获取 YouTube 视频评论",
+    "params": [
+      {
+        "name": "video_id",
+        "type": "str",
+        "required": true
+      },
+      {
+        "name": "language_code",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "country_code",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "sort_by",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "continuation_token",
+        "type": "Optional[str]",
+        "required": false,
+        "default": null
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "youtube.get_comments",
+    "result": null,
+    "source": "获取 YouTube 视频评论-MCP",
+    "platform": "youtube",
+    "category": "social",
+    "id": "youtube.get.comments",
+    "name_en": "get comments",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "youtube_get_comments",
+        "get comments"
+      ]
+    }
+  },
+  {
+    "legacy_tool": "youtube_get_transcript",
+    "summary_zh": "提取 YouTube 视频字幕轨道。video_url 为视频链接（必填）。\n返回视频信息（标题、时长、发布时间、封面、描述）及各语言、各格式\n（srt/vtt/ttml/json3）的字幕下载地址，含人工字幕与自动生成字幕。",
+    "name_zh": "提取 YouTube 视频字幕轨道",
+    "params": [
+      {
+        "name": "video_url",
+        "type": "str",
+        "required": true
+      }
+    ],
+    "one_of": [],
+    "kind": "sync",
+    "sdk": "youtube.get_transcript",
+    "result": null,
+    "source": "提取 YouTube 视频字幕/文案-MCP",
+    "platform": "youtube",
+    "category": "social",
+    "id": "youtube.get.transcript",
+    "name_en": "get transcript",
+    "aliases": {
+      "zh": [],
+      "en": [
+        "youtube_get_transcript",
+        "get transcript"
+      ]
+    }
+  }
+]
