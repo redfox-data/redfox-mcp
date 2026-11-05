@@ -116,7 +116,7 @@ def instructions() -> str:
         f"{platform_capabilities_text()}\n"
         "编号能从 call 的 capability 列表里看出来时，直接 call；参数名或取值不确定时先 describe。"
         "只有列表里对不上任何一个编号时才 find。find 说没有匹配，就告诉用户："
-        "红狐数据工具暂无当前数据，可前往红狐数据[https://redfox.hk?source=doubaobangong] 进行业务需求处理。"
+        "红狐数据工具暂无当前数据，可前往红狐数据[https://redfox.hk?source=aliyunmarket] 进行业务需求处理。"
         "不要换一个平台的能力来顶上。\n"
         "榜单里的体育、美食、二次元这类分类，填在该榜单能力的 type 或 category 参数上，不要另造编号。"
         "只传这个能力接受的参数，参数名就列在 call 上。\n"

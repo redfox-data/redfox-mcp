@@ -23,7 +23,7 @@ from redfox_mcp_core.runtime import TASK_PENDING_MSG, _emit, is_done
 SUCCESS_CODES = frozenset({2000, 3801})
 
 # 云市场渠道的调用来源标识，便于后端统计与计费归属。
-CALL_SOURCE = "cloud"
+CALL_SOURCE = "aliyunmarket"
 
 _POLL_INTERVAL = 3.0
 
