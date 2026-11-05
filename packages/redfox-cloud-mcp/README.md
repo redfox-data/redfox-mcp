@@ -1,6 +1,6 @@
-# redfox-aliyun-mcp
+# redfox-cloud-mcp
 
-面向阿里云 MCP 渠道的红狐数据聚合服务：用 `find / describe / call / result` 四个工具访问红狐全部已开放接口（目录与参数逻辑复用 `redfox-data-mcp`）。
+面向云市场 MCP 渠道的红狐数据聚合服务：用 `find / describe / call / result` 四个工具访问红狐全部已开放接口（目录与参数逻辑复用 `redfox-data-mcp`）。
 
 ## 鉴权
 
@@ -23,6 +23,6 @@ stdio 模式读环境变量 `REDFOX_API_KEY`。
 ## 运行
 
 ```bash
-uv run redfox-aliyun-mcp                       # stdio
-uv run redfox-aliyun-mcp --transport http      # HTTP 多租户
+uv run redfox-cloud-mcp                       # stdio
+uv run redfox-cloud-mcp --transport http      # HTTP 多租户
 ```

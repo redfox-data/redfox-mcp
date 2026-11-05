@@ -14,9 +14,9 @@ resolution-markers = [
 members = [
     "redfox-ai-gen-mcp",
     "redfox-ai-search-mcp",
-    "redfox-aliyun-mcp",
     "redfox-auto-mcp",
     "redfox-bilibili-mcp",
+    "redfox-cloud-mcp",
     "redfox-data-mcp",
     "redfox-douyin-mcp",
     "redfox-instagram-mcp",
@@ -1198,21 +1198,6 @@ dependencies = [
 requires-dist = [{ name = "redfox-mcp-core", editable = "packages/redfox-mcp-core" }]
 
 [[package]]
-name = "redfox-aliyun-mcp"
-version = "0.1.0"
-source = { editable = "packages/redfox-aliyun-mcp" }
-dependencies = [
-    { name = "redfox-data-mcp" },
-    { name = "redfox-mcp-core" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "redfox-data-mcp", editable = "packages/redfox-data-mcp" },
-    { name = "redfox-mcp-core", editable = "packages/redfox-mcp-core" },
-]
-
-[[package]]
 name = "redfox-auto-mcp"
 version = "0.1.2"
 source = { editable = "packages/redfox-auto-mcp" }
@@ -1233,6 +1218,21 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [{ name = "redfox-mcp-core", editable = "packages/redfox-mcp-core" }]
+
+[[package]]
+name = "redfox-cloud-mcp"
+version = "0.1.0"
+source = { editable = "packages/redfox-cloud-mcp" }
+dependencies = [
+    { name = "redfox-data-mcp" },
+    { name = "redfox-mcp-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "redfox-data-mcp", editable = "packages/redfox-data-mcp" },
+    { name = "redfox-mcp-core", editable = "packages/redfox-mcp-core" },
+]
 
 [[package]]
 name = "redfox-data-mcp"

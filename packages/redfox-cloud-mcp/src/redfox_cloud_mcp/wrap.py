@@ -1,4 +1,4 @@
-"""阿里云 MCP 的返回包装与上游 code 判定。
+"""云市场 MCP 的返回包装与上游 code 判定。
 
 工具返回值统一包成 MCP CallToolResult 形状：
     {"isError": bool, "content": [{"type": "text", "text": "<json 字符串>"}]}
@@ -22,8 +22,8 @@ from redfox_mcp_core.runtime import TASK_PENDING_MSG, _emit, is_done
 # 上游成功码（均扣费）。其余 code 一律视为失败。
 SUCCESS_CODES = frozenset({2000, 3801})
 
-# 阿里云渠道的调用来源标识，便于后端统计与计费归属。
-CALL_SOURCE = "aliyun"
+# 云市场渠道的调用来源标识，便于后端统计与计费归属。
+CALL_SOURCE = "cloud"
 
 _POLL_INTERVAL = 3.0
 
@@ -108,7 +108,7 @@ def run_task(
 
 
 def envelope(code: int, payload: Optional[Dict[str, Any]] = None, message: Optional[str] = None) -> ToolResult:
-    """把 (code, 结果体) 包成阿里云要求的 CallToolResult。"""
+    """把 (code, 结果体) 包成云市场要求的 CallToolResult。"""
     ok = code in SUCCESS_CODES
     payload = payload or {}
     if message is None:

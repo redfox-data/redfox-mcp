@@ -3,13 +3,13 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "redfox-aliyun-mcp"
+name = "redfox-cloud-mcp"
 version = "0.1.0"
-description = "RedFox aliyun MCP: find, describe, call and result over the RedFoxHub catalog with aliyun-style wrapped results"
+description = "RedFox cloud MCP: find, describe, call and result over the RedFoxHub catalog with wrapped results"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-keywords = ["mcp", "redfox", "aliyun"]
+keywords = ["mcp", "redfox", "cloud"]
 dependencies = [
     "redfox-mcp-core>=0.1.7",
     "redfox-data-mcp>=0.2.0",
@@ -20,10 +20,10 @@ redfox-mcp-core = { workspace = true }
 redfox-data-mcp = { workspace = true }
 
 [project.scripts]
-redfox-aliyun-mcp = "redfox_aliyun_mcp.server:main"
+redfox-cloud-mcp = "redfox_cloud_mcp.server:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/redfox_aliyun_mcp"]
+packages = ["src/redfox_cloud_mcp"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/redfox_aliyun_mcp", "README.md"]
+include = ["src/redfox_cloud_mcp", "README.md"]

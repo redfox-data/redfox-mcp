@@ -1,9 +1,9 @@
-"""RedFox 阿里云 MCP：find、describe、call、result。
+"""RedFox 云市场 MCP：find、describe、call、result。
 
 能力执行与目录沿用 redfox-data-mcp 的同一套逻辑（catalog / search / schema / prepare）。
 与 data-mcp 的差异：
 - 鉴权走普通 apikey（HTTP 时从 Authorization: Bearer <key> 或 REDFOX_API_KEY 头读取），不接 OAuth。
-- 工具返回按阿里云规范包成 {isError, content:[{type:text,text:<json>}]}，
+- 工具返回按云市场返回规范包成 {isError, content:[{type:text,text:<json>}]}，
   成功码仅上游 2000 / 3801，其余为失败（见 wrap.py）。
 """
 
@@ -18,8 +18,8 @@ from fastmcp.exceptions import ValidationError as FastMCPValidationError
 from fastmcp.server.middleware import Middleware
 from redfox_mcp_core import create_server, serve
 
-from redfox_aliyun_mcp import __version__
-from redfox_aliyun_mcp.wrap import CALL_SOURCE, envelope, run_task, sdk_raw
+from redfox_cloud_mcp import __version__
+from redfox_cloud_mcp.wrap import CALL_SOURCE, envelope, run_task, sdk_raw
 from redfox_data_mcp.clients import get_client
 from redfox_data_mcp.dispatch import prepare
 from redfox_data_mcp.schema import (
@@ -34,7 +34,7 @@ from redfox_data_mcp.search import DESCRIBE_LIMIT, by_id
 from redfox_data_mcp.search import describe as describe_catalog
 from redfox_data_mcp.search import find as find_catalog
 
-mcp = create_server("红狐数据(阿里云)", __version__)
+mcp = create_server("红狐数据(云市场)", __version__)
 mcp.instructions = instructions()
 
 
@@ -209,7 +209,7 @@ mcp.tool()(result)
 
 
 def main() -> None:
-    serve(mcp, prog="redfox-aliyun-mcp", description="RedFox 阿里云 MCP：find / describe / call / result")
+    serve(mcp, prog="redfox-cloud-mcp", description="RedFox 云市场 MCP：find / describe / call / result")
 
 
 if __name__ == "__main__":
