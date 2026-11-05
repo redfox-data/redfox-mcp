@@ -17,7 +17,6 @@ members = [
     "redfox-auto-mcp",
     "redfox-bilibili-mcp",
     "redfox-cloud-mcp",
-    "redfox-data-mcp",
     "redfox-douyin-mcp",
     "redfox-instagram-mcp",
     "redfox-kuaishou-mcp",
@@ -1223,17 +1222,6 @@ requires-dist = [{ name = "redfox-mcp-core", editable = "packages/redfox-mcp-cor
 name = "redfox-cloud-mcp"
 version = "0.1.0"
 source = { editable = "packages/redfox-cloud-mcp" }
-dependencies = [
-    { name = "redfox-mcp-core" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "redfox-mcp-core", editable = "packages/redfox-mcp-core" }]
-
-[[package]]
-name = "redfox-data-mcp"
-version = "0.2.0"
-source = { editable = "packages/redfox-data-mcp" }
 dependencies = [
     { name = "redfox-mcp-core" },
 ]
