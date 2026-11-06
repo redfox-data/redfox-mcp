@@ -39,7 +39,7 @@ from mcp.server.auth.provider import (
 )
 from mcp.server.auth.settings import ClientRegistrationOptions, RevocationOptions
 from mcp.shared.auth import OAuthClientInformationFull, OAuthToken
-from pydantic import AnyHttpUrl
+from pydantic import AnyHttpUrl, AnyUrl
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse, RedirectResponse, Response
 
@@ -246,6 +246,23 @@ def _with_txn(consent_url: str, txn_id: str) -> str:
     return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
 
 
+# 豆包客户端的回调地址由运行环境临时生成，DCR 与 /authorize 两次提交的不一定一致，
+# SDK 默认的精确匹配会拒掉。按豆包接入文档 7.1.3 的临时加白建议，放行该前缀
+# （限定 HTTPS、Host 与完整路径前缀，不做通配）。
+DOUBAO_CALLBACK_PREFIX = "https://api.doubao-dev.com/api/oauth/v1/callback/personal/cb_ah_"
+
+
+class _DoubaoCallbackClient(OAuthClientInformationFull):
+    """在 SDK 精确匹配之上，额外放行豆包回调地址前缀。"""
+
+    def validate_redirect_uri(self, redirect_uri: AnyUrl | None) -> AnyUrl:
+        if redirect_uri is not None and str(redirect_uri).startswith(
+            DOUBAO_CALLBACK_PREFIX
+        ):
+            return redirect_uri
+        return super().validate_redirect_uri(redirect_uri)
+
+
 class RedFoxOAuthProvider(InMemoryOAuthProvider):
     """fastmcp 内置 InMemoryOAuthProvider 之上，把全部状态换成后台远端存储。
 
@@ -289,7 +306,7 @@ class RedFoxOAuthProvider(InMemoryOAuthProvider):
         payload = await self._store.get("client", client_id)
         if payload is None:
             return None
-        return OAuthClientInformationFull.model_validate(payload)
+        return _DoubaoCallbackClient.model_validate(payload)
 
     # ---- 授权（/authorize） ----
     async def authorize(
