@@ -252,8 +252,14 @@ def _with_txn(consent_url: str, txn_id: str) -> str:
 DOUBAO_CALLBACK_PREFIX = "https://api.doubao-dev.com/api/oauth/v1/callback/personal/cb_ah_"
 
 
-class _DoubaoCallbackClient(OAuthClientInformationFull):
-    """在 SDK 精确匹配之上，额外放行豆包回调地址前缀。"""
+class _DoubaoCompatClient(OAuthClientInformationFull):
+    """放宽 SDK 的精确匹配校验，兼容豆包客户端的 DCR 行为。
+
+    - redirect_uri：按接入文档 7.1.3 放行回调地址前缀；
+    - scope：OAuth 2.0 可选参数，豆包侧会动态追加 scope，与 DCR 注册值
+      不一定一致，SDK 默认按注册值精确匹配、不符即 invalid_scope 拒掉，
+      这里放行，交由 provider 下游按 client.scope 裁剪。
+    """
 
     def validate_redirect_uri(self, redirect_uri: AnyUrl | None) -> AnyUrl:
         if redirect_uri is not None and str(redirect_uri).startswith(
@@ -261,6 +267,12 @@ class _DoubaoCallbackClient(OAuthClientInformationFull):
         ):
             return redirect_uri
         return super().validate_redirect_uri(redirect_uri)
+
+    def validate_scope(self, requested_scope: str | None) -> list[str] | None:
+        if not requested_scope:
+            return None
+        scopes = [item for item in requested_scope.split(" ") if item]
+        return scopes or None
 
 
 class RedFoxOAuthProvider(InMemoryOAuthProvider):
@@ -282,6 +294,12 @@ class RedFoxOAuthProvider(InMemoryOAuthProvider):
     ) -> None:
         super().__init__(*args, **kwargs)
         self._store = store if store is not None else build_state_store()
+
+    @property
+    def scopes_supported(self) -> list[str] | None:  # type: ignore[override]
+        # 本服务没有真实业务 scope，PRM 里省略该字段，
+        # 避免豆包客户端对空数组执行“动态追加 scopes_supported”逻辑。
+        return None
 
     # ---- 客户端注册（DCR） ----
     async def register_client(self, client_info: OAuthClientInformationFull) -> None:
@@ -306,7 +324,7 @@ class RedFoxOAuthProvider(InMemoryOAuthProvider):
         payload = await self._store.get("client", client_id)
         if payload is None:
             return None
-        return _DoubaoCallbackClient.model_validate(payload)
+        return _DoubaoCompatClient.model_validate(payload)
 
     # ---- 授权（/authorize） ----
     async def authorize(
