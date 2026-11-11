@@ -365,7 +365,7 @@ class RedFoxOAuthProvider(InMemoryOAuthProvider):
 
     async def finish_consent(self, pending: _PendingConsent, user_id: str) -> str:
         """验过 ticket 后发授权码，并 302 回 OAuth 客户端（豆包回调）。"""
-        code = f"test_auth_code_{secrets.token_hex(16)}"
+        code = f"rf_auth_code_{secrets.token_hex(16)}"
         auth_code = AuthorizationCode(
             code=code,
             client_id=pending.client_id,
@@ -498,7 +498,7 @@ class RedFoxOAuthProvider(InMemoryOAuthProvider):
             raise AuthorizeError(
                 error="invalid_client", error_description="Client ID is required"
             )
-        code = f"test_auth_code_{secrets.token_hex(16)}"
+        code = f"rf_auth_code_{secrets.token_hex(16)}"
         auth_code = AuthorizationCode(
             code=code,
             client_id=client.client_id,
@@ -524,8 +524,8 @@ class RedFoxOAuthProvider(InMemoryOAuthProvider):
     ) -> OAuthToken:
         if client.client_id is None:
             raise TokenError("invalid_client", "Client ID is required")
-        access_token_value = f"test_access_token_{secrets.token_hex(32)}"
-        refresh_token_value = f"test_refresh_token_{secrets.token_hex(32)}"
+        access_token_value = f"rf_access_token_{secrets.token_hex(32)}"
+        refresh_token_value = f"rf_refresh_token_{secrets.token_hex(32)}"
         access_expires_at = int(time.time() + _ACCESS_TOKEN_TTL_SECONDS)
         access = AccessToken(
             token=access_token_value,
