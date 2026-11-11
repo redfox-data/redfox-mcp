@@ -303,6 +303,12 @@ class RedFoxOAuthProvider(InMemoryOAuthProvider):
 
     # ---- 客户端注册（DCR） ----
     async def register_client(self, client_info: OAuthClientInformationFull) -> None:
+        # 豆包插件是公开客户端（插件包无法保密），但 SDK 对未声明 auth method 的 DCR
+        # 默认 client_secret_post 并颁发 secret，换令牌不带 secret 即 401 invalid_client；
+        # 统一按公开客户端注册，与元数据公布的 none 保持一致。
+        client_info.token_endpoint_auth_method = "none"
+        client_info.client_secret = None
+        client_info.client_secret_expires_at = None
         if (
             client_info.scope is not None
             and self.client_registration_options is not None
