@@ -39,7 +39,7 @@ from mcp.server.auth.provider import (
 )
 from mcp.server.auth.settings import ClientRegistrationOptions, RevocationOptions
 from mcp.shared.auth import OAuthClientInformationFull, OAuthToken
-from pydantic import AnyHttpUrl, AnyUrl
+from pydantic import AnyHttpUrl, AnyUrl, model_validator
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse, RedirectResponse, Response
 
@@ -273,6 +273,15 @@ class _DoubaoCompatClient(OAuthClientInformationFull):
             return None
         scopes = [item for item in requested_scope.split(" ") if item]
         return scopes or None
+
+    @model_validator(mode="after")
+    def _force_public_client(self) -> "_DoubaoCompatClient":
+        # 公开客户端修复前注册的旧记录仍带 client_secret_post 与 secret，
+        # 读取时归一到同一策略，旧 client_id 无需重新 DCR 即可换令牌。
+        self.token_endpoint_auth_method = "none"
+        self.client_secret = None
+        self.client_secret_expires_at = None
+        return self
 
 
 class RedFoxOAuthProvider(InMemoryOAuthProvider):
