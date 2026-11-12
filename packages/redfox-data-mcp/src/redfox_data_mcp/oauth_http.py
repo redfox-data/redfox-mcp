@@ -86,8 +86,9 @@ def _advertise_public_client(metadata):
 def install_public_client_metadata() -> None:
     """让 /.well-known/oauth-authorization-server 公布公开客户端。
 
-    SDK 在 build_metadata 里写死了 client_secret_post 和 client_secret_basic。
-    注册时未声明方式的客户端仍默认 client_secret_post，这里只补元数据。
+    SDK 在 build_metadata 里写死了 client_secret_post 和 client_secret_basic，
+    这里补上 none。三种方式都已实现：显式声明按声明值注册（见
+    _RegisterBodyMiddleware），未声明的归一为 none。
     """
     import mcp.server.auth.routes as routes
 
@@ -155,10 +156,74 @@ def _inject_public_client(body: bytes) -> bytes:
     return body
 
 
+class _RegisterBodyMiddleware:
+    """DCR 请求体未声明 token_endpoint_auth_method 时补写成 none。
+
+    SDK 对未声明的方式默认 client_secret_post 并颁发 secret，而豆包自定义链接
+    客户端换令牌不带 secret；显式声明 client_secret_basic / client_secret_post
+    的请求原样放行，按机密客户端注册（豆包连接器预检要求注册响应原样回显）。
+    """
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope.get("type") != "http" or scope.get("method") != "POST":
+            await self.app(scope, receive, send)
+            return
+        chunks = bytearray()
+        while True:
+            message = await receive()
+            if message["type"] != "http.request":
+                break
+            chunks.extend(message.get("body") or b"")
+            if not message.get("more_body"):
+                break
+        body = _normalize_register_body(bytes(chunks))
+        if len(body) != len(chunks):
+            headers = [
+                (key, value)
+                for key, value in scope.get("headers") or []
+                if key.lower() != b"content-length"
+            ]
+            headers.append((b"content-length", str(len(body)).encode()))
+            scope = {**scope, "headers": headers}
+        sent = False
+
+        async def replay() -> dict:
+            nonlocal sent
+            if sent:
+                return {"type": "http.disconnect"}
+            sent = True
+            return {"type": "http.request", "body": body, "more_body": False}
+
+        await self.app(scope, replay, send)
+
+
+def _normalize_register_body(body: bytes) -> bytes:
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError:
+        return body
+    if not isinstance(payload, dict):
+        return body
+    if payload.get("token_endpoint_auth_method") is not None:
+        return body
+    payload["token_endpoint_auth_method"] = _PUBLIC_CLIENT_AUTH_METHOD
+    return json.dumps(payload, separators=(",", ":")).encode()
+
+
 def _wrap_authorization_metadata(app) -> None:
     for route in getattr(app, "routes", []):
         if getattr(route, "path", None) == "/.well-known/oauth-authorization-server":
             route.app = _PublicClientMetadataMiddleware(route.app)
+            return
+
+
+def _wrap_register_route(app) -> None:
+    for route in getattr(app, "routes", []):
+        if getattr(route, "path", None) == "/register":
+            route.app = _RegisterBodyMiddleware(route.app)
             return
 
 
@@ -167,6 +232,7 @@ def build_app(mcp):
     app = mcp.http_app(path="/mcp", stateless_http=False, transport="streamable-http")
     _wrap_mcp_route(app)
     _wrap_authorization_metadata(app)
+    _wrap_register_route(app)
     return app
 
 

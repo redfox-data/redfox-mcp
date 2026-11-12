@@ -276,11 +276,13 @@ class _DoubaoCompatClient(OAuthClientInformationFull):
 
     @model_validator(mode="after")
     def _force_public_client(self) -> "_DoubaoCompatClient":
-        # 公开客户端修复前注册的旧记录仍带 client_secret_post 与 secret，
-        # 读取时归一到同一策略，旧 client_id 无需重新 DCR 即可换令牌。
-        self.token_endpoint_auth_method = "none"
-        self.client_secret = None
-        self.client_secret_expires_at = None
+        # 公开客户端修复上线前注册的旧记录默认 client_secret_post 且客户端
+        # 不持有 secret，读取时归一为公开客户端；显式声明 client_secret_basic
+        # 的机密客户端记录保持原样，secret 校验交给 SDK 的 ClientAuthenticator。
+        if self.token_endpoint_auth_method == "client_secret_post":
+            self.token_endpoint_auth_method = "none"
+            self.client_secret = None
+            self.client_secret_expires_at = None
         return self
 
 
@@ -312,12 +314,10 @@ class RedFoxOAuthProvider(InMemoryOAuthProvider):
 
     # ---- 客户端注册（DCR） ----
     async def register_client(self, client_info: OAuthClientInformationFull) -> None:
-        # 豆包插件是公开客户端（插件包无法保密），但 SDK 对未声明 auth method 的 DCR
-        # 默认 client_secret_post 并颁发 secret，换令牌不带 secret 即 401 invalid_client；
-        # 统一按公开客户端注册，与元数据公布的 none 保持一致。
-        client_info.token_endpoint_auth_method = "none"
-        client_info.client_secret = None
-        client_info.client_secret_expires_at = None
+        # token_endpoint_auth_method 以 DCR 请求为准：显式声明 basic/post 的按
+        # 机密客户端注册、保留 SDK 颁发的 secret（豆包连接器预检要求注册响应
+        # 原样回显声明值）；未声明的已在 HTTP 层归一为 none，公开客户端换令牌
+        # 不带 secret 也能通过。
         if (
             client_info.scope is not None
             and self.client_registration_options is not None
