@@ -16,7 +16,11 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 from redfox_mcp_core.runtime import set_transport
 
-from redfox_data_mcp.oauth import build_auth, handle_oauth_resume
+from redfox_data_mcp.oauth import (
+    DOUBAO_CALLBACK_PREFIX,
+    build_auth,
+    handle_oauth_resume,
+)
 
 # 公开客户端换令牌不带 client_secret。SDK 的元数据只公布带密钥的两种方式，
 # 豆包审核要求 token_endpoint_auth_methods_supported 包含 none。
@@ -157,11 +161,13 @@ def _inject_public_client(body: bytes) -> bytes:
 
 
 class _RegisterBodyMiddleware:
-    """DCR 请求体未声明 token_endpoint_auth_method 时补写成 none。
+    """DCR 请求体未声明 token_endpoint_auth_method 时按回调地址补默认值。
 
-    SDK 对未声明的方式默认 client_secret_post 并颁发 secret，而豆包自定义链接
-    客户端换令牌不带 secret；显式声明 client_secret_basic / client_secret_post
-    的请求原样放行，按机密客户端注册（豆包连接器预检要求注册响应原样回显）。
+    SDK 对未声明的方式默认 client_secret_post 并颁发 secret，豆包两条接入流
+    的实际行为不同：连接器（回调挂在 api.doubao-dev.com 前缀）配置的是
+    client_secret_basic，但 DCR 请求省略该字段，预检比对配置与注册回显值
+    会不匹配，默认补 basic；自定义链接（本机回环回调）是公开客户端，换令牌
+    不带 secret，默认补 none。显式声明的一律原样放行。
     """
 
     def __init__(self, app: ASGIApp) -> None:
@@ -200,6 +206,16 @@ class _RegisterBodyMiddleware:
         await self.app(scope, replay, send)
 
 
+def _default_auth_method(payload: dict) -> str:
+    redirect_uris = payload.get("redirect_uris") or []
+    if any(
+        isinstance(uri, str) and uri.startswith(DOUBAO_CALLBACK_PREFIX)
+        for uri in redirect_uris
+    ):
+        return "client_secret_basic"
+    return _PUBLIC_CLIENT_AUTH_METHOD
+
+
 def _normalize_register_body(body: bytes) -> bytes:
     try:
         payload = json.loads(body)
@@ -209,7 +225,7 @@ def _normalize_register_body(body: bytes) -> bytes:
         return body
     if payload.get("token_endpoint_auth_method") is not None:
         return body
-    payload["token_endpoint_auth_method"] = _PUBLIC_CLIENT_AUTH_METHOD
+    payload["token_endpoint_auth_method"] = _default_auth_method(payload)
     return json.dumps(payload, separators=(",", ":")).encode()
 
 
