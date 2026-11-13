@@ -52,6 +52,7 @@ def _capability_groups() -> list[tuple[str, list[str]]]:
     rules = [
         ("抖音", lambda item: item["platform"] == "douyin"),
         ("快手", lambda item: item["platform"] == "kuaishou"),
+        ("小红书", lambda item: item["platform"] == "xiaohongshu"),
         ("TikTok", lambda item: item["platform"] == "tiktok"),
         ("微信公众号", lambda item: item["platform"] == "wechat"),
         ("微信视频号", lambda item: item["platform"] == "wechat_channels"),
@@ -111,7 +112,7 @@ PARAM_TEXT = {
 def instructions() -> str:
     example = "douyin.get.daily.hot.rank"
     return (
-        "红狐数据(RedFox)提供抖音、快手、微信公众号、微信视频号、B站、头条、TikTok、Instagram、X（推特）、YouTube、懂车帝、汽车之家、易车等平台的公开数据能力。一次 call 只调一个能力。\n"
+        "红狐数据(RedFox)提供抖音、快手、小红书、微信公众号、微信视频号、B站、头条、懂车帝、汽车之家、易车等平台的公开数据能力。一次 call 只调一个能力。\n"
         f"能力编号形如 platform.resource.action，例如 {example}。\n"
         f"{platform_capabilities_text()}\n"
         "编号能从 call 的 capability 列表里看出来时，直接 call；参数名或取值不确定时先 describe。"
